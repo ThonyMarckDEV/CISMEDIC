@@ -1,7 +1,7 @@
 import React from 'react';
 
 const WhatsAppIcon = () => {
-  const whatsappNumber = '946463174';
+  const whatsappNumber = '902207108';
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
 
   return (
