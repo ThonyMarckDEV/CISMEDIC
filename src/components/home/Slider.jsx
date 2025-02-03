@@ -8,32 +8,32 @@ import img4 from '../../img/4.jpg';
 const slides = [
   {
     image: img1,
-    title: "Cocinas Elegantes",
-    description: "Descubre nuestra colección exclusiva de cocinas modernas y clásicas, diseñadas para brindar estilo y funcionalidad.",
-    buttonText: "Ver más",
-    buttonLink: "/catalogo?categoria=Cocinas",
+    title: "Atención Médica de Calidad",
+    description: "Brindamos servicios médicos con un equipo altamente capacitado, comprometido con el bienestar de cada paciente.",
+    buttonText: "Conocer más",
+    buttonLink: "/servicios?categoria=AtencionMedica"
   },
   {
     image: img2,
-    title: "Escritorios Modernos",
-    description: "Explora nuestra variedad de escritorios ergonómicos y contemporáneos, perfectos para tu espacio de trabajo.",
-    buttonText: "Explorar",
-    buttonLink: "/catalogo?categoria=Escritorios",
+    title: "Especialidades Médicas",
+    description: "Contamos con diversas especialidades médicas para ofrecerte el mejor diagnóstico y tratamiento.",
+    buttonText: "Ver especialidades",
+    buttonLink: "/servicios?categoria=Especialidades"
   },
   {
     image: img3,
-    title: "Sofás de Lujo",
-    description: "Encuentra sofás y muebles de alta calidad, diseñados para ofrecer comodidad y elegancia suprema.",
-    buttonText: "Descubrir",
-    buttonLink: "/catalogo?categoria=Sofas",
+    title: "Cuidado Empático",
+    description: "Nuestro equipo de salud trabaja con empatía y dedicación para brindarte la mejor experiencia de atención.",
+    buttonText: "Saber más",
+    buttonLink: "/servicios?categoria=CuidadoEmpatico"
   },
   {
     image: img4,
-    title: "Centros de Entretenimiento",
-    description: "Transforma tu espacio con nuestros modernos centros de entretenimiento, fusionando estilo y funcionalidad.",
-    buttonText: "Comprar ahora",
-    buttonLink: "/catalogo?categoria=Centros+De+Entretenimiento",
-  }  
+    title: "Equipos de Alta Tecnología",
+    description: "Disponemos de tecnología avanzada para garantizar diagnósticos precisos y tratamientos efectivos.",
+    buttonText: "Explorar",
+    buttonLink: "/servicios?categoria=TecnologiaMedica"
+  }
 ];
 
 const Slider = () => {
@@ -50,6 +50,7 @@ const Slider = () => {
         return prevProgress + 8;
       });
     }, 300);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -59,58 +60,52 @@ const Slider = () => {
   };
 
   return (
-    <div className="relative w-full h-[85vh] overflow-hidden"> 
+    <div className="relative w-full h-[85vh] md:h-[90vh] overflow-hidden">
       <div className="relative w-full h-full flex">
         {slides.map((slide, index) => (
-          <div 
-            key={index} 
-            className={`absolute inset-0 flex transition-all duration-1000 ${
+          <div
+            key={index}
+            className={`absolute inset-0 flex flex-col md:flex-row transition-all duration-1000 ${
               index === currentIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* Enhanced Text Container */}
-            <div className="w-1/2 h-full bg-white/95 backdrop-blur-sm relative flex items-center">
-              <div 
-                className="pl-12 lg:pl-24 pr-6 space-y-6 w-full max-w-[42rem]"
-              >
-                {/* Title with Enhanced Typography */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tight text-gray-900 leading-tight">
+            {/* Text Container */}
+            <div className="w-full md:w-1/2 h-1/2 md:h-full bg-white/95 backdrop-blur-sm flex items-center justify-center md:justify-start">
+              <div className="px-6 md:pl-12 lg:pl-24 md:pr-6 space-y-4 md:space-y-6 w-full max-w-[42rem] text-center md:text-left">
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 leading-tight">
                   {slide.title}
                 </h1>
-                
-                {/* Description with Improved Readability */}
-                <p className="text-xl md:text-2xl lg:text-3xl font-light text-gray-700 leading-relaxed">
+                <p className="text-base md:text-xl lg:text-2xl font-light text-gray-700 leading-relaxed">
                   {slide.description}
                 </p>
-                
-                {/* Refined Button */}
                 <Link to={slide.buttonLink}>
-                  <button
-                    className="mt-6 px-10 py-4 text-lg font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
+                  <button className="mt-4 md:mt-6 px-6 md:px-10 py-2 md:py-4 text-base md:text-lg font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
                     {slide.buttonText}
                   </button>
                 </Link>
               </div>
             </div>
-            {/* Image Container with Sophisticated Effects */}
-            <div className="w-1/2 h-full relative overflow-hidden">
+            {/* Image Container */}
+            <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden order-first md:order-none">
               <img
                 src={slide.image}
                 alt={`Slide ${index + 1}`}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-in-out"
               />
-              {/* Subtle Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent opacity-30" />
-              
-              {/* Gradiente adicional para fusión con el texto */}
-              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white via-white/90 to-transparent"></div>
+              {/* Gradient Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/20 to-transparent opacity-30" />
+              {/* Gradient for Mobile */}
+              <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white via-white/80 to-transparent md:hidden"></div>
+              {/* Gradient for PC (Left Side) */}
+              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white via-white/90 to-transparent hidden md:block"></div>
+              {/* Gradient for PC (Bottom) */}
+              <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white via-white/80 to-transparent hidden md:block"></div>
             </div>
           </div>
         ))}
       </div>
-      {/* Navigation Dots with Elegant Design */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+      {/* Navigation Dots */}
+      <div className="absolute bottom-9 md:bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-4 z-10">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -123,12 +118,9 @@ const Slider = () => {
           />
         ))}
       </div>
-      {/* Progress Bar with Refined Style */}
+      {/* Progress Bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 z-10">
-        <div
-          className="h-full bg-gray-900 transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
+        <div className="h-full bg-gray-900 transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
     </div>
   );
