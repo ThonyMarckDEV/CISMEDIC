@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import appImage from '../../img/app.jpg'; // Importar la imagen
 
 const AppDownload = () => {
+  // URL del archivo APK en el repositorio de releases
+  const apkDownloadUrl = "https://github.com/ThonyMarckDEV/CISMEDIC/releases/download/1.0/Cismedic.apk";
+
   return (
     <div className="bg-white text-gray-900 py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
@@ -59,16 +62,19 @@ const AppDownload = () => {
               </li>
             ))}
           </motion.ul>
-          <motion.button
+          {/* Botón de descarga */}
+          <motion.a
+            href={apkDownloadUrl} // URL del APK
+            download="CISMEDIC-App.apk" // Nombre del archivo al descargar
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold 
+            className="inline-block bg-black text-white px-8 py-4 rounded-full text-lg font-semibold 
             hover:bg-gray-700 transition-colors duration-300 
             shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           >
             Descargar App CISMEDIC
-          </motion.button>
+          </motion.a>
         </div>
 
         {/* Phone Mockup */}
