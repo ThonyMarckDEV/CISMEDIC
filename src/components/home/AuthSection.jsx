@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const AuthSection = () => {
   return (
-    <div className="w-full bg-white py-2">
+    <div className="w-full bg-gray-200 py-2">
       <div className="container mx-auto flex justify-end items-center px-4">
         {/* Botón de Registrarse */}
         <Link

@@ -2,10 +2,11 @@ import React from 'react';
 import Navbar from '../components/home/NavBar';
 import Slider from '../components/home/Slider';
 import Footer from '../components/home/Footer';
+import Specialties from '../components/home/Specialties';
+import AppDownload from '../components/home/AppDownload';
 import { motion } from 'framer-motion';
 
 const Home = () => {
-
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -21,12 +22,30 @@ const Home = () => {
       <Navbar />
   
       {/* Slider con texto superpuesto */}
-      <div className="relative mt-20"> {/* Añade un margen superior para evitar que el contenido quede oculto detrás de la Navbar */}
+      <div className="relative mt-20">
         <Slider />
-
-        {/* Footer */}
-        <Footer />
       </div>
+
+      {/* Specialties Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <Specialties />
+      </motion.div>
+
+      {/* App Download Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <AppDownload />
+      </motion.div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
