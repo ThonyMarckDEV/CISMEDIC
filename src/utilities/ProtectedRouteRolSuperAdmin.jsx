@@ -19,7 +19,10 @@ const ProtectedRouteRolSuperAdmin = ({ element }) => {
 
     if (userRole === 'admin') {
       return <Navigate to="/admin" />;
+    }else if(userRole === 'cliente') {
+      return <Navigate to="/cliente" />;
     }
+
     return element;
   } catch (error) {
     console.error('Error al decodificar el token:', error);

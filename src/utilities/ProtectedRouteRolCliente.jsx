@@ -28,8 +28,11 @@ const ProtectedRouteCliente = ({ element, allowedRoles }) => {
        
      } else if (userRole === 'superadmin') {
        return <Navigate to="/superAdmin" />;
-
+       
+     }else{
+      return <Navigate to="/" />;
      }
+     
      return element;
    } catch (error) {
      console.error('Error al decodificar el token:', error);
