@@ -78,10 +78,10 @@ const AppDownload = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="bg-gray-100 w-72 h-[550px] rounded-3xl relative overflow-hidden shadow-2xl border-8 border-gray-200">
+          <div className="bg-gray-100 w-72 h-[550px] rounded-3xl relative overflow-hidden shadow-2xl border-8 border-black">
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-300 h-6 w-1/2 rounded-full"></div>
             <div className="bg-white w-full h-full p-4 overflow-hidden relative">
-              <div className="absolute top-4 right-4 w-8 h-8 bg-gray-200 rounded-full"></div>
+              <div className="absolute top-4 right-4 w-8 h-8 bg-black rounded-full"></div>
               {/* Sliding app showcase */}
               <div className="h-full w-full bg-gray-100 rounded overflow-hidden">
                 <div className="animate-slide-images flex h-full">
