@@ -19,6 +19,10 @@ import Login from './ui/Login';
   
   //UI ADMIN
 
+  //UI AUTH
+
+  import Register from './ui/Register';
+
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
@@ -88,6 +92,8 @@ function AppContent() {
 
 
           <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
+
+          <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
   
           {/* Rutas SuperAdmin */}
 

@@ -7,7 +7,7 @@ const AuthSection = () => {
       <div className="container mx-auto flex justify-end items-center px-4">
         {/* Botón de Registrarse */}
         <Link
-          to="/registro"
+          to="/register"
           className="bg-black text-white px-4 py-1 rounded-md text-sm font-medium mr-4 transition duration-300 hover:bg-gray-800"
         >
           Registrarse
