@@ -1,5 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+
+// Importa los estilos de Swiper
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const specialties = [
   {
@@ -21,6 +28,26 @@ const specialties = [
     title: "Cardiología",
     description: "Diagnóstico avanzado y tratamiento de precisión cardiovascular",
     icon: "❤️"
+  },
+  {
+    title: "Dermatología",
+    description: "Cuidado de la piel con los mejores tratamientos y tecnología",
+    icon: "🧴"
+  },
+  {
+    title: "Ortopedia",
+    description: "Soluciones especializadas para problemas musculoesqueléticos",
+    icon: "🦴"
+  },
+  {
+    title: "Neurología",
+    description: "Atención experta en trastornos del sistema nervioso",
+    icon: "🧠"
+  },
+  {
+    title: "Oftalmología",
+    description: "Cuidado visual con tecnología de vanguardia",
+    icon: "👁️"
   }
 ];
 
@@ -35,30 +62,47 @@ const Specialties = () => {
       >
         Nuestras Especialidades
       </motion.h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={30}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        breakpoints={{
+          640: {
+            slidesPerView: 2,
+          },
+          1024: {
+            slidesPerView: 4,
+          },
+        }}
+        className="w-full"
+      >
         {specialties.map((specialty, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ 
-              duration: 0.6, 
-              delay: index * 0.2,
-              type: "spring",
-              stiffness: 100
-            }}
-            className="bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl border-t-4 border-black"
-          >
-            <div className="text-5xl mb-6 text-center">{specialty.icon}</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-              {specialty.title}
-            </h3>
-            <p className="text-gray-600 text-center leading-relaxed">
-              {specialty.description}
-            </p>
-          </motion.div>
+          <SwiperSlide key={index}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: index * 0.2,
+                type: "spring",
+                stiffness: 100
+              }}
+              className="bg-white rounded-2xl shadow-1xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl border-t-4 border-black"
+            >
+              <div className="text-5xl mb-6 text-center">{specialty.icon}</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+                {specialty.title}
+              </h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                {specialty.description}
+              </p>
+            </motion.div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </div>
   );
 };
