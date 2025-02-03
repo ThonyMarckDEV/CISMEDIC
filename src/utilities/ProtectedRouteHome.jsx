@@ -8,15 +8,21 @@ const ProtectedRoute = ({ element }) => {
   
   if (token) {
     // Si hay token, decodificar el JWT y verificar el estado de emailVerified
+    const emailVerified = jwtUtils.getEmailVerified(token);
     const role = jwtUtils.getUserRole(token); // Extraer el rol del token
+
+    if(emailVerified === 0) {
+      // Si el correo no está verificado (email_verified es 0), redirigir a la página de verificación
+      return <Navigate to="/verificar-correo" />;
+    }
 
      // Redirigir según el rol del usuario
      switch (role) {
       case 'superadmin':
-        return <Navigate to="/superAdmin/dashboard" />;
+        return <Navigate to="/superAdmin" />;
         return element;
       case 'admin':
-        return <Navigate to="/admin/productos/agregar" />;
+        return <Navigate to="/admin" />;
         return element;
     }
   }
