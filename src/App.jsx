@@ -18,7 +18,8 @@ import VerificarCorreoToken from './ui/VerificarCorreoToken';
   //UI SUPER ADMIN
 
   
-  //UI ADMIN
+  //UI Cliente
+  import Cliente from './ui/clienteUI/Cliente';
 
   //UI AUTH
 
@@ -33,6 +34,7 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
 // Scripts
  import { updateLastActivity } from './js/lastActivity';
+
 
 function AppContent() {
   const location = useLocation();
@@ -101,7 +103,9 @@ function AppContent() {
           {/* Rutas SuperAdmin */}
 
   
-          {/* Rutas Admin */}
+          {/* Rutas cliente */}
+
+          <Route path="/cliente" element={<Cliente />} />
 
   
           <Route path="*" element={<ErrorPage />} />

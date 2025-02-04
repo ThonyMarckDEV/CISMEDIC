@@ -53,11 +53,13 @@ const Login = ({ closeLoginModal }) => {
     
         // Redirigir según el rol
         if (userRole === 'superadmin') {
-            window.location.href = '/superAdmin/dashboard';
+            window.location.href = '/superAdmin';
         } else if (userRole === 'admin') {
-            window.location.href = '/admin/productos/agregar';
-        } else {
-            console.error('Rol no reconocido:', userRole);
+            window.location.href = '/admin';
+        } else if(userRole === 'cliente'){
+            window.location.href = '/cliente';
+        }else{
+          console.error('Rol no reconocido:', userRole);
         }
       } else {
         // Mostrar mensaje de error específico para usuario inactivo o correo no verificado

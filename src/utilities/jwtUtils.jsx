@@ -40,8 +40,14 @@ export const getPerfil = (token) => {
 // Función para obtener el ID del usuario
 export const getIdUsuario = (token) => decodeToken(token)?.idUsuario ?? null;
 
-// Función para obtener el nombre de usuario
+// Función para obtener el usernamede usuario
 export const getUsername = (token) => decodeToken(token)?.username ?? null;
+
+// Función para obtener el nombre de usuario
+export const getNombres = (token) => {
+  const decodedToken = decodeToken(token || getTokenFromCookie()); // Usa el token proporcionado o lo obtiene de la cookie
+  return decodedToken?.nombres ?? null; // Devuelve los nombres si existen, o null si no
+};
 
 // Función para obtener el rol del usuario
 export const getUserRole = (token) => decodeToken(token)?.rol ?? null;
@@ -110,6 +116,7 @@ export default {
   getPerfil,
   getIdUsuario,
   getUsername,
+  getNombres,
   getUserRole,
   isTokenExpired,
   getTokenExpirationDate,
