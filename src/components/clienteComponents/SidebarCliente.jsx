@@ -54,8 +54,8 @@ const SidebarCliente = ({ children }) => {
           />
         </div>
 
-        {/* Right Section: Profile and Dropdown */}
-        <div className="relative">
+          {/* Right Section: Profile and Dropdown */}
+          <div className="relative flex justify-center items-center">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className="flex items-center space-x-2 text-black"
@@ -65,16 +65,11 @@ const SidebarCliente = ({ children }) => {
           </button>
           {/* Dropdown Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-10">
+            <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-50 w-48"> {/* Añadí w-48 para un ancho fijo */}
               <ul className="text-gray-700">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-center"> {/* Añadí text-center */}
                   <Link to="/perfil" className="block w-full h-full">
                     Perfil
-                  </Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <Link to="/configuracion" className="block w-full h-full">
-                    Configuración
                   </Link>
                 </li>
                 <button
@@ -82,7 +77,7 @@ const SidebarCliente = ({ children }) => {
                     logout();
                     setIsProfileMenuOpen(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300"
+                  className="block w-full px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300 text-center"
                 >
                   Cerrar sesión
                 </button>
@@ -90,6 +85,7 @@ const SidebarCliente = ({ children }) => {
             </div>
           )}
         </div>
+
       </div>
 
       {/* Sidebar for Desktop and Mobile */}
@@ -111,7 +107,7 @@ const SidebarCliente = ({ children }) => {
                       to={item.href}
                       className={`flex items-center gap-3 p-2 rounded-md ${
                         item.current
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-blue-400 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
