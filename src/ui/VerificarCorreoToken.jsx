@@ -5,6 +5,7 @@ import LoadingScreen from '../components/home/LoadingScreen';
 import verificarCorreo from '../img/verificar_correo.png';
 import jwtUtils from '../utilities/jwtUtils';
 import { verificarYRenovarToken } from '../js/authToken';
+import SweetAlert from '../components/SweetAlert';
 
 const VerificarCorreo = () => {
   const [notification, setNotification] = useState(null);
@@ -33,36 +34,19 @@ const VerificarCorreo = () => {
           const verifyResult = await verifyResponse.json();
 
           if (verifyResponse.ok && verifyResult.success) {
-            setNotification({
-              message: 'Correo verificado exitosamente. Redirigiendo...',
-              color: 'bg-green-400',
-            });
-
-            // Guardar el nuevo token en localStorage si el usuario está autenticado
-            if (verifyResult.token) {
-              localStorage.setItem('jwt', verifyResult.token);
-            }
+            SweetAlert.showMessageAlert('Éxito', 'Correo verificado exitosamente. Redirigiendo...', 'success');
 
             // Redirigir después de un pequeño retraso
-            setTimeout(() => navigate('/'), 3000);
+            setTimeout(() => navigate('/'), 1500);
           } else {
-            setNotification({
-              message: verifyResult.message || 'Error verificando el correo.',
-              color: 'bg-red-400',
-            });
+            SweetAlert.showMessageAlert('Error', 'Error verificando el correo.', 'error');
           }
         } catch (error) {
           console.error('Error al verificar el correo:', error);
-          setNotification({
-            message: 'Error al comunicarse con el servidor.',
-            color: 'bg-red-400',
-          });
+          SweetAlert.showMessageAlert('Error', 'Error al comunicarse con el servidor.', 'error');
         }
       } else {
-        setNotification({
-          message: 'Token no proporcionado en la URL.',
-          color: 'bg-red-400',
-        });
+        SweetAlert.showMessageAlert('Error', 'Token no proporcionado en la URL.', 'error');
       }
 
       setLoading(false);
@@ -87,9 +71,6 @@ const VerificarCorreo = () => {
               alt="Correo no verificado"
               className="w-80 h-80 mb-6 sm:w-60 sm:h-60 md:w-72 md:h-72 lg:w-80 lg:h-80"
             />
-            {notification && (
-              <Notification description={notification.message} bgColor={notification.color} />
-            )}
           </>
         )}
       </div>
