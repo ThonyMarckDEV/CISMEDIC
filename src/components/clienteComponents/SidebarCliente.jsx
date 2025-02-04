@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'; // Importa useLocation
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
 
 const navigation = [
-  { name: "Inicio", href: "/cliente", icon: Home, current: true },
+  { name: "Inicio", href: "/cliente", icon: Home },
   { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
   { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText },
   { name: "Programas", href: "/cliente/programas", icon: Layout },
@@ -17,6 +17,7 @@ const SidebarCliente = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
+  const location = useLocation(); // Obtén la ruta actual
 
   // Función para cerrar la sidebar al hacer clic fuera de ella
   useEffect(() => {
@@ -54,8 +55,8 @@ const SidebarCliente = ({ children }) => {
           />
         </div>
 
-          {/* Right Section: Profile and Dropdown */}
-          <div className="relative flex justify-center items-center">
+        {/* Right Section: Profile and Dropdown */}
+        <div className="relative flex justify-center items-center">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className="flex items-center space-x-2 text-black"
@@ -65,9 +66,9 @@ const SidebarCliente = ({ children }) => {
           </button>
           {/* Dropdown Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-50 w-48"> {/* Añadí w-48 para un ancho fijo */}
+            <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-50 w-48">
               <ul className="text-gray-700">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-center"> {/* Añadí text-center */}
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-center">
                   <Link to="/perfil" className="block w-full h-full">
                     Perfil
                   </Link>
@@ -85,7 +86,6 @@ const SidebarCliente = ({ children }) => {
             </div>
           )}
         </div>
-
       </div>
 
       {/* Sidebar for Desktop and Mobile */}
@@ -106,7 +106,7 @@ const SidebarCliente = ({ children }) => {
                     <Link
                       to={item.href}
                       className={`flex items-center gap-3 p-2 rounded-md ${
-                        item.current
+                        location.pathname === item.href // Compara la ruta actual con la del ítem
                           ? 'bg-blue-400 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}

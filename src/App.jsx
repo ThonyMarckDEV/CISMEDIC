@@ -16,15 +16,15 @@ import Contacto from './ui/Contacto';
 import Login from './ui/Login';
 import VerificarCorreoToken from './ui/VerificarCorreoToken';
 
-  //UI SUPER ADMIN
+//UI SUPER ADMIN
 
-  
-  //UI Cliente
-  import Cliente from './ui/clienteUI/Cliente';
 
-  //UI AUTH
+//UI Cliente
+import Cliente from './ui/clienteUI/Cliente';
+import ClienteNuevaCita from './ui/clienteUI/ClienteNuevaCita';
 
-  import Register from './ui/Register';
+//UI AUTH
+import Register from './ui/Register';
 
 
 // Utilities
@@ -35,6 +35,7 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
 // Scripts
  import { updateLastActivity } from './js/lastActivity';
+
 
 
 function AppContent() {
@@ -109,7 +110,7 @@ function AppContent() {
           {/* Rutas cliente */}
 
           <Route path="/cliente" element={<Cliente />} />
-
+          <Route path="/cliente/nuevacita" element={<ClienteNuevaCita />} />
   
           <Route path="*" element={<ErrorPage />} />
         </Routes>
