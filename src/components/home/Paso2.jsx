@@ -42,7 +42,7 @@ const Paso2 = ({ onNext }) => {
         // Limpiar localStorage después de registrarse
         localStorage.clear();
 
-        SweetAlert.showMessageAlert('Éxito', 'Usuario registrado Correctamente', 'success');
+        SweetAlert.showMessageAlert('Éxito', 'Usuario registrado Correctamente , Verifica tu Correo!.', 'success');
     
         setTimeout(() => {
           window.location.href = '/';
