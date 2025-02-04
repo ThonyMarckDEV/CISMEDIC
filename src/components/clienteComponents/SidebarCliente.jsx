@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
 
-const Sidebar = ({ children }) => {
+const navigation = [
+  { name: "Inicio", href: "/cliente", icon: Home, current: true },
+  { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
+  { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText },
+  { name: "Programas", href: "/cliente/programas", icon: Layout },
+  { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard },
+  { name: "Ayuda", href: "/ayuda", icon: HelpCircle },
+];
+
+const SidebarCliente = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
@@ -85,38 +94,51 @@ const Sidebar = ({ children }) => {
 
       {/* Sidebar for Desktop and Mobile */}
       <div className="flex">
-        {/* Sidebar */}
+        {/* Dashboard Sidebar */}
         <div
           ref={sidebarRef}
           className={`md:flex md:flex-col md:w-64 bg-white text-black min-h-screen border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } md:translate-x-0 fixed md:relative z-20`}
         >
-          {/* Sidebar Links */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
-              <li className="hover:bg-gray-100 p-2 rounded-md cursor-pointer">
-                <Link to="/inicio" className="block w-full h-full">
-                  Inicio
-                </Link>
-              </li>
-              <li className="hover:bg-gray-100 p-2 rounded-md cursor-pointer">
-                <Link to="/citas" className="block w-full h-full">
-                  Citas
-                </Link>
-              </li>
-              <li className="hover:bg-gray-100 p-2 rounded-md cursor-pointer">
-                <Link to="/historial" className="block w-full h-full">
-                  Historial
-                </Link>
-              </li>
-              <li className="hover:bg-gray-100 p-2 rounded-md cursor-pointer">
-                <Link to="/configuracion" className="block w-full h-full">
-                  Configuración
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          {/* Sidebar Content */}
+          <div className="flex-1 p-4">
+            <nav>
+              <ul className="space-y-2">
+                {navigation.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      to={item.href}
+                      className={`flex items-center gap-3 p-2 rounded-md ${
+                        item.current
+                          ? 'bg-blue-500 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Footer Section */}
+            <div className="mt-auto p-4">
+              <div className="text-xs text-gray-500">
+                <p>¿Tienes alguna duda o inconveniente?</p>
+                <p>Contáctanos a:</p>
+                <a href="mailto:soporteapp.pe@auna.org" className="text-blue-500 hover:underline">
+                  soporteapp.pe@cismedic.org
+                </a>
+                <p className="mt-2">
+                  <a href="#" className="text-blue-500 hover:underline">
+                    Whatsapp Cismedic
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -129,4 +151,4 @@ const Sidebar = ({ children }) => {
   );
 };
 
-export default Sidebar;
+export default SidebarCliente;

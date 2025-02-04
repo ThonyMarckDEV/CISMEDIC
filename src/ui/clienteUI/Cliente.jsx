@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../../components/home/Sidebar';
+import Sidebar from '../../components/clienteComponents/SidebarCliente';
 import jwtUtils from '../../utilities/jwtUtils';
 
 const Cliente = () => {
