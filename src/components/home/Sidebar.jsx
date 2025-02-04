@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, ChevronDown, User } from 'lucide-react';
-import { Link } from 'react-router-dom'; // Importar Link de react-router-dom
-import logo from '../../img/logo.png'; // Reemplaza con la ruta de tu logo
+import { Link } from 'react-router-dom';
+import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
 
 const Sidebar = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado para controlar la Sidebar
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Estado para el menú desplegable del perfil
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const sidebarRef = useRef(null);
+
+  // Función para cerrar la sidebar al hacer clic fuera de ella
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,17 +31,17 @@ const Sidebar = ({ children }) => {
         <div className="flex items-center space-x-2">
           {/* Hamburguer Menu for Mobile */}
           <button
-            className="md:hidden" // Solo visible en móviles
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)} // Alternar la visibilidad de la Sidebar
+            className="md:hidden"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <Menu className="text-black w-6 h-6" />
           </button>
 
           {/* Logo */}
           <img
-            src={logo} // Reemplaza con la ruta de tu logo
+            src={logo}
             alt="Cismedic Logo"
-            className="w-12 h-12 md:w-24 md:h-16" // Logo más ancho
+            className="w-12 h-12 md:w-24 md:h-16"
           />
         </div>
 
@@ -43,7 +58,6 @@ const Sidebar = ({ children }) => {
           {isProfileMenuOpen && (
             <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-10">
               <ul className="text-gray-700">
-                {/* Cada elemento usa Link para redirigir a una ruta */}
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   <Link to="/perfil" className="block w-full h-full">
                     Perfil
@@ -55,13 +69,13 @@ const Sidebar = ({ children }) => {
                   </Link>
                 </li>
                 <button
-                      onClick={() => {
-                        logout();
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300"
-                    >
-                      Cerrar sesión
+                  onClick={() => {
+                    logout();
+                    setIsProfileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300"
+                >
+                  Cerrar sesión
                 </button>
               </ul>
             </div>
@@ -73,9 +87,10 @@ const Sidebar = ({ children }) => {
       <div className="flex">
         {/* Sidebar */}
         <div
-          className={`md:flex md:flex-col md:w-64 bg-white text-black min-h-screen border-r border-gray-200 ${
-            isSidebarOpen ? 'block' : 'hidden'
-          } md:block`}
+          ref={sidebarRef}
+          className={`md:flex md:flex-col md:w-64 bg-white text-black min-h-screen border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 fixed md:relative z-20`}
         >
           {/* Sidebar Links */}
           <nav className="flex-1 p-4">

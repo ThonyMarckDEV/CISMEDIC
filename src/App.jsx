@@ -10,6 +10,7 @@ import ScrollToTopButton from './components/home/ScrollToTopButton';
 
 // Componentes Home
 import Home from './ui/Home';
+import Contacto from './ui/Contacto';
 
 // UIS
 import Login from './ui/Login';
@@ -99,7 +100,9 @@ function AppContent() {
           <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
 
           <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
-  
+
+          <Route path="/contacto" element={<Contacto />} />
+
           {/* Rutas SuperAdmin */}
 
   
