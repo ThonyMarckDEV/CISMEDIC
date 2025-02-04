@@ -3,6 +3,8 @@ import { Calendar, Clock, User, Activity } from "lucide-react";
 import Sidebar from "../../components/clienteComponents/SidebarCliente";
 import jwtUtils from "../../utilities/jwtUtils";
 import API_BASE_URL from "../../js/urlHelper";
+import SweetAlert from '../../components/SweetAlert';
+import LoadingScreen from '../../components/home/LoadingScreen'; // Importa el LoadingScreen
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -16,18 +18,14 @@ const ClienteNuevaCita = () => {
   const [loading, setLoading] = useState(false);
   const [selectedHorario, setSelectedHorario] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false); // Estado para el LoadingScreen
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
   const formatTime = (timeString) => {
     try {
-      // Ensure we have a valid time string
       if (!timeString) return '';
-      
-      // Create a date object with the time
       const date = new Date(`2000-01-01T${timeString}`);
-      
-      // Format the time
       return date.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
@@ -35,17 +33,15 @@ const ClienteNuevaCita = () => {
       });
     } catch (error) {
       console.error('Error formatting time:', error);
-      return timeString; // Return original string if formatting fails
+      return timeString;
     }
   };
 
   const fetchHorariosDisponibles = async (doctorId, selectedDate) => {
     if (!doctorId || !selectedDate) return;
-    
     setLoading(true);
     setError("");
-    setHorariosDisponibles([]); // Clear previous schedules
-    
+    setHorariosDisponibles([]);
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/horarios-disponibles/${doctorId}/${selectedDate}`,
@@ -56,19 +52,13 @@ const ClienteNuevaCita = () => {
           },
         }
       );
-
       const data = await response.json();
-      
       if (!response.ok) {
         throw new Error(data.error || `Error: ${response.status}`);
       }
-
-      // Sort horarios by time before setting state
       const sortedHorarios = (data.horarios || []).sort((a, b) => 
         a.hora_inicio.localeCompare(b.hora_inicio)
       );
-
-      console.log('Horarios disponibles:', sortedHorarios); // Debug log
       setHorariosDisponibles(sortedHorarios);
     } catch (error) {
       console.error("Error:", error);
@@ -90,7 +80,6 @@ const ClienteNuevaCita = () => {
           },
         }
       );
-      
       if (!response.ok) throw new Error('Error al cargar doctores');
       const data = await response.json();
       setDoctores(data);
@@ -104,7 +93,6 @@ const ClienteNuevaCita = () => {
       setDoctores([]);
     }
   };
-
 
   useEffect(() => {
     const token = getToken();
@@ -166,25 +154,24 @@ const ClienteNuevaCita = () => {
       setError("Por favor, complete todos los campos.");
       return;
     }
-  
+
     const token = getToken();
     if (!token) {
       setError("No se pudo obtener el token de autenticación.");
       return;
     }
-  
+
     try {
+      setIsLoadingFullScreen(true); // Activar el LoadingScreen
       const idCliente = jwtUtils.getIdUsuario(token);
-  
+
       const citaData = {
         idCliente: idCliente,
         idDoctor: idDoctor,
         idHorario: selectedHorario,
         fecha: fecha,
       };
-  
-      console.log("Datos de la cita:", citaData); // Verifica los datos antes de enviar
-  
+
       const citaResponse = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
         method: 'POST',
         headers: {
@@ -193,19 +180,19 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(citaData),
       });
-  
+
       if (!citaResponse.ok) {
         throw new Error('Error al agendar la cita');
       }
-  
+
       const citaResult = await citaResponse.json();
       const idCita = citaResult.idCita;
-  
+
       const pagoData = {
         idCita: idCita,
         monto: 100.80,
       };
-  
+
       const pagoResponse = await fetch(`${API_BASE_URL}/api/registrar-pago`, {
         method: 'POST',
         headers: {
@@ -214,12 +201,12 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(pagoData),
       });
-  
+
       if (!pagoResponse.ok) {
         throw new Error('Error al registrar el pago');
       }
-  
-      alert('Cita agendada y pago registrado exitosamente');
+
+      SweetAlert.showMessageAlert('Éxito', 'Cita agendada y pago registrado exitosamente.', 'success');
       setSelectedEspecialidad("");
       setIdDoctor("");
       setFecha("");
@@ -228,11 +215,16 @@ const ClienteNuevaCita = () => {
     } catch (error) {
       console.error("Error:", error);
       setError("Hubo un error al agendar la cita. Por favor, inténtalo de nuevo.");
+    } finally {
+      setIsLoadingFullScreen(false); // Desactivar el LoadingScreen
     }
   };
 
   return (
     <Sidebar>
+      {/* LoadingScreen que cubre toda la pantalla */}
+      {isLoadingFullScreen && <LoadingScreen />}
+
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
         {/* Welcome Card */}
         <div className="relative w-full bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-8 overflow-hidden shadow-lg">
@@ -266,7 +258,7 @@ const ClienteNuevaCita = () => {
               </div>
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Especialidad Selection */}
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -328,8 +320,8 @@ const ClienteNuevaCita = () => {
               />
             </div>
 
-             {/* Available Times - Updated Section */}
-             <div className="bg-gray-50 p-4 rounded-lg">
+            {/* Available Times */}
+            <div className="bg-gray-50 p-4 rounded-lg">
               <label className="block text-sm font-medium text-gray-700 mb-4">
                 Horarios Disponibles
               </label>
@@ -359,7 +351,7 @@ const ClienteNuevaCita = () => {
                       <div className="flex items-center gap-3">
                         <Clock className="h-5 w-5 text-cyan-600" />
                         <span className="text-gray-700 font-medium">
-                          {formatTime(horario.hora_inicio)}
+                          {formatTime(horario.hora_inicio)} - Costo: S/.{horario.costo.toFixed(2)}
                         </span>
                       </div>
                     </label>
@@ -375,7 +367,7 @@ const ClienteNuevaCita = () => {
               )}
             </div>
 
-            {/* Submit Button - Updated for better feedback */}
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
