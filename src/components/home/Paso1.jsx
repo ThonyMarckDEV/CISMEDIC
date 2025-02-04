@@ -5,26 +5,32 @@ import API_BASE_URL from '../../js/urlHelper';
 const Paso1 = ({ onNext }) => {
   const [dni, setDni] = useState('');
   const [nacimiento, setNacimiento] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({}); // Limpiar errores anteriores
+
     try {
-      const response = await fetch(`${API_BASE_URL}/verificar-dni`, {
+      const response = await fetch(`${API_BASE_URL}/api/verificar-dni`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dni, nacimiento }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
-        onNext();
+        // Guardar los datos en localStorage
+        localStorage.setItem('dni', dni);
+        localStorage.setItem('nacimiento', nacimiento);
+
+        onNext(); // Pasar al siguiente paso
       } else {
-        setError(data.message || 'Error al verificar el DNI');
+        setErrors(data.errors || { general: data.message || 'Error al verificar el DNI' });
       }
     } catch (err) {
-      setError('Error de conexión');
+      setErrors({ general: 'Error de conexión' });
     }
   };
 
@@ -49,10 +55,11 @@ const Paso1 = ({ onNext }) => {
             <label className="block text-sm text-gray-600 mb-1">N° de documento</label>
             <input
               placeholder="Ej: 11122233"
-              className="w-full p-2 border rounded-md text-sm"
+              className={`w-full p-2 border rounded-md text-sm ${errors.dni ? 'border-red-500' : ''}`}
               value={dni}
               onChange={(e) => setDni(e.target.value)}
             />
+            {errors.dni && <p className="text-red-500 text-sm mt-1">{errors.dni}</p>}
           </div>
         </div>
 
@@ -60,13 +67,14 @@ const Paso1 = ({ onNext }) => {
           <label className="block text-sm text-gray-600 mb-1">Fecha de nacimiento</label>
           <input
             type="date"
-            className="w-full p-2 border rounded-md text-sm"
+            className={`w-full p-2 border rounded-md text-sm ${errors.nacimiento ? 'border-red-500' : ''}`}
             value={nacimiento}
             onChange={(e) => setNacimiento(e.target.value)}
           />
+          {errors.nacimiento && <p className="text-red-500 text-sm mt-1">{errors.nacimiento}</p>}
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
 
         <button
           type="submit"

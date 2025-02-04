@@ -13,6 +13,7 @@ import Home from './ui/Home';
 
 // UIS
 import Login from './ui/Login';
+import VerificarCorreoToken from './ui/VerificarCorreoToken';
 
   //UI SUPER ADMIN
 
@@ -94,6 +95,8 @@ function AppContent() {
           <Route path="/login" element={<ProtectedRouteHome element={<Login />} />} />
 
           <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
+
+          <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
   
           {/* Rutas SuperAdmin */}
 
