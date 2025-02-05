@@ -58,7 +58,7 @@ const MisPagos = () => {
         SweetAlert.showMessageAlert(message.title, message.text, message.icon);
       }
 
-      window.history.replaceState({}, '', window.location.pathname);
+    //  window.history.replaceState({}, '', window.location.pathname);
       fetchAppointments();
     }
   }, [searchParams]);
