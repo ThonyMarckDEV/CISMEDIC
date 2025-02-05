@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom"; // Para leer los parámetros de la URL
+import { useSearchParams } from "react-router-dom";
 import { Calendar, Clock, User, Tag, CreditCard, XCircle, CheckCircle, AlertCircle } from "lucide-react";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import MercadoPago from "../../components/clienteComponents/MercadoPago"; // Importar el componente MercadoPago
-import SweetAlert from "../../components/SweetAlert"; // Importar SweetAlert
+import MercadoPago from "../../components/clienteComponents/MercadoPago";
+import SweetAlert from "../../components/SweetAlert";
 
 const MisPagos = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams(); // Leer los parámetros de la URL
+  const [searchParams] = useSearchParams();
+  const [alreadyShownAlert, setAlreadyShownAlert] = useState(false);
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
@@ -43,112 +44,152 @@ const MisPagos = () => {
     fetchAppointments();
   }, [userId, token]);
 
-  // Procesar los parámetros de la URL cuando el usuario regresa del pago
   useEffect(() => {
     const status = searchParams.get("status");
     const externalReference = searchParams.get("external_reference");
 
-    if (status && externalReference) {
-      // Mostrar un mensaje al usuario usando SweetAlert
-      if (status === "approved") {
-        SweetAlert.showMessageAlert('Éxito', '¡El pago fue exitoso! Tu cita ha sido confirmada.', 'success');
-      } else if (status === "failure") {
-        SweetAlert.showMessageAlert('Error', 'El pago no se pudo completar. Por favor, intenta nuevamente.', 'error');
-      } else if (status === "pending") {
-        SweetAlert.showMessageAlert('Pendiente', 'El pago está pendiente. Te notificaremos cuando se complete.', 'warning');
+    if (status && externalReference && !alreadyShownAlert) {
+      setAlreadyShownAlert(true);
+      const messages = {
+        approved: { title: 'Éxito', text: '¡El pago fue exitoso! Tu cita ha sido confirmada.', icon: 'success' },
+        failure: { title: 'Error', text: 'El pago no se pudo completar. Por favor, intenta nuevamente.', icon: 'error' },
+        pending: { title: 'Pendiente', text: 'El pago está pendiente. Te notificaremos cuando se complete.', icon: 'warning' }
+      };
+
+      const message = messages[status];
+      if (message) {
+        SweetAlert.showMessageAlert(message.title, message.text, message.icon);
       }
 
-      // Recargar la página para refrescar los datos
-      window.location.reload();
+      // Remove URL parameters without page reload
+      window.history.replaceState({}, '', window.location.pathname);
+      
+      // Fetch updated appointments
+      const fetchUpdatedAppointments = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/citas/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setAppointments(data);
+          }
+        } catch (error) {
+          console.error("Error updating appointments:", error);
+        }
+      };
+      
+      fetchUpdatedAppointments();
     }
-  }, [searchParams]);
+  }, [searchParams, alreadyShownAlert, userId, token]);
 
   return (
     <SidebarCliente>
-      <div className="flex flex-col p-6 gap-6 md:-ml-64">
+      <div className="flex flex-col p-6 gap-8 md:-ml-64 bg-gray-50 min-h-screen">
         {/* Welcome Card */}
-        <div className="relative w-full bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-8 overflow-hidden shadow-lg">
+        <div className="relative w-full bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-10 overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
           <div className="relative z-10">
-            <h1 className="text-3xl text-cyan-600 font-bold mb-3">
+            <h1 className="text-4xl text-white font-bold mb-4">
               ¡Bienvenido, {userName || "Usuario"}!
             </h1>
-            <p className="text-gray-600 text-lg">
-              Aquí están tus pagos para tus citas médicas programadas.
+            <p className="text-white/90 text-xl font-light">
+              Gestiona tus pagos para citas médicas de manera segura y eficiente.
             </p>
           </div>
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/20 rounded-full blur-2xl"></div>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-            <Clock className="h-8 w-8 animate-spin text-cyan-600" />
-            <p>Cargando tus pagos...</p>
+          <div className="text-center py-20">
+            <Clock className="h-12 w-12 animate-spin text-cyan-600 mx-auto mb-4" />
+            <p className="text-lg text-gray-600">Cargando tus pagos...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="text-center text-red-500 flex flex-col items-center justify-center gap-2">
-            <XCircle className="h-8 w-8 text-red-500" />
-            <p>{error}</p>
+          <div className="text-center py-20">
+            <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <p className="text-lg text-red-600">{error}</p>
           </div>
         )}
 
         {/* Appointment Cards */}
         {!loading && !error && appointments.length === 0 ? (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-            <Calendar className="h-8 w-8 text-gray-500" />
-            <p>No tienes citas programadas.</p>
+          <div className="text-center py-20">
+            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-lg text-gray-500">No tienes citas programadas.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {appointments.map((appointment) => (
               <div
                 key={appointment.idCita}
-                className="rounded-xl shadow-lg bg-white p-6"
+                className="rounded-2xl shadow-xl bg-white p-8 hover:shadow-2xl transition-shadow duration-300 border border-gray-100"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="h-6 w-6 text-cyan-600" />
-                  <h2 className="text-xl font-semibold">Cita #{appointment.idCita}</h2>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-3 bg-cyan-50 rounded-xl">
+                    <Calendar className="h-6 w-6 text-cyan-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Cita #{appointment.idCita}
+                  </h2>
                 </div>
-                <div className="space-y-2 mb-4">
-                  <p className="flex items-center">
-                    <User className="mr-2 h-4 w-4 text-gray-500" />
-                    Paciente: {appointment.clienteNombre}{" "}
-                    {appointment.clienteApellidos}
+                <div className="space-y-4 mb-6">
+                  <p className="flex items-center text-gray-700">
+                    <User className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Paciente:</span>
+                    <span className="ml-2">{appointment.clienteNombre} {appointment.clienteApellidos}</span>
                   </p>
-                  <p className="flex items-center">
-                    <User className="mr-2 h-4 w-4 text-gray-500" />
-                    Doctor: {appointment.doctorNombre}{" "}
-                    {appointment.doctorApellidos}
+                  <p className="flex items-center text-gray-700">
+                    <User className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Doctor:</span>
+                    <span className="ml-2">{appointment.doctorNombre} {appointment.doctorApellidos}</span>
                   </p>
-                  <p className="flex items-center">
-                    <Tag className="mr-2 h-4 w-4 text-gray-500" />
-                    Especialidad: {appointment.especialidad}
+                  <p className="flex items-center text-gray-700">
+                    <Tag className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Especialidad:</span>
+                    <span className="ml-2">{appointment.especialidad}</span>
                   </p>
-                  <p className="flex items-center">
-                    <Calendar className="mr-2 h-4 w-4 text-gray-500" />
-                    Fecha: {new Date(appointment.fecha).toLocaleDateString()}
+                  <p className="flex items-center text-gray-700">
+                    <Calendar className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Fecha:</span>
+                    <span className="ml-2">{new Date(appointment.fecha).toLocaleDateString()}</span>
                   </p>
-                  <p className="flex items-center">
-                    <Clock className="mr-2 h-4 w-4 text-gray-500" />
-                    Hora: {appointment.horaInicio}
+                  <p className="flex items-center text-gray-700">
+                    <Clock className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Hora:</span>
+                    <span className="ml-2">{appointment.horaInicio}</span>
                   </p>
-                  <p className="flex items-center">
-                    <CreditCard className="mr-2 h-4 w-4 text-gray-500" />
-                    Costo: S/.{appointment.costo.toFixed(2)}
+                  <p className="flex items-center text-gray-700">
+                    <CreditCard className="mr-3 h-5 w-5 text-cyan-500" />
+                    <span className="font-medium">Costo:</span>
+                    <span className="ml-2">S/.{appointment.costo.toFixed(2)}</span>
                   </p>
-                  <p className="flex items-center font-semibold">
-                    Estado: {appointment.estado}
-                  </p>
+                  <div className="flex items-center pt-2">
+                    <div className={`px-4 py-2 rounded-full ${
+                      appointment.estado === 'confirmado' ? 'bg-green-100 text-green-800' :
+                      appointment.estado === 'pago pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    } font-medium`}>
+                      {appointment.estado}
+                    </div>
+                  </div>
                 </div>
                 {appointment.estado === "pago pendiente" && (
-                  <MercadoPago
-                    cita={{
-                      idCita: appointment.idCita,
-                      monto: appointment.costo,
-                    }}
-                  />
+                  <div className="mt-6">
+                    <MercadoPago
+                      cita={{
+                        idCita: appointment.idCita,
+                        monto: appointment.costo,
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             ))}
