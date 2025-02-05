@@ -318,7 +318,7 @@ const ClienteNuevaCita = () => {
           {/* Formulario de Cita */}
           <div className="flex-1 rounded-xl shadow-lg bg-white p-8">
             <div className="flex items-center gap-3 mb-6">
-              <Calendar className="h-6 w-6 text-cyan-600" />
+              <Calendar className="h-6 w-6 text-green-600" />
               <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
             </div>
   
@@ -344,7 +344,7 @@ const ClienteNuevaCita = () => {
                   Especialidad Médica
                 </label>
                 <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
                   value={selectedEspecialidad}
                   onChange={handleEspecialidadChange}
                   required
@@ -367,7 +367,7 @@ const ClienteNuevaCita = () => {
                   Médico Especialista
                 </label>
                 <select
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
                   value={idDoctor}
                   onChange={handleDoctorChange}
                   required
@@ -389,7 +389,7 @@ const ClienteNuevaCita = () => {
                 </label>
                 <input
                   type="date"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
                   min={new Date().toISOString().split("T")[0]}
                   value={fecha}
                   onChange={handleFechaChange}
@@ -414,8 +414,8 @@ const ClienteNuevaCita = () => {
                         key={horario.idHorario}
                         className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
                           selectedHorario === horario.idHorario.toString()
-                            ? 'border-cyan-500 bg-cyan-50 shadow-md'
-                            : 'border-gray-200 hover:border-cyan-500'
+                            ? 'border-green-600 bg-green-50 shadow-md'
+                            : 'border-gray-200 hover:border-green-600'
                         }`}
                       >
                         <input
@@ -427,7 +427,7 @@ const ClienteNuevaCita = () => {
                           className="hidden"
                         />
                         <div className="flex items-center gap-3">
-                          <Clock className="h-5 w-5 text-cyan-600" />
+                          <Clock className="h-5 w-5 text-green-600" />
                           <span className="text-gray-700 font-medium">
                             {formatTime(horario.hora_inicio)} - Costo: S/.{horario.costo.toFixed(2)}
                           </span>
@@ -448,7 +448,7 @@ const ClienteNuevaCita = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
+                className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-green-600 hover:bg-green-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
                 disabled={loading || !selectedHorario}
               >
                 <Calendar className="h-5 w-5" />

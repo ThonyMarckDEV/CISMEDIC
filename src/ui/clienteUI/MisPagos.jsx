@@ -35,7 +35,7 @@ const MisPagos = () => {
     <SidebarCliente>
       <div className="bg-white flex flex-col p-6 gap-6 md:-ml-64">
         {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
+        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
             <div className="relative z-10">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">

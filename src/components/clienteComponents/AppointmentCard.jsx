@@ -80,17 +80,17 @@ const AppointmentCard = ({ appointment, invisible }) => {
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
       {/* Card Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+      <div className="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold text-gray-800">
             Cita #{appointment.idCita}
           </span>
           <div className="flex items-center gap-3">
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-              appointment.estado === 'confirmado' ? 'bg-green-100 text-green-700' :
+              appointment.estado === 'confirmado' ? 'bg-green-50 text-green-700' :
               appointment.estado === 'pago pendiente' ? 'bg-amber-100 text-amber-700' :
-              appointment.estado === 'pagado' ? 'bg-blue-100 text-blue-700' :
-              appointment.estado === 'completada' ? 'bg-green-100 text-green-700' :
+              appointment.estado === 'pagado' ? 'bg-green-50 text-green-700' :
+              appointment.estado === 'completada' ? 'bg-green-50 text-green-700' :
               'bg-gray-100 text-gray-700'
             }`}>
               {appointment.estado}
@@ -105,7 +105,7 @@ const AppointmentCard = ({ appointment, invisible }) => {
                   title="Descargar comprobante"
                 >
                   <DownloadCloud 
-                    className={`h-5 w-5 text-blue-500 ${isLoading ? 'animate-pulse' : ''}`}
+                    className={`h-5 w-5 text-green-700 ${isLoading ? 'animate-pulse' : ''}`}
                     strokeWidth={2}
                   />
                 </button>
@@ -123,7 +123,7 @@ const AppointmentCard = ({ appointment, invisible }) => {
       {/* Card Content */}
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-3 text-gray-700">
-          <User className="h-5 w-5 text-blue-500"/>
+          <User className="h-5 w-5 text-green-600"/>
           <div>
             <p className="text-sm text-gray-500">Doctor</p>
             <p className="font-medium">{appointment.doctorNombre} {appointment.doctorApellidos}</p>
@@ -131,7 +131,7 @@ const AppointmentCard = ({ appointment, invisible }) => {
         </div>
         
         <div className="flex items-center gap-3 text-gray-700">
-          <Tag className="h-5 w-5 text-blue-500"/>
+          <Tag className="h-5 w-5 text-green-600"/>
           <div>
             <p className="text-sm text-gray-500">Especialidad</p>
             <p className="font-medium">{appointment.especialidad}</p>
@@ -139,7 +139,7 @@ const AppointmentCard = ({ appointment, invisible }) => {
         </div>
         
         <div className="flex items-center gap-3 text-gray-700">
-          <Calendar className="h-5 w-5 text-blue-500"/>
+          <Calendar className="h-5 w-5 text-green-600"/>
           <div>
             <p className="text-sm text-gray-500">Fecha y Hora</p>
             <p className="font-medium">
@@ -149,7 +149,7 @@ const AppointmentCard = ({ appointment, invisible }) => {
         </div>
         
         <div className="flex items-center gap-3 text-gray-700">
-          <CreditCard className="h-5 w-5 text-blue-500"/>
+          <CreditCard className="h-5 w-5 text-green-600"/>
           <div>
             <p className="text-sm text-gray-500">Costo</p>
             <p className="font-medium">S/.{appointment.costo.toFixed(2)}</p>

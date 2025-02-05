@@ -4,6 +4,7 @@ import jwtUtils from "../../utilities/jwtUtils";
 import API_BASE_URL from "../../js/urlHelper";
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
+import Swal from 'sweetalert2';
 
 const Familiares = () => {
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
@@ -108,7 +109,19 @@ const Familiares = () => {
   };
 
   const handleDelete = async (idFamiliarUsuario) => {
-    if (window.confirm("¿Estás seguro de eliminar este familiar?")) {
+    const result = await Swal.fire({
+      title: '¿Eliminar familiar?',
+      text: '¿Estás seguro que deseas eliminar este familiar? Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+  
+    // Si el usuario confirma la eliminación
+    if (result.isConfirmed) {
       setIsLoadingFullScreen(true);
       try {
         const response = await fetch(`${API_BASE_URL}/api/familiares/eliminar/${idFamiliarUsuario}`, {
@@ -120,7 +133,7 @@ const Familiares = () => {
             "Familiar eliminado",
             'success'
           );
-          fetchFamiliares(formData.idUsuario);
+          fetchFamiliares(formData.idUsuario); // Recargar la lista de familiares
         } else {
           SweetAlert.showMessageAlert(
             'Error',
@@ -228,12 +241,23 @@ const Familiares = () => {
               <option value="Otro">Otro</option>
             </select>
           </div>
-          <button
-            type="submit"
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
-          </button>
+          <div className="flex gap-4 mt-4">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
+            </button>
+            {editMode && ( // Mostrar botón "Cancelar" solo en modo edición
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </form>
 
         {/* Tabla de Familiares */}
@@ -261,7 +285,7 @@ const Familiares = () => {
                   <td className="p-2 border">
                     <button
                       onClick={() => handleEdit(familiar)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                      className="bg-green-500 text-white px-2 py-1 rounded mr-2"
                     >
                       Editar
                     </button>

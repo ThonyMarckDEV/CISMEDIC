@@ -22,7 +22,7 @@ const Cliente = () => {
       <div className="flex flex-col p-6 gap-6 md:-ml-64"> {/* Margen negativo solo en desktop */}
                 
            {/* Header */}
-           <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
+           <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
             <div className="px-8 py-12 relative">
               <div className="relative z-10">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
@@ -47,12 +47,12 @@ const Cliente = () => {
           {/* Sección de citas */}
           <div className="rounded-lg shadow-md bg-white p-6">
             <div className="flex flex-col items-center text-center gap-4">
-              <div className="h-16 w-16 flex items-center justify-center rounded-full bg-[#E8F7FC]">
-                <Calendar className="h-8 w-8 text-[#00A3D7]" />
+              <div className="h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
+                <Calendar className="h-8 w-8 text-green-600" />
               </div>
               <h2 className="text-xl font-semibold">Todavía no tienes citas.</h2>
               <p className="text-gray-500">¿Te gustaría agendar una?</p>
-              <button className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium bg-[#00A3D7] text-white hover:bg-[#0090BE] focus:outline-none">
+              <button className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium bg-green-600 text-white hover:bg-green-700 focus:outline-none">
                 <Link to="/cliente/nuevacita">Agendar una cita</Link> {/* Usa Link para la navegación */}
               </button>
             </div>
@@ -63,10 +63,10 @@ const Cliente = () => {
           <div className="rounded-lg shadow-md bg-white p-6">
             <h2 className="text-xl font-semibold mb-4">Mis resultados</h2>
             <Link to="/cliente/resultadoslaboratorio" className="w-full"> {/* Envuelve el botón con Link */}
-              <button className="w-full flex justify-between items-center px-4 py-2 rounded-md font-normal text-left hover:bg-[#E8F7FC] focus:outline-none">
+              <button className="w-full flex justify-between items-center px-4 py-2 rounded-md font-normal text-left hover:bg-green-100 focus:outline-none">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#E8F7FC]">
-                    <FileText className="h-5 w-5 text-[#00A3D7]" />
+                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-green-100">
+                    <FileText className="h-5 w-5 text-green-700" />
                   </div>
                   <span>Resultados de Laboratorio</span>
                 </div>

@@ -73,7 +73,7 @@ const DoctorCalendar = ({ doctorId }) => {
         <button
           onClick={goToPreviousMonth}
           className={`p-2 rounded ${
-            isCurrentMonth() ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white"
+            isCurrentMonth() ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-green-700 text-white"
           }`}
           disabled={isCurrentMonth()} // Deshabilitar el botón si estamos en el mes actual
         >
@@ -83,7 +83,7 @@ const DoctorCalendar = ({ doctorId }) => {
           {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
         </div>
         {/* Botón Siguiente */}
-        <button onClick={goToNextMonth} className="p-2 bg-blue-500 text-white rounded">
+        <button onClick={goToNextMonth} className="p-2 bg-green-700 text-white rounded">
           Siguiente
         </button>
       </div>

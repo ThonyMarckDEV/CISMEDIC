@@ -111,7 +111,7 @@ const SidebarCliente = ({ children }) => {
                       to={item.href}
                       className={`flex items-center gap-3 p-2 rounded-md ${
                         location.pathname === item.href
-                          ? 'bg-blue-400 text-white'
+                          ? 'bg-green-600 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >

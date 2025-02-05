@@ -39,8 +39,8 @@ const AppointmentsList = ({ userId, token }) => {
   if (loading) {
     return (
       <div className="bg-white text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-        <Clock className="h-8 w-8 animate-spin text-cyan-600" />
-        <p>Cargando tus citas...</p>
+        <Clock className="h-8 w-8 animate-spin text-green-600" />
+        <p>Cargando tus pagos...</p>
       </div>
     );
   }
