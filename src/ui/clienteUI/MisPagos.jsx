@@ -4,7 +4,8 @@ import { Calendar, Clock, User, Tag, CreditCard, XCircle, CheckCircle, AlertCirc
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import MercadoPago from "../../components/clienteComponents/MercadoPago";
+import MercadoPago from "../../components/MercadoPago"; // Importar el componente MercadoPago
+import SweetAlert from "../../components/SweetAlert"; // Importar SweetAlert
 
 const MisPagos = () => {
   const [appointments, setAppointments] = useState([]);
@@ -42,7 +43,6 @@ const MisPagos = () => {
         setLoading(false);
       }
     };
-
     fetchAppointments();
   }, [userId, token]);
 
@@ -61,8 +61,17 @@ const MisPagos = () => {
         )
       );
 
-      // Mostrar un mensaje al usuario
-      setPaymentStatus({ status, externalReference });
+      // Mostrar un mensaje al usuario usando SweetAlert
+      if (status === "approved") {
+        SweetAlert.showMessageAlert('Éxito', '¡El pago fue exitoso! Tu cita ha sido confirmada.', 'success');
+      } else if (status === "failure") {
+        SweetAlert.showMessageAlert('Error', 'El pago no se pudo completar. Por favor, intenta nuevamente.', 'error');
+      } else if (status === "pending") {
+        SweetAlert.showMessageAlert('Pendiente', 'El pago está pendiente. Te notificaremos cuando se complete.', 'warning');
+      }
+
+      // Limpiar los parámetros de la URL después de procesarlos
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [searchParams]);
 
@@ -94,38 +103,6 @@ const MisPagos = () => {
             </p>
           </div>
         </div>
-
-        {/* Mensaje de estado del pago */}
-        {paymentStatus && (
-          <div
-            className={`text-center ${
-              paymentStatus.status === "approved"
-                ? "text-green-500"
-                : paymentStatus.status === "failure"
-                ? "text-red-500"
-                : "text-yellow-500"
-            } flex flex-col items-center justify-center gap-2`}
-          >
-            {paymentStatus.status === "approved" && (
-              <>
-                <CheckCircle className="h-8 w-8 text-green-500" />
-                <p>¡El pago fue exitoso! Tu cita ha sido confirmada.</p>
-              </>
-            )}
-            {paymentStatus.status === "failure" && (
-              <>
-                <XCircle className="h-8 w-8 text-red-500" />
-                <p>El pago no se pudo completar. Por favor, intenta nuevamente.</p>
-              </>
-            )}
-            {paymentStatus.status === "pending" && (
-              <>
-                <AlertCircle className="h-8 w-8 text-yellow-500" />
-                <p>El pago está pendiente. Te notificaremos cuando se complete.</p>
-              </>
-            )}
-          </div>
-        )}
 
         {/* Loading State */}
         {loading && (
