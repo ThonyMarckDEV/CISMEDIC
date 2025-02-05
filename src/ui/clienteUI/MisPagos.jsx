@@ -49,15 +49,6 @@ const MisPagos = () => {
     const externalReference = searchParams.get("external_reference");
 
     if (status && externalReference) {
-      // Actualizar el estado de la cita en la interfaz
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appointment) =>
-          appointment.idCita === parseInt(externalReference)
-            ? { ...appointment, estado: mapPaymentStatusToAppointmentState(status) }
-            : appointment
-        )
-      );
-
       // Mostrar un mensaje al usuario usando SweetAlert
       if (status === "approved") {
         SweetAlert.showMessageAlert('Éxito', '¡El pago fue exitoso! Tu cita ha sido confirmada.', 'success');
@@ -67,24 +58,10 @@ const MisPagos = () => {
         SweetAlert.showMessageAlert('Pendiente', 'El pago está pendiente. Te notificaremos cuando se complete.', 'warning');
       }
 
-      // Limpiar los parámetros de la URL después de procesarlos
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // Recargar la página para refrescar los datos
+      window.location.reload();
     }
   }, [searchParams]);
-
-  // Mapear el estado del pago a un estado de cita más legible
-  const mapPaymentStatusToAppointmentState = (status) => {
-    switch (status) {
-      case "approved":
-        return "pagado";
-      case "failure":
-        return "pago fallido";
-      case "pending":
-        return "pago pendiente";
-      default:
-        return "desconocido";
-    }
-  };
 
   return (
     <SidebarCliente>
