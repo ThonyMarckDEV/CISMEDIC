@@ -38,7 +38,7 @@ const SidebarCliente = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="bg-white lex flex-col min-h-screen">
       {/* Top Bar with Logo and Profile */}
       <div className="bg-white h-16 flex items-center justify-between px-4 shadow-md">
         {/* Left Section: Logo and Hamburguer Menu for Mobile */}
