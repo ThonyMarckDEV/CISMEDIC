@@ -25,6 +25,7 @@ import Cliente from './ui/clienteUI/Cliente';
 import ClienteNuevaCita from './ui/clienteUI/ClienteNuevaCita';
 import ClienteMisCitas from './ui/clienteUI/MisCitas';
 import ClienteMisPagos from './ui/clienteUI/MisPagos';
+import ClienteFamiliares from './ui/clienteUI/Familiares';
 
 //UI AUTH
 import Register from './ui/Register';
@@ -116,6 +117,7 @@ function AppContent() {
             <Route path="/cliente/nuevacita" element={<ProtectedRouteCliente element={<ClienteNuevaCita />}  />} />
             <Route path="/cliente/miscitas" element={<ProtectedRouteCliente element={<ClienteMisCitas />} />}/>
             <Route path="/cliente/mispagos" element={<ProtectedRouteCliente element={<ClienteMisPagos />} />}/>
+            <Route path="/cliente/familiares" element={<ProtectedRouteCliente element={<ClienteFamiliares />} />}/>
 
           <Route path="*" element={<ErrorPage />} />
         </Routes>
