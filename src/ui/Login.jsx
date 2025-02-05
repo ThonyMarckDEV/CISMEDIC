@@ -94,7 +94,7 @@ const Login = ({ closeLoginModal }) => {
           {/* Texto */}
           <h1 className="text-white text-4xl font-medium text-center max-w-md">
             Agenda tus citas médicas virtuales y/o presenciales de la manera{' '}
-            <span className="text-gray-400">más simple y rápida</span>
+            <span className="text-[#FFEB3B]">más simple y rápida</span>
           </h1>
         </div>
       </div>
