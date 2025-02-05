@@ -144,13 +144,6 @@ const MisCitas = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <CreditCard className="h-5 w-5 text-blue-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Costo</p>
-                      <p className="font-medium">S/.{appointment.costo.toFixed(2)}</p>
-                    </div>
-                  </div>
                 </div>
               </div>
             ))}
