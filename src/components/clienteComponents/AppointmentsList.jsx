@@ -34,13 +34,13 @@ const AppointmentsList = ({ userId, token }) => {
 
   useEffect(() => {
     fetchAppointments();
-  }, [userId, token]); // Solo depende de userId y token
+  }, [userId, token]);
 
   if (loading) {
     return (
       <div className="bg-white text-center text-gray-500 flex flex-col items-center justify-center gap-2">
         <Clock className="h-8 w-8 animate-spin text-cyan-600" />
-        <p>Cargando tus pagos...</p>
+        <p>Cargando tus citas...</p>
       </div>
     );
   }
@@ -57,9 +57,8 @@ const AppointmentsList = ({ userId, token }) => {
   if (appointments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-        {/* Reemplaza CalendarIcon con PaymentIcon */}
         <PaymentIcon className="h-10 w-10 mb-2" />
-        <p>No hay Pagos Pendientes</p>
+        <p>No hay citas disponibles</p>
       </div>
     );
   }
@@ -67,7 +66,11 @@ const AppointmentsList = ({ userId, token }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {appointments.map((appointment) => (
-        <AppointmentCard key={appointment.idCita} appointment={appointment} />
+        <AppointmentCard
+        key={appointment.idCita}
+        appointment={appointment}
+        paymentId={appointment.idPago} // Pasar idPago como prop
+      />
       ))}
     </div>
   );

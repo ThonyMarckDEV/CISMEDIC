@@ -1,9 +1,13 @@
-// AppointmentCard.jsx
 import React from 'react';
 import { User, Tag, Calendar, CreditCard } from "lucide-react";
 import MercadoPago from "../../components/clienteComponents/MercadoPago";
 
-const AppointmentCard = ({ appointment }) => {
+const AppointmentCard = ({ appointment, invisible }) => {
+  // If the card is marked as invisible, return null or a placeholder
+  if (invisible) {
+    return null; // Or you could return a placeholder like <div className="hidden">Hidden Card</div>
+  }
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
       {/* Card Header */}
@@ -21,7 +25,6 @@ const AppointmentCard = ({ appointment }) => {
           </div>
         </div>
       </div>
-
       {/* Card Content */}
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-3 text-gray-700">
@@ -31,7 +34,6 @@ const AppointmentCard = ({ appointment }) => {
             <p className="font-medium">{appointment.doctorNombre} {appointment.doctorApellidos}</p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <Tag className="h-5 w-5 text-blue-500"/>
           <div>
@@ -39,7 +41,6 @@ const AppointmentCard = ({ appointment }) => {
             <p className="font-medium">{appointment.especialidad}</p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <Calendar className="h-5 w-5 text-blue-500"/>
           <div>
@@ -49,7 +50,6 @@ const AppointmentCard = ({ appointment }) => {
             </p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <CreditCard className="h-5 w-5 text-blue-500"/>
           <div>
@@ -57,7 +57,6 @@ const AppointmentCard = ({ appointment }) => {
             <p className="font-medium">S/.{appointment.costo.toFixed(2)}</p>
           </div>
         </div>
-
         {appointment.estado === "pago pendiente" && (
           <div className="pt-4">
             <MercadoPago
@@ -65,6 +64,7 @@ const AppointmentCard = ({ appointment }) => {
                 idCita: appointment.idCita,
                 monto: appointment.costo,
               }}
+              appointment={appointment}  // Pass the full appointment object
             />
           </div>
         )}

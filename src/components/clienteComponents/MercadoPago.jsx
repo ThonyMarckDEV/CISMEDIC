@@ -5,7 +5,7 @@ import SweetAlert from "../../components/SweetAlert";
 import jwtUtils from "../../utilities/jwtUtils.jsx";
 import { verificarYRenovarToken } from "../../js/authToken";
 
-const MercadoPago = ({ cita }) => {
+const MercadoPago = ({ cita, appointment }) => {
   const [loading, setLoading] = useState(false);
   const [mercadoPago, setMercadoPago] = useState(null);
   const [error, setError] = useState(null);
@@ -15,6 +15,7 @@ const MercadoPago = ({ cita }) => {
   const [rucValid, setRucValid] = useState(false);
 
   useEffect(() => {
+    //console.log("Appointment data:", appointment);
     const initializeMercadoPago = () => {
       const scriptId = "mercadoPagoScript";
       const existingScript = document.getElementById(scriptId);
@@ -48,10 +49,9 @@ const MercadoPago = ({ cita }) => {
     };
 
     initializeMercadoPago();
-  }, []);
+  }, [appointment]);
 
   const validateRuc = async (rucNumber) => {
-    // Early validation for RUC format
     if (!/^\d{11}$/.test(rucNumber)) {
       setRucError("El RUC debe tener exactamente 11 dígitos numéricos");
       setRucValid(false);
@@ -109,14 +109,54 @@ const MercadoPago = ({ cita }) => {
     }
   };
 
+  const actualizarComprobante = async () => {
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      await verificarYRenovarToken();
+
+      const requestBody = {
+        idPago: appointment.idPago, // Using idPago from appointment
+        tipo_comprobante: tipoComprobante,
+      };
+
+      if (tipoComprobante === "factura") {
+        requestBody.ruc = ruc;
+      }
+
+      //console.log("Sending actualizarComprobante request:", requestBody);
+
+      const response = await fetch(`${API_BASE_URL}/api/actualizar-comprobante`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      //console.log("actualizarComprobante response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Error al actualizar el comprobante");
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in actualizarComprobante:", error);
+      throw new Error(`Error al actualizar comprobante: ${error.message}`);
+    }
+  };
+
   const handlePago = async () => {
     if (!mercadoPago) {
       setError("MercadoPago no está disponible. Por favor, intenta más tarde.");
       return;
     }
 
-    if (!cita?.idCita) {
-      setError("No se encontró un ID de cita válido.");
+    if (!appointment?.idPago) {
+      console.error("No payment ID found:", appointment);
+      setError("No se encontró un ID de pago válido.");
       return;
     }
 
@@ -129,6 +169,11 @@ const MercadoPago = ({ cita }) => {
     setError(null);
 
     try {
+     // console.log("Starting payment process for payment ID:", appointment.idPago);
+      
+      // Primero actualizar el comprobante
+      await actualizarComprobante();
+
       const token = jwtUtils.getTokenFromCookie();
       const decodedToken = decodeJWT(token);
       const correoUsuario = decodedToken?.correo;
@@ -139,27 +184,32 @@ const MercadoPago = ({ cita }) => {
 
       await verificarYRenovarToken();
 
+      const paymentRequestBody = {
+        idCita: cita.idCita,
+        monto: cita.monto,
+        correo: correoUsuario,
+        tipo_comprobante: tipoComprobante,
+        ruc: tipoComprobante === "factura" ? ruc : null,
+      };
+
+      //console.log("Sending payment preference request:", paymentRequestBody);
+
       const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          idCita: cita.idCita,
-          monto: cita.monto,
-          correo: correoUsuario,
-          tipo_comprobante: tipoComprobante,
-          ruc: tipoComprobante === "factura" ? ruc : null,
-        }),
+        body: JSON.stringify(paymentRequestBody),
       });
 
+      const data = await response.json();
+     // console.log("Payment preference response:", data);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.message || "Error al crear la preferencia de pago.");
+        throw new Error(data?.message || "Error al crear la preferencia de pago.");
       }
 
-      const data = await response.json();
       if (data.success) {
         mercadoPago.checkout({
           preference: { id: data.preference_id },
