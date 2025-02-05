@@ -57,8 +57,8 @@ const AppointmentsList = ({ userId, token }) => {
   if (appointments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-        <CalendarIcon className="h-10 w-10 mb-2" />
-        <p>No hay citas programadas</p>
+        <PaymentRequest className="h-10 w-10 mb-2" />
+        <p>No hay Pagos Pendientes</p>
       </div>
     );
   }
