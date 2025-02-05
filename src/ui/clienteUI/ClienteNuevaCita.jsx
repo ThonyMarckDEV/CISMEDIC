@@ -4,7 +4,9 @@ import Sidebar from "../../components/clienteComponents/SidebarCliente";
 import jwtUtils from "../../utilities/jwtUtils";
 import API_BASE_URL from "../../js/urlHelper";
 import SweetAlert from '../../components/SweetAlert';
-import LoadingScreen from '../../components/home/LoadingScreen'; // Importa el LoadingScreen
+import LoadingScreen from '../../components/home/LoadingScreen';
+import { useCitas } from '../../context/CitasContext';
+import { usePagos } from '../../context/PagosContext';
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -18,7 +20,10 @@ const ClienteNuevaCita = () => {
   const [loading, setLoading] = useState(false);
   const [selectedHorario, setSelectedHorario] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false); // Estado para el LoadingScreen
+  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
+
+  const { setCantidadCitas } = useCitas();
+  const { setCantidadPagos } = usePagos();
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
@@ -150,28 +155,39 @@ const ClienteNuevaCita = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Validar que todos los campos estén completos
     if (!idDoctor || !fecha || !selectedHorario) {
       setError("Por favor, complete todos los campos.");
       return;
     }
-
+  
     const token = getToken();
     if (!token) {
       setError("No se pudo obtener el token de autenticación.");
       return;
     }
-
+  
     try {
       setIsLoadingFullScreen(true); // Activar el LoadingScreen
+  
       const idCliente = jwtUtils.getIdUsuario(token);
-
+  
+      // Obtener el costo del horario seleccionado
+      const horarioSeleccionado = horariosDisponibles.find(
+        (horario) => horario.idHorario.toString() === selectedHorario
+      );
+      const costo = horarioSeleccionado ? horarioSeleccionado.costo : 0;
+  
+      // Datos para registrar la cita
       const citaData = {
         idCliente: idCliente,
         idDoctor: idDoctor,
         idHorario: selectedHorario,
         fecha: fecha,
       };
-
+  
+      // Registrar la cita
       const citaResponse = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
         method: 'POST',
         headers: {
@@ -180,19 +196,21 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(citaData),
       });
-
+  
       if (!citaResponse.ok) {
         throw new Error('Error al agendar la cita');
       }
-
+  
       const citaResult = await citaResponse.json();
       const idCita = citaResult.idCita;
-
+  
+      // Datos para registrar el pago
       const pagoData = {
         idCita: idCita,
-        monto: 100.80,
+        monto: costo,
       };
-
+  
+      // Registrar el pago
       const pagoResponse = await fetch(`${API_BASE_URL}/api/registrar-pago`, {
         method: 'POST',
         headers: {
@@ -201,28 +219,71 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(pagoData),
       });
-
+  
       if (!pagoResponse.ok) {
         throw new Error('Error al registrar el pago');
       }
-
-      SweetAlert.showMessageAlert('Éxito', 'Cita agendada y pago registrado exitosamente.', 'success');
-      setSelectedEspecialidad("");
-      setIdDoctor("");
-      setFecha("");
-      setHorariosDisponibles([]);
-      setSelectedHorario("");
+  
+      // Actualizar la cantidad de citas y pagos
+      const [citasResponse, pagosResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/citas/cantidad`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }),
+        fetch(`${API_BASE_URL}/api/pagos/cantidad`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }),
+      ]);
+  
+      if (!citasResponse.ok || !pagosResponse.ok) {
+        throw new Error('Error al actualizar los datos');
+      }
+  
+      const [citasData, pagosData] = await Promise.all([
+        citasResponse.json(),
+        pagosResponse.json(),
+      ]);
+  
+      setCantidadCitas(citasData.cantidad);
+      setCantidadPagos(pagosData.cantidad);
+  
+      // Mostrar mensaje de éxito
+      SweetAlert.showMessageAlert(
+        'Éxito',
+        'Cita agendada y pago registrado exitosamente.',
+        'success'
+      );
+  
+      // Limpiar el formulario después de un registro exitoso
+      resetForm();
     } catch (error) {
-      console.error("Error:", error);
-      setError("Hubo un error al agendar la cita. Por favor, inténtalo de nuevo.");
+      console.error('Error:', error);
+      setError('Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
+  
+      // Limpiar el formulario en caso de error también
+      resetForm();
     } finally {
       setIsLoadingFullScreen(false); // Desactivar el LoadingScreen
     }
   };
+  
+  // Función para resetear el formulario
+  const resetForm = () => {
+    setSelectedEspecialidad("");
+    setIdDoctor("");
+    setFecha("");
+    setHorariosDisponibles([]);
+    setSelectedHorario("");
+    setError(""); // Limpiar cualquier mensaje de error
+  };
 
   return (
     <Sidebar>
-      {/* LoadingScreen que cubre toda la pantalla */}
       {isLoadingFullScreen && <LoadingScreen />}
 
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
