@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, User, Tag, CreditCard, XCircle } from "lucide-react";
+import { useSearchParams } from "react-router-dom"; // Para leer los parámetros de la URL
+import { Calendar, Clock, User, Tag, CreditCard, XCircle, CheckCircle, AlertCircle } from "lucide-react";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import MercadoPago from "../../components/clienteComponents/MercadoPago"; // Importar el componente MercadoPago
+import MercadoPago from "../../components/clienteComponents/MercadoPago";
 
 const MisPagos = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams(); // Leer los parámetros de la URL
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
+
+  // Estado para mostrar mensajes de éxito o error basados en el status de la URL
+  const [paymentStatus, setPaymentStatus] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -37,8 +42,43 @@ const MisPagos = () => {
         setLoading(false);
       }
     };
+
     fetchAppointments();
   }, [userId, token]);
+
+  // Procesar los parámetros de la URL cuando el usuario regresa del pago
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const externalReference = searchParams.get("external_reference");
+
+    if (status && externalReference) {
+      // Actualizar el estado de la cita en la interfaz
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment.idCita === parseInt(externalReference)
+            ? { ...appointment, estado: mapPaymentStatusToAppointmentState(status) }
+            : appointment
+        )
+      );
+
+      // Mostrar un mensaje al usuario
+      setPaymentStatus({ status, externalReference });
+    }
+  }, [searchParams]);
+
+  // Mapear el estado del pago a un estado de cita más legible
+  const mapPaymentStatusToAppointmentState = (status) => {
+    switch (status) {
+      case "approved":
+        return "pagado";
+      case "failure":
+        return "pago fallido";
+      case "pending":
+        return "pago pendiente";
+      default:
+        return "desconocido";
+    }
+  };
 
   return (
     <SidebarCliente>
@@ -54,6 +94,38 @@ const MisPagos = () => {
             </p>
           </div>
         </div>
+
+        {/* Mensaje de estado del pago */}
+        {paymentStatus && (
+          <div
+            className={`text-center ${
+              paymentStatus.status === "approved"
+                ? "text-green-500"
+                : paymentStatus.status === "failure"
+                ? "text-red-500"
+                : "text-yellow-500"
+            } flex flex-col items-center justify-center gap-2`}
+          >
+            {paymentStatus.status === "approved" && (
+              <>
+                <CheckCircle className="h-8 w-8 text-green-500" />
+                <p>¡El pago fue exitoso! Tu cita ha sido confirmada.</p>
+              </>
+            )}
+            {paymentStatus.status === "failure" && (
+              <>
+                <XCircle className="h-8 w-8 text-red-500" />
+                <p>El pago no se pudo completar. Por favor, intenta nuevamente.</p>
+              </>
+            )}
+            {paymentStatus.status === "pending" && (
+              <>
+                <AlertCircle className="h-8 w-8 text-yellow-500" />
+                <p>El pago está pendiente. Te notificaremos cuando se complete.</p>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
