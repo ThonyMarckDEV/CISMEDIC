@@ -48,17 +48,25 @@ const MisCitas = () => {
 
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
 
-         {/* Welcome Card */}
-        <div className="relative w-full bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-8 overflow-hidden shadow-lg">
-          <div className="relative z-10">
-            <h1 className="text-3xl text-cyan-600 font-bold mb-3">
-              ¡Bienvenido, {userName || "Usuario"}!
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Aquí están tus citas médicas programadas.
-            </p>
+          {/* Header */}
+          <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
+            <div className="px-8 py-12 relative">
+              <div className="relative z-10">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  Bienvenido, {userName || "Usuario"}
+                </h1>
+                <p className="text-violet-100 text-lg">
+                Aquí están tus citas médicas programadas.
+                </p>
+              </div>
+              <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+                <svg viewBox="0 0 100 100" className="h-full">
+                  <circle cx="80" cy="20" r="15" fill="white"/>
+                  <circle cx="20" cy="80" r="25" fill="white"/>
+                </svg>
+              </div>
+            </div>
           </div>
-        </div>
 
         {/* Loading State */}
         {loading && (

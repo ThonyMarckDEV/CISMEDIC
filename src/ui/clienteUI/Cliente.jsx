@@ -20,13 +20,27 @@ const Cliente = () => {
   return (
     <Sidebar>
       <div className="flex flex-col p-6 gap-6 md:-ml-64"> {/* Margen negativo solo en desktop */}
-        {/* Banner de bienvenida */}
-        <div className="relative w-full bg-[#E8F7FC] rounded-lg p-6 overflow-hidden">
-          <div className="relative z-10">
-            <h1 className="text-2xl text-[#00A3D7] font-bold mb-2">¡Hola {nombreUsuario || "Usuario"}!</h1>
-            <p className="text-gray-600">Estamos aquí para cuidarte.</p>
+                
+           {/* Header */}
+           <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
+            <div className="px-8 py-12 relative">
+              <div className="relative z-10">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  Bienvenido, {nombreUsuario || "Usuario"}
+                </h1>
+                <p className="text-violet-100 text-lg">
+                 Estamos aquí para cuidarte.
+                </p>
+              </div>
+              <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+                <svg viewBox="0 0 100 100" className="h-full">
+                  <circle cx="80" cy="20" r="15" fill="white"/>
+                  <circle cx="20" cy="80" r="25" fill="white"/>
+                </svg>
+              </div>
+            </div>
           </div>
-        </div>
+
         {/* Contenido principal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Una columna en móvil, dos en desktop */}
 
