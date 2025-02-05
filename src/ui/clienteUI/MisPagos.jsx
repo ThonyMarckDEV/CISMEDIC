@@ -16,9 +16,6 @@ const MisPagos = () => {
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
 
-  // Estado para mostrar mensajes de éxito o error basados en el status de la URL
-  const [paymentStatus, setPaymentStatus] = useState(null);
-
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
