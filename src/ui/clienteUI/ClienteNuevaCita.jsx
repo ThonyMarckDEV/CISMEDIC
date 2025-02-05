@@ -22,11 +22,43 @@ const ClienteNuevaCita = () => {
   const [selectedHorario, setSelectedHorario] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
+  const [familiares, setFamiliares] = useState([]); // Lista de familiares
+  const [citaParaFamiliar, setCitaParaFamiliar] = useState(false); // Estado para cita para familiar
+  const [idFamiliarUsuario, setIdFamiliarUsuario] = useState(""); // ID del familiar seleccionado
 
   const { setCantidadCitas } = useCitas();
   const { setCantidadPagos } = usePagos();
 
   const getToken = () => jwtUtils.getTokenFromCookie();
+
+  // Obtener la lista de familiares del usuario
+  const fetchFamiliares = async (idUsuario) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/familiares/listar/${idUsuario}`, {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+          'Accept': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setFamiliares(data);
+    } catch (error) {
+      console.error("Error al cargar familiares:", error);
+    }
+  };
+
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      const nombre = jwtUtils.getNombres(token);
+      const idUsuario = jwtUtils.getIdUsuario(token);
+      if (nombre) setNombreUsuario(nombre);
+      if (idUsuario) {
+        fetchFamiliares(idUsuario); // Cargar familiares del usuario
+      }
+    }
+  }, []);
+
 
   const formatTime = (timeString) => {
     try {
@@ -158,41 +190,43 @@ const ClienteNuevaCita = () => {
     }
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validar que todos los campos estén completos
     if (!idDoctor || !fecha || !selectedHorario) {
       setError("Por favor, complete todos los campos.");
       return;
     }
-  
+
     const token = getToken();
     if (!token) {
       setError("No se pudo obtener el token de autenticación.");
       return;
     }
-  
+
     try {
       setIsLoadingFullScreen(true); // Activar el LoadingScreen
-  
+
       const idCliente = jwtUtils.getIdUsuario(token);
-  
+
       // Obtener el costo del horario seleccionado
       const horarioSeleccionado = horariosDisponibles.find(
         (horario) => horario.idHorario.toString() === selectedHorario
       );
       const costo = horarioSeleccionado ? horarioSeleccionado.costo : 0;
-  
+
       // Datos para registrar la cita
       const citaData = {
         idCliente: idCliente,
+        idFamiliarUsuario: citaParaFamiliar ? idFamiliarUsuario : null, // Enviar el ID del familiar si es una cita para él
         idDoctor: idDoctor,
         idHorario: selectedHorario,
         fecha: fecha,
-        especialidad: selectedEspecialidad, // Enviar el nombre de la especialidad
+        especialidad: selectedEspecialidad,
       };
-  
+
       // Registrar la cita
       const citaResponse = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
         method: 'POST',
@@ -202,20 +236,20 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(citaData),
       });
-  
+
       if (!citaResponse.ok) {
         throw new Error('Error al agendar la cita');
       }
-  
+
       const citaResult = await citaResponse.json();
       const idCita = citaResult.idCita;
-  
+
       // Datos para registrar el pago
       const pagoData = {
         idCita: idCita,
         monto: costo,
       };
-  
+
       // Registrar el pago
       const pagoResponse = await fetch(`${API_BASE_URL}/api/registrar-pago`, {
         method: 'POST',
@@ -225,11 +259,11 @@ const ClienteNuevaCita = () => {
         },
         body: JSON.stringify(pagoData),
       });
-  
+
       if (!pagoResponse.ok) {
         throw new Error('Error al registrar el pago');
       }
-  
+
       // Actualizar la cantidad de citas y pagos
       const [citasResponse, pagosResponse] = await Promise.all([
         fetch(`${API_BASE_URL}/api/citas/cantidad`, {
@@ -245,32 +279,32 @@ const ClienteNuevaCita = () => {
           },
         }),
       ]);
-  
+
       if (!citasResponse.ok || !pagosResponse.ok) {
         throw new Error('Error al actualizar los datos');
       }
-  
+
       const [citasData, pagosData] = await Promise.all([
         citasResponse.json(),
         pagosResponse.json(),
       ]);
-  
+
       setCantidadCitas(citasData.cantidad);
       setCantidadPagos(pagosData.cantidad);
-  
+
       // Mostrar mensaje de éxito
       SweetAlert.showMessageAlert(
         'Éxito',
         'Cita agendada y pago registrado exitosamente.',
         'success'
       );
-  
+
       // Limpiar el formulario después de un registro exitoso
       resetForm();
     } catch (error) {
       console.error('Error:', error);
       setError('Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
-  
+
       // Limpiar el formulario en caso de error también
       resetForm();
     } finally {
@@ -321,6 +355,41 @@ const ClienteNuevaCita = () => {
               <Calendar className="h-6 w-6 text-green-600" />
               <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
             </div>
+
+              {/* Checkbox para cita para familiar */}
+          <div className="mb-6">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={citaParaFamiliar}
+                onChange={(e) => setCitaParaFamiliar(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-green-600"
+              />
+              <span className="text-gray-700">¿Es la cita para un familiar?</span>
+            </label>
+          </div>
+
+          {/* Combobox para seleccionar familiar */}
+          {citaParaFamiliar && (
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Seleccione un Familiar
+              </label>
+              <select
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
+                value={idFamiliarUsuario}
+                onChange={(e) => setIdFamiliarUsuario(e.target.value)}
+                required
+              >
+                <option value="">Seleccione un familiar</option>
+                {familiares.map((familiar) => (
+                  <option key={familiar.idFamiliarUsuario} value={familiar.idFamiliarUsuario}>
+                    {familiar.nombre} {familiar.apellidos} (DNI: {familiar.dni})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
   
             {error && (
               <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
