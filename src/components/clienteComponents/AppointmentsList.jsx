@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Clock, AlertCircle } from "lucide-react";
-import { Payment as PaymentIcon } from "lucide-react"; // Importa el ícono de pago
+import { CreditCard as PaymentIcon } from "lucide-react"; // Importa el ícono de pago
 import AppointmentCard from "./AppointmentCard";
 import API_BASE_URL from "../../js/urlHelper";
 
