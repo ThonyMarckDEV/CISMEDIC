@@ -3,6 +3,7 @@ import { Calendar, Clock, User, Tag, CreditCard, XCircle } from "lucide-react";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
+import MercadoPago from "../../components/clienteComponents/MercadoPago"; // Importar el componente MercadoPago
 
 const MisPagos = () => {
   const [appointments, setAppointments] = useState([]);
@@ -18,7 +19,6 @@ const MisPagos = () => {
         if (!userId || !token) {
           throw new Error("User ID or token not found");
         }
-
         const response = await fetch(`${API_BASE_URL}/api/citas/${userId}`, {
           method: "GET",
           headers: {
@@ -26,11 +26,9 @@ const MisPagos = () => {
             "Content-Type": "application/json",
           },
         });
-
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-
         const data = await response.json();
         setAppointments(data);
       } catch (err) {
@@ -39,31 +37,23 @@ const MisPagos = () => {
         setLoading(false);
       }
     };
-
     fetchAppointments();
   }, [userId, token]);
 
-  const handlePayment = (idCita) => {
-    console.log(`Processing payment for appointment ${idCita}`);
-    // Implementar lógica de pago aquí
-  };
-
   return (
     <SidebarCliente>
-
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
-
         {/* Welcome Card */}
         <div className="relative w-full bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-8 overflow-hidden shadow-lg">
           <div className="relative z-10">
-              <h1 className="text-3xl text-cyan-600 font-bold mb-3">
+            <h1 className="text-3xl text-cyan-600 font-bold mb-3">
               ¡Bienvenido, {userName || "Usuario"}!
-              </h1>
-              <p className="text-gray-600 text-lg">
+            </h1>
+            <p className="text-gray-600 text-lg">
               Aquí están tus pagos para tus citas médicas programadas.
-              </p>
+            </p>
           </div>
-      </div>
+        </div>
 
         {/* Loading State */}
         {loading && (
@@ -130,14 +120,12 @@ const MisPagos = () => {
                   </p>
                 </div>
                 {appointment.estado === "pago pendiente" && (
-                  <button
-                    onClick={() => handlePayment(appointment.idCita)}
-                    className="w-full flex items-center justify-center gap-2 p-3 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all"
-                    aria-label={`Pagar cita #${appointment.idCita}`}
-                  >
-                    <CreditCard className="h-5 w-5" />
-                    Pagar Cita
-                  </button>
+                  <MercadoPago
+                    cita={{
+                      idCita: appointment.idCita,
+                      monto: appointment.costo,
+                    }}
+                  />
                 )}
               </div>
             ))}
