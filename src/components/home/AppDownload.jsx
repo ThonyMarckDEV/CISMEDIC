@@ -15,7 +15,7 @@ const AppDownload = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl font-bold text-black mb-4"
+            className="text-4xl font-bold text-green-800 mb-4"
           >
             EN EL APP CISMEDIC
           </motion.h2>
@@ -69,8 +69,8 @@ const AppDownload = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="inline-block bg-black text-white px-8 py-4 rounded-full text-lg font-semibold 
-            hover:bg-gray-700 transition-colors duration-300 
+            className="inline-block bg-green-700 text-white px-8 py-4 rounded-full text-lg font-semibold 
+            hover:bg-green-800 transition-colors duration-300 
             shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           >
             Descargar App CISMEDIC

@@ -58,7 +58,7 @@ const Specialties = () => {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-4xl font-extrabold text-center mb-12 text-gray-800 tracking-tight"
+        className="text-4xl font-extrabold text-center mb-12 text-green-800 tracking-tight"
       >
         Nuestras Especialidades
       </motion.h2>
@@ -90,7 +90,7 @@ const Specialties = () => {
                 type: "spring",
                 stiffness: 100
               }}
-              className="bg-white rounded-2xl shadow-1xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl border-t-4 border-black"
+              className="bg-white rounded-2xl shadow-1xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl border-t-4 border-green-700"
             >
               <div className="text-5xl mb-6 text-center">{specialty.icon}</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">

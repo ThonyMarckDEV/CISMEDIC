@@ -8,7 +8,7 @@ const AuthSection = () => {
         {/* Botón de Registrarse */}
         <Link
           to="/register"
-          className="bg-black text-white px-4 py-1 rounded-md text-sm font-medium mr-4 transition duration-300 hover:bg-gray-800"
+          className="bg-white text-black px-4 py-1 rounded-md text-sm font-medium mr-4 transition duration-300 hover:bg-gray-200"
         >
           Registrarse
         </Link>
@@ -16,7 +16,7 @@ const AuthSection = () => {
         {/* Botón de Iniciar sesión */}
         <Link
           to="/login"
-          className="bg-black text-white px-4 py-1 rounded-md text-sm font-medium transition duration-300 hover:bg-gray-800"
+          className="bg-white text-black px-4 py-1 rounded-md text-sm font-medium transition duration-300 hover:bg-gray-200"
         >
           Iniciar sesión
         </Link>
