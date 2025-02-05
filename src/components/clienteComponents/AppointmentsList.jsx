@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Clock, AlertCircle } from "lucide-react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Payment as PaymentIcon } from "lucide-react"; // Importa el ícono de pago
 import AppointmentCard from "./AppointmentCard";
 import API_BASE_URL from "../../js/urlHelper";
 
@@ -57,7 +57,8 @@ const AppointmentsList = ({ userId, token }) => {
   if (appointments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-        <PaymentRequest className="h-10 w-10 mb-2" />
+        {/* Reemplaza CalendarIcon con PaymentIcon */}
+        <PaymentIcon className="h-10 w-10 mb-2" />
         <p>No hay Pagos Pendientes</p>
       </div>
     );
