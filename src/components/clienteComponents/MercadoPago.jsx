@@ -291,7 +291,7 @@ const MercadoPago = ({ cita, appointment }) => {
           className={`w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
             tipoComprobante === "factura" && !rucValid
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-yellow-500 text-white hover:bg-yellow-600"
+              : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
         >
           {loading ? "Procesando..." : "Pagar Cita"}
