@@ -32,6 +32,7 @@ import Register from './ui/Register';
 
 // Utilities
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
+import ProtectedRouteCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
@@ -111,10 +112,10 @@ function AppContent() {
 
   
           {/* Rutas cliente */}
-            <Route path="/cliente" element={<Cliente />} />
-            <Route path="/cliente/nuevacita" element={<ClienteNuevaCita />} />
-            <Route path="/cliente/miscitas" element={<ClienteMisCitas />} />
-            <Route path="/cliente/mispagos" element={<ClienteMisPagos />} />
+            <Route path="/cliente" element={<ProtectedRouteCliente  element={<Cliente />} />} />
+            <Route path="/cliente/nuevacita" element={<ProtectedRouteCliente element={<ClienteNuevaCita />}  />} />
+            <Route path="/cliente/miscitas" element={<ProtectedRouteCliente element={<ClienteMisCitas />} />}/>
+            <Route path="/cliente/mispagos" element={<ProtectedRouteCliente element={<ClienteMisPagos />} />}/>
 
           <Route path="*" element={<ErrorPage />} />
         </Routes>

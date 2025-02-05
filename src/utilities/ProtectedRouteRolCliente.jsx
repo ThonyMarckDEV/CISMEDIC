@@ -17,14 +17,10 @@ const ProtectedRouteCliente = ({ element, allowedRoles }) => {
      const userRole = jwtUtils.getUserRole(token); // Extraer el rol del token
 
      // Redirigir dependiendo del rol
-     if (userRole === 'admin') {
-       return <Navigate to="/admin" />;
-       
-     } else if (userRole === 'superadmin') {
-       return <Navigate to="/superAdmin" />;
-       
-     }else{
-      return <Navigate to="/" />;
+     if (userRole === 'superadmin') {
+       return <Navigate to="/superadmin" />;
+     }else if (userRole === 'doctor') {
+      return <Navigate to="/doctor" />;
      }
      
      return element;

@@ -17,10 +17,10 @@ const ProtectedRouteRolSuperAdmin = ({ element }) => {
     // Decodificar el JWT
     const userRole = jwtUtils.getUserRole(token); // Extraer el rol del token
 
-    if (userRole === 'admin') {
-      return <Navigate to="/admin" />;
-    }else if(userRole === 'cliente') {
+    if (userRole === 'cliente') {
       return <Navigate to="/cliente" />;
+    }else if(userRole === 'doctor') {
+      return <Navigate to="/doctor" />;
     }
 
     return element;
