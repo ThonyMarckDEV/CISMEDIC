@@ -1,4 +1,3 @@
-// MisPagos.jsx
 import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
@@ -14,26 +13,46 @@ const MisPagos = () => {
 
   useEffect(() => {
     const status = searchParams.get("status");
-    
+
     if (status) {
       const messages = {
-        approved: { title: 'Éxito', text: '¡Pago exitoso! Tu cita está confirmada.', icon: 'success' },
-        failure: { title: 'Error', text: 'No se pudo procesar el pago. Inténtalo nuevamente.', icon: 'error' },
-        pending: { title: 'Pendiente', text: 'Pago en proceso. Te notificaremos cuando se complete.', icon: 'warning' }
+        approved: {
+          title: "Éxito",
+          text: "¡Pago exitoso! Tu cita está confirmada.",
+          icon: "success",
+        },
+        failure: {
+          title: "Error",
+          text: "No se pudo procesar el pago. Inténtalo nuevamente.",
+          icon: "error",
+        },
+        pending: {
+          title: "Pendiente",
+          text: "Pago en proceso. Te notificaremos cuando se complete.",
+          icon: "warning",
+        },
       };
 
       const message = messages[status];
       if (message) {
         SweetAlert.showMessageAlert(message.title, message.text, message.icon);
-      }
 
-      setSearchParams({}, { replace: true });
+        // Limpiar el parámetro 'status' antes de recargar la página
+        setSearchParams({}, { replace: true });
+
+        // Recargar solo si el estado es 'approved'
+        if (status === "approved") {
+          setTimeout(() => {
+            window.location.reload();
+          }, 100); // Pequeño retraso para asegurar que SweetAlert termine
+        }
+      }
     }
   }, [searchParams, setSearchParams]);
 
   return (
     <SidebarCliente>
-      <div className="flex flex-col p-6 gap-6 md:-ml-64">
+      <div className="bg-white flex flex-col p-6 gap-6 md:-ml-64">
         {/* Header */}
         <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
@@ -47,13 +66,12 @@ const MisPagos = () => {
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
               <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
+                <circle cx="80" cy="20" r="15" fill="white" />
+                <circle cx="20" cy="80" r="25" fill="white" />
               </svg>
             </div>
           </div>
         </div>
-
         <AppointmentsList userId={userId} token={token} />
       </div>
     </SidebarCliente>
