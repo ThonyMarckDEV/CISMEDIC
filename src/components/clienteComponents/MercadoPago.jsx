@@ -15,7 +15,7 @@ const MercadoPago = ({ cita }) => {
         const existingScript = document.getElementById(scriptId);
         if (existingScript) {
             if (window.MercadoPago) {
-                setMercadoPago(new window.MercadoPago('APP_USR-4005458516359674-020422-f715000cbaa8ad711e1250d1c9699d64-2099203345', { locale: 'es-PE' }));
+                setMercadoPago(new window.MercadoPago('APP_USR-befe1f6a-9fa4-40c5-85db-22f44139f7d8', { locale: 'es-PE' }));
             }
             return;
         }
@@ -24,7 +24,7 @@ const MercadoPago = ({ cita }) => {
         script.src = 'https://sdk.mercadopago.com/js/v2';
         script.onload = () => {
             if (window.MercadoPago) {
-                setMercadoPago(new window.MercadoPago('APP_USR-4005458516359674-020422-f715000cbaa8ad711e1250d1c9699d64-2099203345', { locale: 'es-PE' }));
+                setMercadoPago(new window.MercadoPago('APP_USR-befe1f6a-9fa4-40c5-85db-22f44139f7d8', { locale: 'es-PE' }));
             } else {
                 setError('Error al cargar el SDK de MercadoPago.');
             }
