@@ -34,7 +34,7 @@ import Register from './ui/Register';
 import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
-import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
+import ProtectedRouteRolDoctor from './utilities/ProtectedRouteRolDoctor';
 
 
 // Scripts
