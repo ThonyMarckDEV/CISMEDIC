@@ -134,6 +134,10 @@ const ClienteNuevaCita = () => {
       fetchDoctoresPorEspecialidad(especialidadId);
     } else {
       setDoctores([]);
+      const doctorId = e.target.value;
+      setIdDoctor(doctorId);
+      setFecha("");
+      setHorariosDisponibles([]);
     }
   };
 

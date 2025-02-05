@@ -64,6 +64,9 @@ const DoctorCalendar = ({ doctorId }) => {
 
   return (
     <div className="p-4">
+      {/* Título del calendario */}
+      <h1 className="text-3xl font-bold text-center mb-4">Disponibilidad de doctor seleccionado</h1>
+
       {/* Encabezado del calendario */}
       <div className="mb-4 flex justify-between items-center">
         {/* Botón Anterior */}
@@ -84,6 +87,7 @@ const DoctorCalendar = ({ doctorId }) => {
           Siguiente
         </button>
       </div>
+
       {/* Leyenda de disponibilidad */}
       <div className="mb-4">
         <div className="flex items-center gap-2">
@@ -95,11 +99,13 @@ const DoctorCalendar = ({ doctorId }) => {
           <span>Días sin disponibilidad</span>
         </div>
       </div>
+
       {/* Nota adicional */}
       <div className="mb-4 text-sm text-gray-600">
         Nota: Los días marcados en verde tienen disponibilidad de horarios. Puede consultar en el
         formulario la disponibilidad de horas para esos días.
       </div>
+
       {/* Días de la semana */}
       <div className="grid grid-cols-7 gap-1">
         {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
@@ -108,6 +114,7 @@ const DoctorCalendar = ({ doctorId }) => {
           </div>
         ))}
       </div>
+
       {/* Días del mes */}
       <div className="grid grid-cols-7 gap-1">
         {Array(firstDayOfMonth)
