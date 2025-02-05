@@ -253,7 +253,7 @@ const MercadoPago = ({ cita, appointment }) => {
           <select
             value={tipoComprobante}
             onChange={handleComprobanteChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm"
           >
             <option value="boleta">Boleta</option>
             <option value="factura">Factura</option>
@@ -279,7 +279,7 @@ const MercadoPago = ({ cita, appointment }) => {
               placeholder="Ingrese RUC"
               className={`mt-1 block w-full border ${
                 rucError ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+              } rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm`}
             />
             {rucError && <p className="text-sm text-red-500">{rucError}</p>}
           </div>
@@ -291,7 +291,7 @@ const MercadoPago = ({ cita, appointment }) => {
           className={`w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
             tipoComprobante === "factura" && !rucValid
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-green-700 text-white hover:bg-green-800"
           }`}
         >
           {loading ? "Procesando..." : "Pagar Cita"}

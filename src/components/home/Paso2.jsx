@@ -63,7 +63,7 @@ const Paso2 = ({ onNext }) => {
 
   return (
     <div className="max-w-md mx-auto mt-16">
-      <h2 className="text-2xl font-medium mb-8">Ingresa tus datos personales</h2>
+      <h2 className="text-2xl font-medium mb-8 text-green-700">Ingresa tus datos personales</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -165,7 +165,7 @@ const Paso2 = ({ onNext }) => {
 
         <button
           type="submit"
-          className="w-full p-3 bg-black text-white rounded-md hover:bg-gray-700 transition-colors"
+          className="w-full p-3 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors"
         >
           Continuar
         </button>

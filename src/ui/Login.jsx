@@ -82,7 +82,7 @@ const Login = ({ closeLoginModal }) => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel - Hidden on Mobile */}
-      <div className="hidden md:flex w-1/2 bg-black p-8 flex-col">
+      <div className="hidden md:flex w-1/2 bg-green-700 p-8 flex-col">
         <div className="text-white text-2xl font-bold mb-20 text-center">Cismedic</div>
 
         <div className="flex-1 flex flex-col justify-center items-center">
@@ -154,8 +154,8 @@ const Login = ({ closeLoginModal }) => {
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg 
-                       hover:bg-gray-900 focus:outline-none focus:ring-2 
+              className="w-full bg-green-700 text-white py-3 rounded-lg 
+                       hover:bg-green-800 focus:outline-none focus:ring-2 
                        focus:ring-black transition-all animate-fade-in"
             >
               Iniciar sesión

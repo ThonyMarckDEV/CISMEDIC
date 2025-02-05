@@ -78,7 +78,7 @@ const Paso1 = ({ onNext }) => {
 
         <button
           type="submit"
-          className="w-full p-3 bg-black text-white rounded-md hover:bg-gray-700 transition-colors"
+          className="w-full p-3 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors"
         >
           Continuar
         </button>
