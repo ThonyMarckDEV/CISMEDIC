@@ -4,7 +4,7 @@ import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
 
-const MisCitas = () => {
+const MisPagos = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,28 +43,33 @@ const MisCitas = () => {
     fetchAppointments();
   }, [userId, token]);
 
+  const handlePayment = (idCita) => {
+    console.log(`Processing payment for appointment ${idCita}`);
+    // Implementar lógica de pago aquí
+  };
+
   return (
     <SidebarCliente>
 
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
 
-         {/* Welcome Card */}
+        {/* Welcome Card */}
         <div className="relative w-full bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-8 overflow-hidden shadow-lg">
           <div className="relative z-10">
-            <h1 className="text-3xl text-cyan-600 font-bold mb-3">
+              <h1 className="text-3xl text-cyan-600 font-bold mb-3">
               ¡Bienvenido, {userName || "Usuario"}!
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Aquí están tus citas médicas programadas.
-            </p>
+              </h1>
+              <p className="text-gray-600 text-lg">
+              Aquí están tus pagos para tus citas médicas programadas.
+              </p>
           </div>
-        </div>
+      </div>
 
         {/* Loading State */}
         {loading && (
           <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
             <Clock className="h-8 w-8 animate-spin text-cyan-600" />
-            <p>Cargando tus citas...</p>
+            <p>Cargando tus pagos...</p>
           </div>
         )}
 
@@ -124,6 +129,16 @@ const MisCitas = () => {
                     Estado: {appointment.estado}
                   </p>
                 </div>
+                {appointment.estado === "pago pendiente" && (
+                  <button
+                    onClick={() => handlePayment(appointment.idCita)}
+                    className="w-full flex items-center justify-center gap-2 p-3 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all"
+                    aria-label={`Pagar cita #${appointment.idCita}`}
+                  >
+                    <CreditCard className="h-5 w-5" />
+                    Pagar Cita
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -133,4 +148,4 @@ const MisCitas = () => {
   );
 };
 
-export default MisCitas;
+export default MisPagos;

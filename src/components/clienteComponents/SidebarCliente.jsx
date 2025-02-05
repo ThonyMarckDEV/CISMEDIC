@@ -10,7 +10,7 @@ const navigation = [
   { name: "Inicio", href: "/cliente", icon: Home },
   { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
   { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
-  { name: "Programas", href: "/cliente/programas", icon: Layout },
+ // { name: "Programas", href: "/cliente/programas", icon: Layout },
   { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
   { name: "Ayuda", href: "/ayuda", icon: HelpCircle },
 ];
