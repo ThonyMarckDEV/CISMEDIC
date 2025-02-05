@@ -23,6 +23,7 @@ import VerificarCorreoToken from './ui/VerificarCorreoToken';
 //UI Cliente
 import Cliente from './ui/clienteUI/Cliente';
 import ClienteNuevaCita from './ui/clienteUI/ClienteNuevaCita';
+import ClienteMisCitas from './ui/clienteUI/MisCitas';
 
 //UI AUTH
 import Register from './ui/Register';
@@ -111,6 +112,7 @@ function AppContent() {
           {/* Rutas cliente */}
             <Route path="/cliente" element={<Cliente />} />
             <Route path="/cliente/nuevacita" element={<ClienteNuevaCita />} />
+            <Route path="/cliente/miscitas" element={<ClienteMisCitas />} />
 
           <Route path="*" element={<ErrorPage />} />
         </Routes>
