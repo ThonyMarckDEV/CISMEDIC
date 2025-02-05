@@ -4,7 +4,7 @@ import { Calendar, Clock, User, Tag, CreditCard, XCircle, CheckCircle, AlertCirc
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import MercadoPago from "../../components/MercadoPago"; // Importar el componente MercadoPago
+import MercadoPago from "../../components/clienteComponents/MercadoPago"; // Importar el componente MercadoPago
 import SweetAlert from "../../components/SweetAlert"; // Importar SweetAlert
 
 const MisPagos = () => {
