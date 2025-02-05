@@ -75,15 +75,6 @@ const MisCitas = () => {
             <p>Cargando tus citas...</p>
           </div>
         )}
-
-        {/* Error State */}
-        {error && (
-          <div className="text-center text-red-500 flex flex-col items-center justify-center gap-2">
-            <XCircle className="h-8 w-8 text-red-500" />
-            <p>{error}</p>
-          </div>
-        )}
-
         {/* Appointment Cards */}
         {!loading && !error && appointments.length === 0 ? (
           <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
@@ -95,47 +86,77 @@ const MisCitas = () => {
             {appointments.map((appointment) => (
               <div
                 key={appointment.idCita}
-                className="rounded-xl shadow-lg bg-white p-6"
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="h-6 w-6 text-cyan-600" />
-                  <h2 className="text-xl font-semibold">Cita #{appointment.idCita}</h2>
+                {/* Card Header */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-gray-800">
+                      Cita #{appointment.idCita}
+                    </span>
+                    <div
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        appointment.estado === 'confirmado'
+                          ? 'bg-green-100 text-green-700'
+                          : appointment.estado === 'pago pendiente'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {appointment.estado}
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2 mb-4">
-                  <p className="flex items-center">
-                    <User className="mr-2 h-4 w-4 text-gray-500" />
-                    Paciente: {appointment.clienteNombre}{" "}
-                    {appointment.clienteApellidos}
-                  </p>
-                  <p className="flex items-center">
-                    <User className="mr-2 h-4 w-4 text-gray-500" />
-                    Doctor: {appointment.doctorNombre}{" "}
-                    {appointment.doctorApellidos}
-                  </p>
-                  <p className="flex items-center">
-                    <Tag className="mr-2 h-4 w-4 text-gray-500" />
-                    Especialidad: {appointment.especialidad}
-                  </p>
-                  <p className="flex items-center">
-                    <Calendar className="mr-2 h-4 w-4 text-gray-500" />
-                    Fecha: {new Date(appointment.fecha).toLocaleDateString()}
-                  </p>
-                  <p className="flex items-center">
-                    <Clock className="mr-2 h-4 w-4 text-gray-500" />
-                    Hora: {appointment.horaInicio}
-                  </p>
-                  <p className="flex items-center">
-                    <CreditCard className="mr-2 h-4 w-4 text-gray-500" />
-                    Costo: S/.{appointment.costo.toFixed(2)}
-                  </p>
-                  <p className="flex items-center font-semibold">
-                    Estado: {appointment.estado}
-                  </p>
+                {/* Card Content */}
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <User className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Paciente</p>
+                      <p className="font-medium">
+                        {appointment.clienteNombre} {appointment.clienteApellidos}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <User className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Doctor</p>
+                      <p className="font-medium">
+                        {appointment.doctorNombre} {appointment.doctorApellidos}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <Tag className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Especialidad</p>
+                      <p className="font-medium">{appointment.especialidad}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <Calendar className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Fecha y Hora</p>
+                      <p className="font-medium">
+                        {new Date(appointment.fecha).toLocaleDateString()} -{' '}
+                        {appointment.horaInicio}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <CreditCard className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Costo</p>
+                      <p className="font-medium">S/.{appointment.costo.toFixed(2)}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+        
       </div>
     </SidebarCliente>
   );
