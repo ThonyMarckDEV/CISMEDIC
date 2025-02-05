@@ -185,6 +185,7 @@ const ClienteNuevaCita = () => {
         idDoctor: idDoctor,
         idHorario: selectedHorario,
         fecha: fecha,
+        especialidad: selectedEspecialidad, // Enviar el nombre de la especialidad
       };
   
       // Registrar la cita
