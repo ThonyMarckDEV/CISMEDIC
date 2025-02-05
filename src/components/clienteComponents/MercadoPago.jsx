@@ -15,7 +15,7 @@ const MercadoPago = ({ cita }) => {
         const existingScript = document.getElementById(scriptId);
         if (existingScript) {
             if (window.MercadoPago) {
-                setMercadoPago(new window.MercadoPago('APP_USR-3760630798893825-020422-7f38a2a839d3cf3ae969fc73428d97f4-1169287561', { locale: 'es-PE' }));
+                setMercadoPago(new window.MercadoPago('APP_USR-4005458516359674-020422-f715000cbaa8ad711e1250d1c9699d64-2099203345', { locale: 'es-PE' }));
             }
             return;
         }
@@ -24,7 +24,7 @@ const MercadoPago = ({ cita }) => {
         script.src = 'https://sdk.mercadopago.com/js/v2';
         script.onload = () => {
             if (window.MercadoPago) {
-                setMercadoPago(new window.MercadoPago('APP_USR-3760630798893825-020422-7f38a2a839d3cf3ae969fc73428d97f4-1169287561', { locale: 'es-PE' }));
+                setMercadoPago(new window.MercadoPago('APP_USR-4005458516359674-020422-f715000cbaa8ad711e1250d1c9699d64-2099203345', { locale: 'es-PE' }));
             } else {
                 setError('Error al cargar el SDK de MercadoPago.');
             }
@@ -44,8 +44,10 @@ const MercadoPago = ({ cita }) => {
             setError("MercadoPago no está disponible. Por favor, intenta más tarde.");
             return;
         }
+
         setLoading(true);
         setError(null);
+
         try {
             // Validar que existe el ID de la cita
             if (!cita?.idCita) {
@@ -53,15 +55,19 @@ const MercadoPago = ({ cita }) => {
                 setLoading(false);
                 return;
             }
+
             const token = jwtUtils.getTokenFromCookie();
             const decodedToken = decodeJWT(token);
             const correoUsuario = decodedToken ? decodedToken.correo : null;
+
             if (!correoUsuario) {
                 setError('No se pudo obtener el correo del usuario.');
                 setLoading(false);
                 return;
             }
+
             await verificarYRenovarToken();
+
             // Crear la preferencia de pago
             const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
                 method: 'POST',
@@ -75,12 +81,15 @@ const MercadoPago = ({ cita }) => {
                     correo: correoUsuario,
                 }),
             });
+
             if (!response.ok) {
                 const errorData = await response.json();
                 setError(errorData?.message || 'Error al crear la preferencia de pago.');
                 return;
             }
+
             const data = await response.json();
+
             if (data.success) {
                 mercadoPago.checkout({
                     preference: { id: data.preference_id },
