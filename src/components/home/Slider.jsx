@@ -79,7 +79,7 @@ const Slider = () => {
                   {slide.description}
                 </p>
                 <Link to={slide.buttonLink}>
-                  <button className="mt-4 md:mt-6 px-6 md:px-10 py-2 md:py-4 text-base md:text-lg font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+                  <button className="mt-4 md:mt-6 px-6 md:px-10 py-2 md:py-4 text-base md:text-lg font-medium text-white bg-green-700 hover:bg-green-700 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
                     {slide.buttonText}
                   </button>
                 </Link>
@@ -112,15 +112,15 @@ const Slider = () => {
             onClick={() => goToImage(index)}
             className={`w-4 h-4 rounded-full transition-all duration-300 ${
               index === currentIndex
-                ? 'bg-gray-900 scale-125 ring-2 ring-gray-900/30'
-                : 'bg-gray-400 hover:bg-gray-600'
+                ? 'bg-green-700 scale-125 ring-2 ring-gray-100'
+                : 'bg-gray-300 hover:bg-green-500'
             }`}
           />
         ))}
       </div>
       {/* Progress Bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 z-10">
-        <div className="h-full bg-gray-900 transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-full bg-green-700 transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
     </div>
   );
