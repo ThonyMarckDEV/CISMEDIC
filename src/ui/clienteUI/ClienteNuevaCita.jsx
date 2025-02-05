@@ -7,6 +7,7 @@ import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import { useCitas } from '../../context/CitasContext';
 import { usePagos } from '../../context/PagosContext';
+import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -286,169 +287,178 @@ const ClienteNuevaCita = () => {
   return (
     <Sidebar>
       {isLoadingFullScreen && <LoadingScreen />}
-
+  
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
-        
-           {/* Header */}
-           <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
-            <div className="px-8 py-12 relative">
-              <div className="relative z-10">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  Bienvenido, {nombreUsuario || "Usuario"}
-                </h1>
-                <p className="text-violet-100 text-lg">
+        {/* Header */}
+        <div className="mb-8 bg-gradient-to-r from-blue-700 to-indigo-600 rounded-3xl shadow-lg overflow-hidden">
+          <div className="px-8 py-12 relative">
+            <div className="relative z-10">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                Bienvenido, {nombreUsuario || "Usuario"}
+              </h1>
+              <p className="text-violet-100 text-lg">
                 Programa tu próxima cita médica con nosotros.
-                </p>
-              </div>
-              <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-                <svg viewBox="0 0 100 100" className="h-full">
-                  <circle cx="80" cy="20" r="15" fill="white"/>
-                  <circle cx="20" cy="80" r="25" fill="white"/>
-                </svg>
-              </div>
+              </p>
+            </div>
+            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+              <svg viewBox="0 0 100 100" className="h-full">
+                <circle cx="80" cy="20" r="15" fill="white"/>
+                <circle cx="20" cy="80" r="25" fill="white"/>
+              </svg>
             </div>
           </div>
-
-        {/* Appointment Form Card */}
-        <div className="rounded-xl shadow-lg bg-white p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Calendar className="h-6 w-6 text-cyan-600" />
-            <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
+        </div>
+  
+        {/* Contenedor Principal: Formulario y Calendario */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Formulario de Cita */}
+          <div className="flex-1 rounded-xl shadow-lg bg-white p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Calendar className="h-6 w-6 text-cyan-600" />
+              <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
+            </div>
+  
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
                 </div>
               </div>
+            )}
+  
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Especialidad Selection */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Especialidad Médica
+                </label>
+                <select 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  value={selectedEspecialidad}
+                  onChange={handleEspecialidadChange}
+                  required
+                >
+                  <option value="">Seleccione una Especialidad</option>
+                  {especialidades.map((especialidad) => (
+                    <option 
+                      key={especialidad.idEspecialidad} 
+                      value={especialidad.idEspecialidad}
+                    >
+                      {especialidad.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+  
+              {/* Doctor Selection */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Médico Especialista
+                </label>
+                <select
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  value={idDoctor}
+                  onChange={handleDoctorChange}
+                  required
+                  disabled={!selectedEspecialidad}
+                >
+                  <option value="">Seleccione un doctor</option>
+                  {doctores.map((doctor) => (
+                    <option key={doctor.idUsuario} value={doctor.idUsuario}>
+                      Dr(a). {doctor.nombres} {doctor.apellidos}
+                    </option>
+                  ))}
+                </select>
+              </div>
+  
+              {/* Date Selection */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fecha de la Cita
+                </label>
+                <input
+                  type="date"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  min={new Date().toISOString().split("T")[0]}
+                  value={fecha}
+                  onChange={handleFechaChange}
+                  required
+                  disabled={!idDoctor}
+                />
+              </div>
+  
+              {/* Available Times */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Horarios Disponibles
+                </label>
+                {loading ? (
+                  <div className="flex items-center justify-center p-6">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+                  </div>
+                ) : horariosDisponibles.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {horariosDisponibles.map((horario) => (
+                      <label
+                        key={horario.idHorario}
+                        className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                          selectedHorario === horario.idHorario.toString()
+                            ? 'border-cyan-500 bg-cyan-50 shadow-md'
+                            : 'border-gray-200 hover:border-cyan-500'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="horario"
+                          value={horario.idHorario}
+                          checked={selectedHorario === horario.idHorario.toString()}
+                          onChange={(e) => setSelectedHorario(e.target.value)}
+                          className="hidden"
+                        />
+                        <div className="flex items-center gap-3">
+                          <Clock className="h-5 w-5 text-cyan-600" />
+                          <span className="text-gray-700 font-medium">
+                            {formatTime(horario.hora_inicio)} - Costo: S/.{horario.costo.toFixed(2)}
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-6 bg-gray-100 rounded-lg">
+                    <Clock className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-600">
+                      {fecha ? "No hay horarios disponibles para este doctor en la fecha seleccionada." : "Seleccione una fecha para ver los horarios disponibles."}
+                    </p>
+                  </div>
+                )}
+              </div>
+  
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
+                disabled={loading || !selectedHorario}
+              >
+                <Calendar className="h-5 w-5" />
+                {loading ? "Procesando..." : "Confirmar Cita"}
+              </button>
+            </form>
+          </div>
+  
+          {/* Calendario Visual */}
+          {idDoctor && (
+            <div className="w-full md:w-1/3">
+              <DoctorCalendar doctorId={idDoctor} />
             </div>
           )}
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Especialidad Selection */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Especialidad Médica
-              </label>
-              <select 
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-                value={selectedEspecialidad}
-                onChange={handleEspecialidadChange}
-                required
-              >
-                <option value="">Seleccione una Especialidad</option>
-                {especialidades.map((especialidad) => (
-                  <option 
-                    key={especialidad.idEspecialidad} 
-                    value={especialidad.idEspecialidad}
-                  >
-                    {especialidad.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Doctor Selection */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Médico Especialista
-              </label>
-              <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-                value={idDoctor}
-                onChange={handleDoctorChange}
-                required
-                disabled={!selectedEspecialidad}
-              >
-                <option value="">Seleccione un doctor</option>
-                {doctores.map((doctor) => (
-                  <option key={doctor.idUsuario} value={doctor.idUsuario}>
-                    Dr(a). {doctor.nombres} {doctor.apellidos}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Date Selection */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Fecha de la Cita
-              </label>
-              <input
-                type="date"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-                min={new Date().toISOString().split("T")[0]}
-                value={fecha}
-                onChange={handleFechaChange}
-                required
-                disabled={!idDoctor}
-              />
-            </div>
-
-            {/* Available Times */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Horarios Disponibles
-              </label>
-              {loading ? (
-                <div className="flex items-center justify-center p-6">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
-                </div>
-              ) : horariosDisponibles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {horariosDisponibles.map((horario) => (
-                    <label
-                      key={horario.idHorario}
-                      className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                        selectedHorario === horario.idHorario.toString()
-                          ? 'border-cyan-500 bg-cyan-50 shadow-md'
-                          : 'border-gray-200 hover:border-cyan-500'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="horario"
-                        value={horario.idHorario}
-                        checked={selectedHorario === horario.idHorario.toString()}
-                        onChange={(e) => setSelectedHorario(e.target.value)}
-                        className="hidden"
-                      />
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-cyan-600" />
-                        <span className="text-gray-700 font-medium">
-                          {formatTime(horario.hora_inicio)} - Costo: S/.{horario.costo.toFixed(2)}
-                        </span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center p-6 bg-gray-100 rounded-lg">
-                  <Clock className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600">
-                    {fecha ? "No hay horarios disponibles para este doctor en la fecha seleccionada." : "Seleccione una fecha para ver los horarios disponibles."}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-cyan-600 hover:bg-cyan-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
-              disabled={loading || !selectedHorario}
-            >
-              <Calendar className="h-5 w-5" />
-              {loading ? "Procesando..." : "Confirmar Cita"}
-            </button>
-          </form>
         </div>
       </div>
     </Sidebar>
