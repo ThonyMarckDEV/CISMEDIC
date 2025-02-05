@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom'; // Importa useLocation
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
+import { useCitas } from '../../context/CitasContext';
+import { usePagos } from '../../context/PagosContext';
 
 const navigation = [
   { name: "Inicio", href: "/cliente", icon: Home },
   { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
-  { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText },
+  { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Programas", href: "/cliente/programas", icon: Layout },
-  { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard },
+  { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
   { name: "Ayuda", href: "/ayuda", icon: HelpCircle },
 ];
 
@@ -17,7 +19,9 @@ const SidebarCliente = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
-  const location = useLocation(); // Obtén la ruta actual
+  const location = useLocation();
+  const { cantidadCitas } = useCitas();
+  const { cantidadPagos } = usePagos();
 
   // Función para cerrar la sidebar al hacer clic fuera de ella
   useEffect(() => {
@@ -55,7 +59,7 @@ const SidebarCliente = ({ children }) => {
           />
         </div>
 
-        {/* Right Section: Profile and Dropdown */}
+        {/* Right Section: Profile */}
         <div className="relative flex justify-center items-center">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -106,13 +110,24 @@ const SidebarCliente = ({ children }) => {
                     <Link
                       to={item.href}
                       className={`flex items-center gap-3 p-2 rounded-md ${
-                        location.pathname === item.href // Compara la ruta actual con la del ítem
+                        location.pathname === item.href
                           ? 'bg-blue-400 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
                       <item.icon className="h-5 w-5" />
                       <span>{item.name}</span>
+                      {/* Mostrar notificaciones solo en "Mis Citas" y "Mis Pagos" */}
+                      {item.notificationKey === 'citas' && cantidadCitas > 0 && (
+                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-auto">
+                          {cantidadCitas}
+                        </span>
+                      )}
+                      {item.notificationKey === 'pagos' && cantidadPagos > 0 && (
+                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-auto">
+                          {cantidadPagos}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}

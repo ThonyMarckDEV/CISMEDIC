@@ -5,7 +5,8 @@ import API_BASE_URL from './js/urlHelper';
 import WhatsAppIcon from './components/home/WhatsAppIcon'; // Asegúrate de importar el icono de WhatsApp
 import jwtUtils from './utilities/jwtUtils';
 import ErrorPage from './components/home/ErrorPage'; // Asegúrate de que la ruta sea correcta
-import { FavoritosProvider } from './context/FavoritosContext';
+import { CitasProvider } from './context/CitasContext';
+import { PagosProvider } from './context/PagosContext';
 import ScrollToTopButton from './components/home/ScrollToTopButton';
 
 // Componentes Home
@@ -108,10 +109,9 @@ function AppContent() {
 
   
           {/* Rutas cliente */}
+            <Route path="/cliente" element={<Cliente />} />
+            <Route path="/cliente/nuevacita" element={<ClienteNuevaCita />} />
 
-          <Route path="/cliente" element={<Cliente />} />
-          <Route path="/cliente/nuevacita" element={<ClienteNuevaCita />} />
-  
           <Route path="*" element={<ErrorPage />} />
         </Routes>
     );
@@ -119,9 +119,13 @@ function AppContent() {
   
   function App() {
     return (
-        <Router>
-          <AppContent />
-        </Router>
+      <PagosProvider>
+          <CitasProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </CitasProvider>
+      </PagosProvider>
     );
   }
   
