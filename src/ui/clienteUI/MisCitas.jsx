@@ -95,11 +95,11 @@ const MisCitas = () => {
                     </span>
                     <div
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        appointment.estado === 'confirmado'
-                          ? 'bg-green-100 text-green-700'
-                          : appointment.estado === 'pago pendiente'
-                          ? 'bg-amber-100 text-amber-700'
-                          : 'bg-gray-100 text-gray-700'
+                          appointment.estado === 'completada' ? 'bg-green-50 text-green-700' :
+                          appointment.estado === 'pago pendiente' ? 'bg-amber-100 text-amber-700' :
+                          appointment.estado === 'pagado' ? 'bg-blue-50 text-blue-700' :
+                          appointment.estado === 'cancelada' ? 'bg-red-50 text-red-700' :
+                          'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {appointment.estado}
