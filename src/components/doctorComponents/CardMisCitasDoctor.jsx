@@ -1,7 +1,7 @@
 import React from "react";
 import { User, Tag, Calendar } from "lucide-react";
 
-const CardMisCitas = ({ appointment }) => {
+const CardMisCitasDoctor= ({ appointment }) => {
   return (
     <div
       key={appointment.idCita}
@@ -72,4 +72,4 @@ const CardMisCitas = ({ appointment }) => {
   );
 };
 
-export default CardMisCitas;
+export default CardMisCitasDoctor;

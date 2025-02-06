@@ -3,7 +3,7 @@ import { Calendar, Clock, XCircle } from "lucide-react";
 import SidebarDoctor from "../../components/doctorComponents/SidebarDoctor";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import CardMisCitas from "../../components/doctorComponents/CardMisCitas";
+import CardMisCitasDoctor from "../../components/doctorComponents/CardMisCitasDoctor";
 
 const MisCitasDoctor = () => {
   const [appointments, setAppointments] = useState([]);
@@ -78,7 +78,7 @@ const MisCitasDoctor = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {appointments.map((appointment) => (
-              <CardMisCitas key={appointment.idCita} appointment={appointment} />
+              <CardMisCitasDoctor key={appointment.idCita} appointment={appointment} />
             ))}
           </div>
         )}
