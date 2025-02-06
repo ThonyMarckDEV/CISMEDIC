@@ -11,12 +11,14 @@ export const PagosProvider = ({ children }) => {
   const fetchPagos = async () => {
     try {
       const token = jwtUtils.getTokenFromCookie();
+      const idCliente = jwtUtils.getIdUsuario(token);
+
       if (!token) {
         console.error('No se encontró un token JWT.');
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/pagos/cantidad`, {
+      const response = await fetch(`${API_BASE_URL}/api/pagos/cantidad/${idCliente}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
