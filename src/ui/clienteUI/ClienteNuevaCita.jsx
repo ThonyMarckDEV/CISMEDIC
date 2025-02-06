@@ -180,6 +180,12 @@ const ClienteNuevaCita = () => {
     setHorariosDisponibles([]);
     const selectedDoc = doctores.find(d => d.idUsuario.toString() === doctorId);
     setSelectedDoctor(selectedDoc);
+
+    // Hacer scroll al principio de la página
+    window.scrollTo({
+        top: 30,
+        behavior: 'smooth' // Esto hace que el scroll sea suave
+    });
   };
 
   const handleFechaChange = (e) => {
@@ -324,73 +330,76 @@ const ClienteNuevaCita = () => {
 
   return (
     <Sidebar>
-      {isLoadingFullScreen && <LoadingScreen />}
-  
-      <div className="flex flex-col p-6 gap-6 md:-ml-64">
-        {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
-          <div className="px-8 py-12 relative">
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {nombreUsuario || "Usuario"}
-              </h1>
-              <p className="text-violet-100 text-lg">
-                Programa tu próxima cita médica con nosotros.
-              </p>
-            </div>
-            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-              <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
-              </svg>
-            </div>
+    {isLoadingFullScreen && <LoadingScreen />}
+
+    <div className="flex flex-col p-6 gap-6 md:-ml-64">
+      {/* Header */}
+      <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
+        <div className="px-8 py-12 relative">
+          <div className="relative z-10">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Bienvenido, {nombreUsuario || "Usuario"}
+            </h1>
+            <p className="text-violet-100 text-lg">
+              Programa tu próxima cita médica con nosotros.
+            </p>
+          </div>
+          <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+            <svg viewBox="0 0 100 100" className="h-full">
+              <circle cx="80" cy="20" r="15" fill="white"/>
+              <circle cx="20" cy="80" r="25" fill="white"/>
+            </svg>
           </div>
         </div>
-  
-        {/* Contenedor Principal: Formulario y Calendario */}
+      </div>
+
+      {/* Main Content Container */}
+      <div className="flex flex-col gap-6">
+        {/* Desktop Layout Container */}
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Formulario de Cita */}
+          {/* Form Container */}
           <div className="flex-1 rounded-xl shadow-lg bg-white p-8">
             <div className="flex items-center gap-3 mb-6">
               <Calendar className="h-6 w-6 text-green-600" />
               <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
             </div>
 
-              {/* Checkbox para cita para familiar */}
-          <div className="mb-6">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={citaParaFamiliar}
-                onChange={(e) => setCitaParaFamiliar(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-green-600"
-              />
-              <span className="text-gray-700">¿Es la cita para un familiar?</span>
-            </label>
-          </div>
-
-          {/* Combobox para seleccionar familiar */}
-          {citaParaFamiliar && (
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Seleccione un Familiar
+            {/* Checkbox for family member appointment */}
+            <div className="mb-6">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={citaParaFamiliar}
+                  onChange={(e) => setCitaParaFamiliar(e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-green-600"
+                />
+                <span className="text-gray-700">¿Es la cita para un familiar?</span>
               </label>
-              <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
-                value={idFamiliarUsuario}
-                onChange={(e) => setIdFamiliarUsuario(e.target.value)}
-                required
-              >
-                <option value="">Seleccione un familiar</option>
-                {familiares.map((familiar) => (
-                  <option key={familiar.idFamiliarUsuario} value={familiar.idFamiliarUsuario}>
-                    {familiar.nombre} {familiar.apellidos} (DNI: {familiar.dni})
-                  </option>
-                ))}
-              </select>
             </div>
-          )}
-  
+
+            {/* Family member selection */}
+            {citaParaFamiliar && (
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Seleccione un Familiar
+                </label>
+                <select
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
+                  value={idFamiliarUsuario}
+                  onChange={(e) => setIdFamiliarUsuario(e.target.value)}
+                  required
+                >
+                  <option value="">Seleccione un familiar</option>
+                  {familiares.map((familiar) => (
+                    <option key={familiar.idFamiliarUsuario} value={familiar.idFamiliarUsuario}>
+                      {familiar.nombre} {familiar.apellidos} (DNI: {familiar.dni})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Error Message */}
             {error && (
               <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
                 <div className="flex items-center">
@@ -528,10 +537,11 @@ const ClienteNuevaCita = () => {
   
           {/* Calendario Visual */}
           {idDoctor && (
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/3 order-first md:order-last mb-6 md:mb-0">
               <DoctorCalendar doctorId={idDoctor} />
             </div>
           )}
+        </div>
         </div>
       </div>
     </Sidebar>
