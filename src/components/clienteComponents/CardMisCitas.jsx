@@ -2,6 +2,13 @@ import React from "react";
 import { User, Tag, Calendar } from "lucide-react";
 
 const CardMisCitas = ({ appointment }) => {
+  // Función para formatear la fecha correctamente
+  const formatDate = (dateString) => {
+    // Agregamos "T12:00:00" para evitar problemas de zona horaria
+    const date = new Date(`${dateString}T12:00:00`);
+    return date.toLocaleDateString();
+  };
+
   return (
     <div
       key={appointment.idCita}
@@ -15,15 +22,15 @@ const CardMisCitas = ({ appointment }) => {
           </span>
           <div
             className={`px-3 py-1 rounded-full text-sm font-medium ${
-              appointment.estado === 'completada'
-                ? 'bg-green-50 text-green-700'
-                : appointment.estado === 'pago pendiente'
-                ? 'bg-amber-100 text-amber-700'
-                : appointment.estado === 'pagado'
-                ? 'bg-blue-50 text-blue-700'
-                : appointment.estado === 'cancelada'
-                ? 'bg-red-50 text-red-700'
-                : 'bg-gray-100 text-gray-700'
+              appointment.estado === "completada"
+                ? "bg-green-50 text-green-700"
+                : appointment.estado === "pago pendiente"
+                ? "bg-amber-100 text-amber-700"
+                : appointment.estado === "pagado"
+                ? "bg-blue-50 text-blue-700"
+                : appointment.estado === "cancelada"
+                ? "bg-red-50 text-red-700"
+                : "bg-gray-100 text-gray-700"
             }`}
           >
             {appointment.estado}
@@ -69,8 +76,7 @@ const CardMisCitas = ({ appointment }) => {
           <div>
             <p className="text-sm text-gray-500">Fecha y Hora</p>
             <p className="font-medium">
-              {new Date(appointment.fecha).toLocaleDateString()} -{' '}
-              {appointment.horaInicio}
+              {formatDate(appointment.fecha)} - {appointment.horaInicio}
             </p>
           </div>
         </div>

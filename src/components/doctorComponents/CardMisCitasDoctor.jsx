@@ -17,7 +17,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
   const handleEstadoChange = (e) => {
     const newState = e.target.value;
     setSelectedEstado(newState);
-    setIsButtonDisabled(newState !== "completada");
+    setIsButtonDisabled(newState !== "completada" && newState !== "cancelada");
   };
 
   // Función para manejar el clic en el botón "Actualizar Estado"
@@ -151,6 +151,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
               Seleccione una opción
             </option>
             <option value="completada">Completada</option>
+            <option value="cancelada">Cancelada</option>
           </select>
         </div>
 
