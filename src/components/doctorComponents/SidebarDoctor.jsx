@@ -3,20 +3,19 @@ import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, 
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
+import { useCitas } from '../../context/CitasContextDoctor';
 
 const navigation = [
   { name: "Inicio", href: "/doctor", icon: Home },
- // { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
   { name: "Mis Citas", href: "/doctor/miscitas", icon: FileText, notificationKey: 'citas' },
-  //{ name: "Familiares", href: "/cliente/familiares", icon: User },
-  //{ name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
 ];
-
+  
 const SidebarDoctor = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
   const location = useLocation();
+  const { cantidadCitas } = useCitas();
 
   // Función para cerrar la sidebar al hacer clic fuera de ella
   useEffect(() => {
@@ -25,7 +24,6 @@ const SidebarDoctor = ({ children }) => {
         setIsSidebarOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -33,7 +31,7 @@ const SidebarDoctor = ({ children }) => {
   }, []);
 
   return (
-    <div className="bg-white lex flex-col min-h-screen">
+    <div className="bg-white flex flex-col min-h-screen">
       {/* Top Bar with Logo and Profile */}
       <div className="bg-white h-16 flex items-center justify-between px-4 shadow-md">
         {/* Left Section: Logo and Hamburguer Menu for Mobile */}
@@ -45,7 +43,6 @@ const SidebarDoctor = ({ children }) => {
           >
             <Menu className="text-black w-6 h-6" />
           </button>
-
           {/* Logo */}
           <img
             src={logo}
@@ -53,7 +50,6 @@ const SidebarDoctor = ({ children }) => {
             className="w-12 h-12 md:w-24 md:h-16"
           />
         </div>
-
         {/* Right Section: Profile */}
         <div className="relative flex justify-center items-center">
           <button
@@ -86,7 +82,6 @@ const SidebarDoctor = ({ children }) => {
           )}
         </div>
       </div>
-
       {/* Sidebar for Desktop and Mobile */}
       <div className="flex">
         {/* Dashboard Sidebar */}
@@ -112,12 +107,17 @@ const SidebarDoctor = ({ children }) => {
                     >
                       <item.icon className="h-5 w-5" />
                       <span>{item.name}</span>
+                      {/* Mostrar notificaciones solo en "Mis Citas"*/}
+                      {item.notificationKey === 'citas' && cantidadCitas > 0 && (
+                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-auto">
+                          {cantidadCitas}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
-
             {/* Footer Section */}
             <div className="mt-auto p-4">
               <div className="text-xs text-gray-500">
@@ -135,7 +135,6 @@ const SidebarDoctor = ({ children }) => {
             </div>
           </div>
         </div>
-
         {/* Main Content */}
         <div className="flex-1 p-4 md:ml-64">
           {/* Children Content */}

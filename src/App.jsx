@@ -156,8 +156,13 @@ import API_BASE_URL from './js/urlHelper';
 import WhatsAppIcon from './components/home/WhatsAppIcon'; // Asegúrate de importar el icono de WhatsApp
 import jwtUtils from './utilities/jwtUtils';
 import ErrorPage from './components/home/ErrorPage'; // Asegúrate de que la ruta sea correcta
+//Contextos
+//CONTEXT CLIENTE
 import { CitasProvider } from './context/CitasContext';
 import { PagosProvider } from './context/PagosContext';
+//CONTEXT DOCTOR
+import { CitasProviderDoctor } from './context/CitasContextDoctor';
+
 import ScrollToTopButton from './components/home/ScrollToTopButton';
 // Componentes Home
 import Home from './ui/Home';
@@ -311,8 +316,23 @@ function AppContent() {
       />
 
       {/* Rutas del doctor */}
-      <Route path="/doctor" element={<ProtectedRouteRolDoctor element={<Doctor />} />} />
-      <Route path="/doctor/miscitas" element={<ProtectedRouteRolDoctor element={<MisCitasDoctor />} />} />
+      <Route
+        path="/doctor"
+        element={
+            <CitasProviderDoctor>
+              <ProtectedRouteRolDoctor element={<Doctor />} />
+            </CitasProviderDoctor>
+        }
+      />
+
+      <Route
+        path="/doctor/miscitas"
+        element={
+            <CitasProviderDoctor>
+              <ProtectedRouteRolDoctor element={<MisCitasDoctor />} />
+            </CitasProviderDoctor>
+        }
+      />
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />

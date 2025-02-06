@@ -19,7 +19,7 @@ const MisCitasDoctor = () => {
           throw new Error("User ID or token not found");
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/doctor/citas`, {
+        const response = await fetch(`${API_BASE_URL}/api/doctor/citas/${userId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
