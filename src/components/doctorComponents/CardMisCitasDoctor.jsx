@@ -8,29 +8,64 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 const CardMisCitasDoctor = ({ appointment }) => {
   const [selectedEstado, setSelectedEstado] = useState("Seleccione una opción");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [isLoading, setIsLoading] = useState(false); // Estado para el loader
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
+  const [motivoCancelacion, setMotivoCancelacion] = useState(""); // Motivo de cancelación
+  const [motivoPersonalizado, setMotivoPersonalizado] = useState(""); // Motivo personalizado
+  const [selectedMotivo, setSelectedMotivo] = useState(""); // Motivo seleccionado del checkbox
   const token = jwtUtils.getTokenFromCookie();
   const idDoctor = jwtUtils.getIdUsuario(token);
-  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
 
-  // Función para formatear la fecha correctamente
+  // Función para formatear la fecha
   const formatDate = (dateString) => {
-    // Agregamos "T12:00:00" para evitar problemas de zona horaria
     const date = new Date(`${dateString}T12:00:00`);
     return date.toLocaleDateString();
   };
 
-  // Función para manejar el cambio en el ComboBox
+  // Manejar el cambio en el ComboBox
   const handleEstadoChange = (e) => {
     const newState = e.target.value;
     setSelectedEstado(newState);
     setIsButtonDisabled(newState !== "completada" && newState !== "cancelada");
+    if (newState !== "cancelada") {
+      setMotivoCancelacion("");
+      setMotivoPersonalizado("");
+      setSelectedMotivo("");
+    }
   };
 
-  // Función para manejar el clic en el botón "Actualizar Estado"
+  // Manejar el cambio en el checkbox de motivos
+  const handleMotivoChange = (e) => {
+    const motivo = e.target.value;
+    setSelectedMotivo(motivo);
+    if (motivo === "otro") {
+      setMotivoCancelacion(""); // Limpiar el motivo si se selecciona "otro"
+    } else {
+      setMotivoCancelacion(motivo); // Asignar el motivo seleccionado
+    }
+  };
+
+  // Manejar el cambio en el input de motivo personalizado
+  const handleMotivoPersonalizadoChange = (e) => {
+    const customMotivo = e.target.value;
+    setMotivoPersonalizado(customMotivo);
+    setMotivoCancelacion(customMotivo); // Asignar el motivo personalizado
+  };
+
+  // Manejar el clic en el botón "Actualizar Estado"
   const handleUpdateEstado = async () => {
-    setIsLoading(true); // Mostrar loader
-    setIsLoadingFullScreen(true); // Activar el LoadingScreen
+    if (selectedEstado === "cancelada" && !motivoCancelacion) {
+      SweetAlert.showMessageAlert(
+        "Error",
+        "Debe proporcionar un motivo de cancelación.",
+        "error"
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    setIsLoadingFullScreen(true);
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/citas/${appointment.idCita}/actualizar-estado/${idDoctor}`, {
         method: "PUT",
@@ -38,7 +73,10 @@ const CardMisCitasDoctor = ({ appointment }) => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ estado: selectedEstado }),
+        body: JSON.stringify({
+          estado: selectedEstado,
+          motivoCancelacion: motivoCancelacion,
+        }),
       });
 
       if (!response.ok) {
@@ -49,29 +87,25 @@ const CardMisCitasDoctor = ({ appointment }) => {
       const data = await response.json();
       console.log("Estado actualizado:", data);
 
-      // Mostrar mensaje de éxito con SweetAlert
       SweetAlert.showMessageAlert(
         "Éxito",
         "Estado de la cita actualizado correctamente.",
         "success"
       );
 
-      // Recargar la página después de 1 segundos
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (error) {
       console.error(error);
-
-      // Mostrar mensaje de error con SweetAlert
       SweetAlert.showMessageAlert(
         "Error",
         error.message || "Hubo un error al actualizar el estado.",
         "error"
       );
     } finally {
-      setIsLoading(false); // Ocultar loader
-      setIsLoadingFullScreen(false); // Ocultar loader
+      setIsLoading(false);
+      setIsLoadingFullScreen(false);
     }
   };
 
@@ -142,8 +176,8 @@ const CardMisCitasDoctor = ({ appointment }) => {
           </div>
         </div>
 
-        {/* ComboBox para cambiar el estado */}
-        <div className="flex items-center gap-3">
+       {/* ComboBox para cambiar el estado */}
+       <div className="flex items-center gap-3">
           <label htmlFor={`estado-${appointment.idCita}`} className="text-sm text-gray-500">
             Cambiar estado:
           </label>
@@ -161,6 +195,51 @@ const CardMisCitasDoctor = ({ appointment }) => {
           </select>
         </div>
 
+        {/* Mostrar campos para cancelación si el estado es "cancelada" */}
+        {selectedEstado === "cancelada" && (
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">Motivo de cancelación:</p>
+            <div className="flex flex-col gap-2">
+              <label>
+                <input
+                  type="checkbox"
+                  value="no llegar"
+                  checked={selectedMotivo === "no llegar"}
+                  onChange={handleMotivoChange}
+                />
+                No llegó
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  value="moroso"
+                  checked={selectedMotivo === "moroso"}
+                  onChange={handleMotivoChange}
+                />
+                Moroso
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  value="otro"
+                  checked={selectedMotivo === "otro"}
+                  onChange={handleMotivoChange}
+                />
+                Otro
+              </label>
+              {selectedMotivo === "otro" && (
+                <input
+                  type="text"
+                  placeholder="Especifique el motivo..."
+                  value={motivoPersonalizado}
+                  onChange={handleMotivoPersonalizadoChange}
+                  className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+                />
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Botón para actualizar el estado */}
         <button
           onClick={handleUpdateEstado}
@@ -174,6 +253,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
           {isLoading ? "Actualizando..." : "Actualizar Estado"}
         </button>
       </div>
+
       {isLoadingFullScreen && <LoadingScreen />}
     </div>
   );
