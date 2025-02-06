@@ -30,6 +30,8 @@ import ClienteResultados from './ui/clienteUI/ResultadosLaboratorio';
 import Doctor from './ui/doctorUI/Doctor';
 import MisCitasDoctor from './ui/doctorUI/MisCitasDoctor';
 import HistorialCitasAtendidasDoctor from './ui/doctorUI/HistorialCitasAtendidasDoctor';
+import HorariosDoctor from './ui/doctorUI/MisHorarios';
+
 // UI AUTH
 import Register from './ui/Register';
 
@@ -184,7 +186,7 @@ function AppContent() {
         }
       />
 
-    <Route
+      <Route
         path="/doctor/historialcitas"
         element={
             <CitasProviderDoctor>
@@ -193,6 +195,14 @@ function AppContent() {
         }
       />
 
+      <Route
+        path="/doctor/mishorarios"
+        element={
+            <CitasProviderDoctor>
+              <ProtectedRouteRolDoctor element={<HorariosDoctor />} />
+            </CitasProviderDoctor>
+        }
+      />
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />

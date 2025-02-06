@@ -9,19 +9,32 @@ const HistorialCitasAtendidasDoctor = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filtroEstado, setFiltroEstado] = useState("todas"); // Estado del filtro
+  const [filtroEstado, setFiltroEstado] = useState("todas");
+  const [filtroNombre, setFiltroNombre] = useState("");
+  const [filtroDni, setFiltroDni] = useState("");
+  const [filtroIdCita, setFiltroIdCita] = useState("");
+  const [filtroFecha, setFiltroFecha] = useState("");
+  const [filtroHora, setFiltroHora] = useState("");
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
 
   // Función para obtener las citas del doctor
-  const fetchAppointments = async (estadoFiltro) => {
+  const fetchAppointments = async () => {
     try {
       if (!userId || !token) {
         throw new Error("User ID or token not found");
       }
+      const params = new URLSearchParams({
+        estado: filtroEstado,
+        nombre: filtroNombre,
+        dni: filtroDni,
+        idCita: filtroIdCita,
+        fecha: filtroFecha,
+        hora: filtroHora,
+      });
       const response = await fetch(
-        `${API_BASE_URL}/api/doctor/historialcitas/${userId}?estado=${estadoFiltro}`,
+        `${API_BASE_URL}/api/doctor/historialcitas/${userId}?${params}`,
         {
           method: "GET",
           headers: {
@@ -42,10 +55,10 @@ const HistorialCitasAtendidasDoctor = () => {
     }
   };
 
-  // Efecto para cargar las citas al cambiar el filtro
+  // Efecto para cargar las citas al cambiar los filtros
   useEffect(() => {
-    fetchAppointments(filtroEstado);
-  }, [filtroEstado]);
+    fetchAppointments();
+  }, [filtroEstado, filtroNombre, filtroDni, filtroIdCita, filtroFecha, filtroHora]);
 
   return (
     <SidebarDoctor>
@@ -70,21 +83,83 @@ const HistorialCitasAtendidasDoctor = () => {
           </div>
         </div>
 
-        {/* Filtro de estado */}
-        <div className="mb-6">
-          <label htmlFor="filtroEstado" className="text-sm text-gray-500">
-            Filtrar por estado:
-          </label>
-          <select
-            id="filtroEstado"
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
-            className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
-          >
-            <option value="todas">Todas</option>
-            <option value="completada">Completadas</option>
-            <option value="cancelada">Canceladas</option>
-          </select>
+        {/* Filtros */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="filtroEstado" className="text-sm text-gray-500">
+              Filtrar por estado:
+            </label>
+            <select
+              id="filtroEstado"
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            >
+              <option value="todas">Todas</option>
+              <option value="completada">Completadas</option>
+              <option value="cancelada">Canceladas</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="filtroNombre" className="text-sm text-gray-500">
+              Filtrar por nombre:
+            </label>
+            <input
+              id="filtroNombre"
+              type="text"
+              value={filtroNombre}
+              onChange={(e) => setFiltroNombre(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroDni" className="text-sm text-gray-500">
+              Filtrar por DNI:
+            </label>
+            <input
+              id="filtroDni"
+              type="text"
+              value={filtroDni}
+              onChange={(e) => setFiltroDni(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroIdCita" className="text-sm text-gray-500">
+              Filtrar por ID de cita:
+            </label>
+            <input
+              id="filtroIdCita"
+              type="text"
+              value={filtroIdCita}
+              onChange={(e) => setFiltroIdCita(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroFecha" className="text-sm text-gray-500">
+              Filtrar por fecha:
+            </label>
+            <input
+              id="filtroFecha"
+              type="date"
+              value={filtroFecha}
+              onChange={(e) => setFiltroFecha(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroHora" className="text-sm text-gray-500">
+              Filtrar por hora:
+            </label>
+            <input
+              id="filtroHora"
+              type="time"
+              value={filtroHora}
+              onChange={(e) => setFiltroHora(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
         </div>
 
         {/* Loading State */}

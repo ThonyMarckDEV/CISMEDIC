@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, HistoryIcon } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, HistoryIcon, TimerIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
@@ -9,6 +9,7 @@ const navigation = [
   { name: "Inicio", href: "/doctor", icon: Home },
   { name: "Mis Citas", href: "/doctor/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Historial Citas Atendidas", href: "/doctor/historialcitas", icon: HistoryIcon},
+  { name: "Mis Horarios", href: "/doctor/mishorarios", icon: TimerIcon},
 ];
   
 const SidebarDoctor = ({ children }) => {
