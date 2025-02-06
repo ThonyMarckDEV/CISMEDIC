@@ -12,7 +12,7 @@ const navigation = [
   { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Familiares", href: "/cliente/familiares", icon: User },
   { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
-  { name: "Ayuda", href: "/ayuda", icon: HelpCircle },
+   //{ name: "Ayuda", href: "/ayuda", icon: HelpCircle },
 ];
 
 const SidebarCliente = ({ children }) => {

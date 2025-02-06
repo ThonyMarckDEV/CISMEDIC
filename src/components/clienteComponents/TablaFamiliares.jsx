@@ -28,7 +28,7 @@ const TablaFamiliares = ({ familiares, handleEdit, handleDelete }) => {
             <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-2">
               <button
                 onClick={() => handleEdit(familiar)}
-                className="text-blue-600 hover:text-blue-800 transition-colors duration-300"
+                className="text-green-600 hover:text-green-800 transition-colors duration-300"
               >
                 <Edit2 size={20} />
               </button>
