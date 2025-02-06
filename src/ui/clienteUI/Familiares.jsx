@@ -204,7 +204,7 @@ const Familiares = () => {
     <Sidebar>
       {isLoadingFullScreen && <LoadingScreen />}
       {/* Main container with max-width and no overflow */}
-      <div className="flex flex-col p-6 gap-6 md:-ml-64 max-w-full">
+      <div className="flex flex-col p-6 gap-6 md:-ml-64">
         {/* Header */}
         <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
