@@ -195,7 +195,7 @@ const Familiares = () => {
                 Bienvenido, {nombreUsuario || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
-                Programa tu próxima cita médica con nosotros.
+                Aqui agrega a tus familiares.
               </p>
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
@@ -208,6 +208,7 @@ const Familiares = () => {
         </div>
         {/* Form section */}
         <div className="w-full">
+        <h2 className="text-2xl font-bold mb-4">Agregar Familiares</h2>
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
