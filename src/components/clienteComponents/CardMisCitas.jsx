@@ -10,18 +10,6 @@ const CardMisCitas = ({ appointment }) => {
     return date.toLocaleDateString();
   };
 
-  // Manejar el clic en el estado
-  const handleEstadoClick = () => {
-    if (appointment.estado === "cancelada") {
-      setShowMotivo(true);
-    }
-  };
-
-  // Manejar el clic fuera del cuadro de motivo
-  const handleClickOutside = () => {
-    setShowMotivo(false);
-  };
-
   return (
     <div
       key={appointment.idCita}
@@ -34,7 +22,8 @@ const CardMisCitas = ({ appointment }) => {
             Cita #{appointment.idCita}
           </span>
           <div
-            onClick={handleEstadoClick}
+            onMouseEnter={() => appointment.estado === "cancelada" && setShowMotivo(true)}
+            onMouseLeave={() => setShowMotivo(false)}
             className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer ${
               appointment.estado === "completada"
                 ? "bg-green-50 text-green-700"
@@ -55,7 +44,6 @@ const CardMisCitas = ({ appointment }) => {
         {showMotivo && appointment.estado === "cancelada" && (
           <div
             className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg p-3 z-10"
-            onClick={(e) => e.stopPropagation()} // Evitar que el clic dentro del cuadro lo cierre
           >
             <p className="text-sm text-gray-500">Motivo de cancelación:</p>
             <p className="text-sm font-medium">{appointment.motivo}</p>
@@ -64,7 +52,7 @@ const CardMisCitas = ({ appointment }) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-6 space-y-4" onClick={handleClickOutside}>
+      <div className="p-6 space-y-4">
         <div className="flex items-center gap-3 text-gray-700">
           <User className="h-5 w-5 text-green-600" />
           <div>
