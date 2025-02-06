@@ -1,140 +1,139 @@
-import React, { useState, useEffect } from "react";
-import API_BASE_URL from "../../js/urlHelper";
-import "react-day-picker/dist/style.css"; // Importa los estilos predeterminados
+import React, { useEffect, useState } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'moment/locale/es'; // Importar el locale en español
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import Swal from 'sweetalert2';
+import jwtUtils from '../../utilities/jwtUtils';
+import API_BASE_URL from '../../js/urlHelper';
+import SweetAlert from '../../components/SweetAlert';
 
-const DoctorCalendar = ({ doctorId }) => {
-  const [availableSlots, setAvailableSlots] = useState({});
-  const [currentDate, setCurrentDate] = useState(new Date());
+moment.locale('es'); // Configurar moment en español
+const localizer = momentLocalizer(moment);
 
-  // Función para obtener los slots disponibles
+const CalendarioHorariosDoctor = () => {
+  const [horarios, setHorarios] = useState([]); // Estado para almacenar los horarios
+  const [isLoading, setIsLoadingFullScreen] = useState(false); // Estado para manejar la carga
+
+  // Función para obtener los horarios del doctor desde el backend
+  const fetchHorarios = async (idDoctor) => {
+    setIsLoadingFullScreen(true);
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      const response = await fetch(`${API_BASE_URL}/api/horarios-doctores/listar/${idDoctor}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+      const data = await response.json();
+      setHorarios(Array.isArray(data) ? data : []);
+    } catch (error) {
+      SweetAlert.showMessageAlert('Error', "Error al cargar los horarios: " + error.message, 'error');
+      setHorarios([]);
+    } finally {
+      setIsLoadingFullScreen(false);
+    }
+  };
+
+  // Obtener el ID del doctor desde el token JWT
   useEffect(() => {
-    const fetchAvailableSlots = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/doctor-schedule/${doctorId}/week`);
-        const data = await response.json();
-        setAvailableSlots(data.availableSlots);
-      } catch (error) {
-        console.error("Error fetching available slots:", error);
+    const token = jwtUtils.getTokenFromCookie();
+    if (token) {
+      const idDoctor = jwtUtils.getIdUsuario(token);
+      if (idDoctor) {
+        fetchHorarios(idDoctor); // Cargar los horarios del doctor
       }
+    }
+  }, []);
+
+  // Convertir horarios a eventos para el calendario
+  const eventos = Array.isArray(horarios) // Asegurarse de que `horarios` sea un array
+    ? horarios.map((horario) => ({
+        id: horario.idHorario,
+        title: `Costo: S/ ${horario.costo} - Estado: ${horario.estadoCita || 'disponible'}`,
+        start: new Date(`${horario.fecha}T${horario.hora_inicio}`),
+        end: new Date(`${horario.fecha}T${horario.hora_inicio}`),
+        horario, // Guardar el objeto completo para usarlo en el evento de selección
+      }))
+    : []; // Si `horarios` no es un array, usar un array vacío
+
+  // Manejar la selección de un evento en el calendario
+  const handleSelectEvent = (event) => {
+    Swal.fire({
+      title: 'Detalles del horario',
+      html: `
+        <p>Fecha: ${moment(event.start).format('YYYY-MM-DD')}</p>
+        <p>Hora: ${moment(event.start).format('HH:mm')}</p>
+        <p>Costo: S/ ${event.horario.costo}</p>
+        <p>Estado: ${event.horario.estadoCita || 'disponible'}</p>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Aceptar',
+    });
+  };
+
+  // Personalizar los colores de los eventos en el calendario
+  const eventPropGetter = (event) => {
+    const style = {
+      backgroundColor: '',
+      color: 'white',
+      borderRadius: '5px',
+      border: 'none',
+      display: 'block',
+      height: '60px', // Aumentar la altura para que el texto sea visible
+      padding: '10px', // Aumentar el padding para mejor legibilidad
+      fontSize: '14px', // Ajustar el tamaño de la fuente si es necesario
     };
-    fetchAvailableSlots();
-  }, [doctorId]);
-
-  // Función para cambiar al mes anterior
-  const goToPreviousMonth = () => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setMonth(prevDate.getMonth() - 1);
-      return newDate;
-    });
-  };
-
-  // Función para cambiar al siguiente mes
-  const goToNextMonth = () => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setMonth(prevDate.getMonth() + 1);
-      return newDate;
-    });
-  };
-
-  // Función para verificar si el mes actual es el mes presente
-  const isCurrentMonth = () => {
-    const today = new Date();
-    return (
-      currentDate.getMonth() === today.getMonth() &&
-      currentDate.getFullYear() === today.getFullYear()
-    );
-  };
-
-  // Obtener el número de días en el mes actual
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-
-  // Obtener el día de la semana del primer día del mes
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-
-  // Crear un array con los días del mes
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-
-  // Función para verificar si una fecha tiene slots disponibles
-  const isDateAvailable = (day) => {
-    const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return Object.values(availableSlots).some((slot) => slot.fecha === dateString);
+    if (event.horario.estadoCita === 'ocupado') {
+      style.backgroundColor = 'blue'; // Azul para horarios ocupados
+      style.pointerEvents = 'none'; // Deshabilitar la edición
+    } else {
+      style.backgroundColor = 'green'; // Verde para horarios libres
+    }
+    return {
+      style,
+    };
   };
 
   return (
-    <div className="p-4">
-      {/* Título del calendario */}
-      <h1 className="text-3xl font-bold text-center mb-4">Disponibilidad de doctor seleccionado</h1>
-
-      {/* Encabezado del calendario */}
-      <div className="mb-4 flex justify-between items-center">
-        {/* Botón Anterior */}
-        <button
-          onClick={goToPreviousMonth}
-          className={`p-2 rounded ${
-            isCurrentMonth() ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-green-700 text-white"
-          }`}
-          disabled={isCurrentMonth()} // Deshabilitar el botón si estamos en el mes actual
-        >
-          Anterior
-        </button>
-        <div className="text-2xl font-bold text-center">
-          {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
-        </div>
-        {/* Botón Siguiente */}
-        <button onClick={goToNextMonth} className="p-2 bg-green-700 text-white rounded">
-          Siguiente
-        </button>
-      </div>
-
-      {/* Leyenda de disponibilidad */}
-      <div className="mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-500"></div>
-          <span>Días con disponibilidad de horarios</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-300"></div>
-          <span>Días sin disponibilidad</span>
-        </div>
-      </div>
-
-      {/* Nota adicional */}
-      <div className="mb-4 text-sm text-gray-600">
-        Nota: Los días marcados en verde tienen disponibilidad de horarios. Puede consultar en el
-        formulario la disponibilidad de horas para esos días.
-      </div>
-
-      {/* Días de la semana */}
-      <div className="grid grid-cols-7 gap-1">
-        {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
-          <div key={day} className="text-center font-bold">
-            {day}
+    <div className="h-[600px]">
+      {isLoading && <p>Cargando horarios...</p>}
+      {!isLoading && (
+        <>
+          <div className="mt-4">
+            <p><span className="inline-block w-4 h-4 bg-blue-500 mr-2"></span> Horarios ocupados (pagado, completado, pago pendiente)</p>
+            <p><span className="inline-block w-4 h-4 bg-green-500 mr-2"></span> Horarios libres</p>
           </div>
-        ))}
-      </div>
-
-      {/* Días del mes */}
-      <div className="grid grid-cols-7 gap-1">
-        {Array(firstDayOfMonth)
-          .fill(null)
-          .map((_, index) => (
-            <div key={`empty-${index}`} className="p-2"></div>
-          ))}
-        {days.map((day) => (
-          <div
-            key={day}
-            className={`p-2 text-center border ${
-              isDateAvailable(day) ? "bg-green-500 text-white" : "bg-gray-300"
-            }`}
-          >
-            {day}
-          </div>
-        ))}
-      </div>
+          <Calendar
+            localizer={localizer}
+            events={eventos}
+            startAccessor="start"
+            endAccessor="end"
+            onSelectEvent={handleSelectEvent}
+            defaultView="week"
+            views={['month', 'week', 'day']}
+            selectable
+            popup
+            eventPropGetter={eventPropGetter} // Aplicar estilos personalizados
+            messages={{
+              today: 'Hoy',
+              previous: 'Anterior',
+              next: 'Siguiente',
+              month: 'Mes',
+              week: 'Semana',
+              day: 'Día',
+              agenda: 'Agenda',
+              date: 'Fecha',
+              time: 'Hora',
+              event: 'Evento',
+            }} // Cambiar los textos del calendario a español
+          />
+        </>
+      )}
     </div>
   );
 };
 
-export default DoctorCalendar;
+export default CalendarioHorariosDoctor;

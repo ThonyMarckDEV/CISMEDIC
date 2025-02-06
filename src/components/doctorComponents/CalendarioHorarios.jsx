@@ -69,7 +69,7 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       borderRadius: '5px',
       border: 'none',
       display: 'block',
-      height: '50px', // Aumentar la altura para que el texto sea visible
+      height: '60px', // Aumentar la altura para que el texto sea visible
       padding: '10px', // Aumentar el padding para mejor legibilidad
       fontSize: '14px', // Ajustar el tamaño de la fuente si es necesario
     };
