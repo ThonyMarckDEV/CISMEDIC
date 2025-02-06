@@ -50,8 +50,7 @@ const Cliente = () => {
               <div className="h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
                 <Calendar className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-xl font-semibold">Todavía no tienes citas.</h2>
-              <p className="text-gray-500">¿Te gustaría agendar una?</p>
+              <p className="text-gray-700">¿Te gustaría agendar una cita?</p>
               <button className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium bg-green-600 text-white hover:bg-green-700 focus:outline-none">
                 <Link to="/cliente/nuevacita">Agendar una cita</Link> {/* Usa Link para la navegación */}
               </button>
