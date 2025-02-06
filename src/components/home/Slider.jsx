@@ -10,29 +10,29 @@ const slides = [
     image: img1,
     title: "Atención Médica de Calidad",
     description: "Brindamos servicios médicos con un equipo altamente capacitado, comprometido con el bienestar de cada paciente.",
-    buttonText: "Conocer más",
-    buttonLink: "/servicios?categoria=AtencionMedica"
+//    buttonText: "Conocer más",
+ //   buttonLink: "/servicios?categoria=AtencionMedica"
   },
   {
     image: img2,
     title: "Especialidades Médicas",
     description: "Contamos con diversas especialidades médicas para ofrecerte el mejor diagnóstico y tratamiento.",
-    buttonText: "Ver especialidades",
-    buttonLink: "/servicios?categoria=Especialidades"
+  //  buttonText: "Ver especialidades",
+  //  buttonLink: "/servicios?categoria=Especialidades"
   },
   {
     image: img3,
     title: "Cuidado Empático",
     description: "Nuestro equipo de salud trabaja con empatía y dedicación para brindarte la mejor experiencia de atención.",
-    buttonText: "Saber más",
-    buttonLink: "/servicios?categoria=CuidadoEmpatico"
+ //   buttonText: "Saber más",
+ //   buttonLink: "/servicios?categoria=CuidadoEmpatico"
   },
   {
     image: img4,
     title: "Equipos de Alta Tecnología",
     description: "Disponemos de tecnología avanzada para garantizar diagnósticos precisos y tratamientos efectivos.",
-    buttonText: "Explorar",
-    buttonLink: "/servicios?categoria=TecnologiaMedica"
+  //  buttonText: "Explorar",
+ //   buttonLink: "/servicios?categoria=TecnologiaMedica"
   }
 ];
 
@@ -78,11 +78,11 @@ const Slider = () => {
                 <p className="text-base md:text-xl lg:text-2xl font-light text-gray-700 leading-relaxed">
                   {slide.description}
                 </p>
-                <Link to={slide.buttonLink}>
+                {/* <Link to={slide.buttonLink}>
                   <button className="mt-4 md:mt-6 px-6 md:px-10 py-2 md:py-4 text-base md:text-lg font-medium text-white bg-green-700 hover:bg-green-700 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
                     {slide.buttonText}
                   </button>
-                </Link>
+                </Link> */}
               </div>
             </div>
             {/* Image Container */}
