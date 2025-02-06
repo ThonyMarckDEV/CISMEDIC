@@ -7,16 +7,19 @@ const CitasContext = createContext();
 export const CitasProvider = ({ children }) => {
   const [cantidadCitas, setCantidadCitas] = useState(0);
 
+
   // Función para obtener la cantidad de citas
   const fetchCitas = async () => {
     try {
       const token = jwtUtils.getTokenFromCookie();
+      const idCliente = jwtUtils.getIdUsuario(token);
+      
       if (!token) {
         console.error('No se encontró un token JWT.');
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/citas/cantidad`, {
+      const response = await fetch(`${API_BASE_URL}/api/citas/cantidad/${idCliente}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
