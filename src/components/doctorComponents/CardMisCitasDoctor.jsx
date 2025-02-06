@@ -13,6 +13,13 @@ const CardMisCitasDoctor = ({ appointment }) => {
   const idDoctor = jwtUtils.getIdUsuario(token);
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
 
+  // Función para formatear la fecha correctamente
+  const formatDate = (dateString) => {
+    // Agregamos "T12:00:00" para evitar problemas de zona horaria
+    const date = new Date(`${dateString}T12:00:00`);
+    return date.toLocaleDateString();
+  };
+
   // Función para manejar el cambio en el ComboBox
   const handleEstadoChange = (e) => {
     const newState = e.target.value;
@@ -130,8 +137,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
           <div>
             <p className="text-sm text-gray-500">Fecha y Hora</p>
             <p className="font-medium">
-              {new Date(appointment.fecha).toLocaleDateString()} -{" "}
-              {appointment.horaInicio}
+              {formatDate(appointment.fecha)} - {appointment.horaInicio}
             </p>
           </div>
         </div>
