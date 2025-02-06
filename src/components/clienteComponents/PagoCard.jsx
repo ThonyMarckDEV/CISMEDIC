@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Tag, Calendar, CreditCard, DownloadCloud } from "lucide-react";
+import { User, Tag, Calendar, CreditCard, DownloadCloud, XCircle } from "lucide-react";
 import MercadoPago from "../../components/clienteComponents/MercadoPago";
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
@@ -7,7 +7,12 @@ import jwtUtils from '../../utilities/jwtUtils';
 const PagoCard = ({ appointment, invisible }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [downloadError, setDownloadError] = useState(null);
+  const [showCancelModal, setShowCancelModal] = useState(false); // Estado para mostrar/ocultar el modal de cancelación
+  const [motivoSeleccionado, setMotivoSeleccionado] = useState(""); // Estado para el motivo seleccionado
+  const [otroMotivo, setOtroMotivo] = useState(""); // Estado para el motivo "Otro"
+  const [cancelError, setCancelError] = useState(null); // Estado para manejar errores de cancelación
 
+  // Función para manejar la descarga del PDF
   const handleDownloadPDF = async () => {
     setIsLoading(true);
     setDownloadError(null);
@@ -75,7 +80,67 @@ const PagoCard = ({ appointment, invisible }) => {
     }
   };
 
+  const handleCancelarCita = async () => {
+    const token = jwtUtils.getTokenFromCookie();
+    const idCliente = jwtUtils.getIdUsuario(token);
+
+    if (!motivoSeleccionado) {
+      setCancelError("Por favor, selecciona un motivo de cancelación.");
+      return;
+    }
+  
+    if (motivoSeleccionado === "Otro" && !otroMotivo) {
+      setCancelError("Por favor, ingresa el motivo de cancelación.");
+      return;
+    }
+  
+    setIsLoading(true);
+    setCancelError(null);
+  
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      if (!token) {
+        throw new Error('No se encontró el token de autenticación');
+      }
+  
+      const motivoFinal = motivoSeleccionado === "Otro" ? otroMotivo : motivoSeleccionado;
+  
+      const url = `${API_BASE_URL}/api/cancelar-cita/${appointment.idCita}`;
+      console.log("URL de la solicitud:", url); // Verifica la URL
+      console.log("Datos enviados:", { motivo: motivoFinal, idCliente: idCliente }); // Verifica los datos
+  
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          motivo: motivoFinal,
+          idCliente: idCliente,
+        }),
+      });
+  
+      console.log("Respuesta del servidor:", response); // Verifica la respuesta
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al cancelar la cita');
+      }
+  
+      // Cerrar el modal y recargar la página
+      setShowCancelModal(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error al cancelar la cita:', error);
+      setCancelError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const showPDFDownload = appointment.estado === 'pagado' || appointment.estado === 'completada';
+  const showCancelButton = appointment.estado !== 'cancelada' && appointment.estado !== 'completada';
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
@@ -168,7 +233,82 @@ const PagoCard = ({ appointment, invisible }) => {
             />
           </div>
         )}
+
+        {/* Botón para cancelar cita */}
+        {showCancelButton && (
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all"
+          >
+            Cancelar Cita
+          </button>
+        )}
       </div>
+
+      {/* Modal de cancelación */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Motivo de cancelación</h2>
+            <div className="space-y-4">
+              <label className="block">
+                <input
+                  type="radio"
+                  name="motivo"
+                  value="No puedo asistir"
+                  onChange={(e) => setMotivoSeleccionado(e.target.value)}
+                />
+                <span className="ml-2">No puedo asistir</span>
+              </label>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="motivo"
+                  value="Cambio de fecha/hora"
+                  onChange={(e) => setMotivoSeleccionado(e.target.value)}
+                />
+                <span className="ml-2">Cambio de fecha/hora</span>
+              </label>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="motivo"
+                  value="Otro"
+                  onChange={(e) => setMotivoSeleccionado(e.target.value)}
+                />
+                <span className="ml-2">Otro</span>
+              </label>
+              {motivoSeleccionado === "Otro" && (
+                <input
+                  type="text"
+                  placeholder="Especifica el motivo"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  value={otroMotivo}
+                  onChange={(e) => setOtroMotivo(e.target.value)}
+                />
+              )}
+            </div>
+            {cancelError && (
+              <div className="mt-4 text-red-600 text-sm">{cancelError}</div>
+            )}
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+              >
+                Cerrar
+              </button>
+              <button
+                onClick={handleCancelarCita}
+                disabled={isLoading}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                {isLoading ? "Cancelando..." : "Confirmar Cancelación"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
