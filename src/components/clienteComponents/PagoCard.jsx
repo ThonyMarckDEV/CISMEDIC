@@ -140,7 +140,7 @@ const PagoCard = ({ appointment, invisible }) => {
   };
 
   const showPDFDownload = appointment.estado === 'pagado' || appointment.estado === 'completada';
-  const showCancelButton = appointment.estado !== 'cancelada' && appointment.estado !== 'completada';
+  const showCancelButton = appointment.estado === 'pago pendiente'; // Solo mostrar en estado "pago pendiente"
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
