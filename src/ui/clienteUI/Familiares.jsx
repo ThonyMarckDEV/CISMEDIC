@@ -5,6 +5,7 @@ import API_BASE_URL from "../../js/urlHelper";
 import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Swal from 'sweetalert2';
+import TablaFamiliares from '../../components/clienteComponents/TablaFamiliares';
 
 const Familiares = () => {
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
@@ -184,7 +185,8 @@ const Familiares = () => {
   return (
     <Sidebar>
       {isLoadingFullScreen && <LoadingScreen />}
-      <div className="flex flex-col p-6 gap-6 md:-ml-64">
+      {/* Main container with max-width and no overflow */}
+      <div className="flex flex-col p-6 gap-6 md:-ml-64 max-w-full">
         {/* Header */}
         <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
@@ -204,122 +206,97 @@ const Familiares = () => {
             </div>
           </div>
         </div>
-
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="nombre"
-              placeholder="Nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="apellidos"
-              placeholder="Apellidos"
-              value={formData.apellidos}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="dni"
-              placeholder="DNI"
-              value={formData.dni}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              name="edad"
-              placeholder="Edad"
-              value={formData.edad}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
-            />
-            <select
-              name="sexo"
-              value={formData.sexo}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              required
-            >
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-          <div className="flex gap-4 mt-4">
-            <button
-                onClick={handleSubmit}
+        {/* Form section */}
+        <div className="w-full">
+          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="apellidos"
+                placeholder="Apellidos"
+                value={formData.apellidos}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="dni"
+                placeholder="DNI"
+                value={formData.dni}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                required
+              />
+              <input
+                type="number"
+                name="edad"
+                placeholder="Edad"
+                value={formData.edad}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                required
+              />
+              <select
+                name="sexo"
+                value={formData.sexo}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                required
+              >
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded-md border border-yellow-200">
+              Solo se permite agregar hasta 4 familiares. Gracias por su comprensión.
+            </div>
+            <div className="flex gap-4 mt-4">
+              <button
+                type="submit"
                 disabled={!canAddMoreFamiliares()}
                 className={`bg-blue-500 text-white px-4 py-2 rounded ${
-                    !canAddMoreFamiliares() ? 'opacity-50 cursor-not-allowed' : ''
+                  !canAddMoreFamiliares() ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
-            >
-                {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
-            </button>
-            {editMode && ( // Mostrar botón "Cancelar" solo en modo edición
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
               >
-                Cancelar
+                {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
               </button>
-            )}
-          </div>
-        </form>
-
-        {/* Tabla de Familiares */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4">Lista de Familiares</h2>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-2 border">Nombre</th>
-                <th className="p-2 border">Apellidos</th>
-                <th className="p-2 border">DNI</th>
-                <th className="p-2 border">Edad</th>
-                <th className="p-2 border">Sexo</th>
-                <th className="p-2 border">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {familiares.map((familiar) => (
-                <tr key={familiar.idFamiliarUsuario} className="border">
-                  <td className="p-2 border">{familiar.nombre}</td>
-                  <td className="p-2 border">{familiar.apellidos}</td>
-                  <td className="p-2 border">{familiar.dni}</td>
-                  <td className="p-2 border">{familiar.edad}</td>
-                  <td className="p-2 border">{familiar.sexo}</td>
-                  <td className="p-2 border">
-                    <button
-                      onClick={() => handleEdit(familiar)}
-                      className="bg-green-500 text-white px-2 py-1 rounded mr-2"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(familiar.idFamiliarUsuario)}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              {editMode && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </form>
         </div>
+
+        <div className="flex-1 p-8 bg-gray-100 overflow-auto">
+          <h2 className="text-2xl font-bold mb-4">Lista de Familiares</h2>
+          <div className="overflow-x-auto">
+            <TablaFamiliares
+                familiares={familiares}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
+          </div>
+        </div>
+
       </div>
+      
     </Sidebar>
   );
 };
