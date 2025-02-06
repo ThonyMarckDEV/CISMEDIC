@@ -34,6 +34,10 @@ const Familiares = () => {
     }
   }, []);
 
+  const canAddMoreFamiliares = () => {
+    return familiares.length < 4; // Permitir agregar solo si hay menos de 4 familiares
+  };
+
   const fetchFamiliares = async (idUsuario) => {
     setIsLoadingFullScreen(true);
     try {
@@ -56,43 +60,54 @@ const Familiares = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoadingFullScreen(true);
-    try {
-      const url = editMode
-        ? `${API_BASE_URL}/api/familiares/actualizar/${editId}`
-        : `${API_BASE_URL}/api/familiares/crear`;
-      const method = editMode ? "PUT" : "POST";
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        SweetAlert.showMessageAlert(
-          'Éxito',
-          editMode ? "Familiar actualizado" : "Familiar agregado",
-          'success'
-        );
-        fetchFamiliares(formData.idUsuario);
-        resetForm();
-      } else {
-        SweetAlert.showMessageAlert(
-          'Error',
-          data.message || "Error al procesar la solicitud",
-          'error'
-        );
+      e.preventDefault();
+
+      // Verificar el límite de familiares
+      if (!canAddMoreFamiliares()) {
+          SweetAlert.showMessageAlert(
+              'Límite alcanzado',
+              'No puedes agregar más de 4 familiares.',
+              'warning'
+          );
+          return;
       }
-    } catch (error) {
-      SweetAlert.showMessageAlert(
-        'Error',
-        "Error en la solicitud",
-        'error'
-      );
-    } finally {
-      setIsLoadingFullScreen(false);
-    }
+
+      setIsLoadingFullScreen(true);
+      try {
+          const url = editMode
+              ? `${API_BASE_URL}/api/familiares/actualizar/${editId}`
+              : `${API_BASE_URL}/api/familiares/crear`;
+          const method = editMode ? "PUT" : "POST";
+          const response = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+          });
+          const data = await response.json();
+          if (response.ok) {
+              SweetAlert.showMessageAlert(
+                  'Éxito',
+                  editMode ? "Familiar actualizado" : "Familiar agregado",
+                  'success'
+              );
+              fetchFamiliares(formData.idUsuario);
+              resetForm();
+          } else {
+              SweetAlert.showMessageAlert(
+                  'Error',
+                  data.message || "Error al procesar la solicitud",
+                  'error'
+              );
+          }
+      } catch (error) {
+          SweetAlert.showMessageAlert(
+              'Error',
+              "Error en la solicitud",
+              'error'
+          );
+      } finally {
+          setIsLoadingFullScreen(false);
+      }
   };
 
   const handleEdit = (familiar) => {
@@ -243,10 +258,13 @@ const Familiares = () => {
           </div>
           <div className="flex gap-4 mt-4">
             <button
-              type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={handleSubmit}
+                disabled={!canAddMoreFamiliares()}
+                className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                    !canAddMoreFamiliares() ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
-              {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
+                {editMode ? "Actualizar Familiar" : "Agregar Familiar"}
             </button>
             {editMode && ( // Mostrar botón "Cancelar" solo en modo edición
               <button
