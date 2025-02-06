@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { User, Tag, Calendar } from "lucide-react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
+import SweetAlert from "../../components/SweetAlert"; // Importamos SweetAlert
+import LoadingScreen from '../../components/home/LoadingScreen';
 
 const CardMisCitasDoctor = ({ appointment }) => {
   const [selectedEstado, setSelectedEstado] = useState("Seleccione una opción");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Estado para el loader
   const token = jwtUtils.getTokenFromCookie();
+  const idDoctor = jwtUtils.getIdUsuario(token);
+  const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
 
   // Función para manejar el cambio en el ComboBox
   const handleEstadoChange = (e) => {
@@ -17,8 +22,10 @@ const CardMisCitasDoctor = ({ appointment }) => {
 
   // Función para manejar el clic en el botón "Actualizar Estado"
   const handleUpdateEstado = async () => {
+    setIsLoading(true); // Mostrar loader
+    setIsLoadingFullScreen(true); // Activar el LoadingScreen
     try {
-      const response = await fetch(`${API_BASE_URL}/api/citas/${appointment.idCita}/actualizar-estado`, {
+      const response = await fetch(`${API_BASE_URL}/api/citas/${appointment.idCita}/actualizar-estado/${idDoctor}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -28,15 +35,36 @@ const CardMisCitasDoctor = ({ appointment }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al actualizar el estado");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al actualizar el estado");
       }
 
       const data = await response.json();
       console.log("Estado actualizado:", data);
-      alert(`Estado actualizado a "${selectedEstado}" para la cita #${appointment.idCita}`);
+
+      // Mostrar mensaje de éxito con SweetAlert
+      SweetAlert.showMessageAlert(
+        "Éxito",
+        "Estado de la cita actualizado correctamente.",
+        "success"
+      );
+
+      // Recargar la página después de 1 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al actualizar el estado");
+
+      // Mostrar mensaje de error con SweetAlert
+      SweetAlert.showMessageAlert(
+        "Error",
+        error.message || "Hubo un error al actualizar el estado.",
+        "error"
+      );
+    } finally {
+      setIsLoading(false); // Ocultar loader
+      setIsLoadingFullScreen(false); // Ocultar loader
     }
   };
 
@@ -108,8 +136,8 @@ const CardMisCitasDoctor = ({ appointment }) => {
           </div>
         </div>
 
-         {/* ComboBox para cambiar el estado */}
-         <div className="flex items-center gap-3">
+        {/* ComboBox para cambiar el estado */}
+        <div className="flex items-center gap-3">
           <label htmlFor={`estado-${appointment.idCita}`} className="text-sm text-gray-500">
             Cambiar estado:
           </label>
@@ -129,16 +157,17 @@ const CardMisCitasDoctor = ({ appointment }) => {
         {/* Botón para actualizar el estado */}
         <button
           onClick={handleUpdateEstado}
-          disabled={isButtonDisabled}
+          disabled={isButtonDisabled || isLoading}
           className={`w-full px-4 py-2 text-sm font-medium rounded-md ${
-            isButtonDisabled
+            isButtonDisabled || isLoading
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-green-600 text-white hover:bg-green-700"
           }`}
         >
-          Actualizar Estado
+          {isLoading ? "Actualizando..." : "Actualizar Estado"}
         </button>
       </div>
+      {isLoadingFullScreen && <LoadingScreen />}
     </div>
   );
 };
