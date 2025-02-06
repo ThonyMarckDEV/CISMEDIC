@@ -9,10 +9,10 @@ const ErrorPage = () => {
       <div className="flex-grow flex justify-center items-center">
         <div className="text-center p-6 md:p-12">
           {/* Ícono */}
-          <FaRegSadTear className="text-8xl text-blue-400 mb-8 mx-auto" />
+          <FaRegSadTear className="text-8xl text-green-600 mb-8 mx-auto" />
 
           {/* Título "404" en amarillo */}
-          <h1 className="text-9xl font-bold text-blue-400 mb-4">
+          <h1 className="text-9xl font-bold text-green-600 mb-4">
             404
           </h1>
 

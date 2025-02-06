@@ -28,6 +28,10 @@ import ClienteMisPagos from './ui/clienteUI/MisPagos';
 import ClienteFamiliares from './ui/clienteUI/Familiares';
 import ClienteResultados from './ui/clienteUI/ResultadosLaboratorio';
 
+//UI Doctor
+import Doctor from './ui/doctorUI/Doctor';
+
+
 //UI AUTH
 import Register from './ui/Register';
 
@@ -120,7 +124,11 @@ function AppContent() {
             <Route path="/cliente/mispagos" element={<ProtectedRouteCliente element={<ClienteMisPagos />} />}/>
             <Route path="/cliente/familiares" element={<ProtectedRouteCliente element={<ClienteFamiliares />} />}/>
             <Route path="/cliente/resultadoslaboratorio" element={<ProtectedRouteCliente element={<ClienteResultados />} />}/>
-            
+
+          {/* Rutas doctor */}
+            <Route path="/doctor" element={<ProtectedRouteRolDoctor element={<Doctor />} />} />
+            <Route path="/doctor/perfil" element={<ProtectedRouteRolDoctor   />} />
+
 
           <Route path="*" element={<ErrorPage />} />
         </Routes>
