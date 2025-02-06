@@ -82,7 +82,7 @@ const SidebarCliente = ({ children }) => {
                     logout();
                     setIsProfileMenuOpen(false);
                   }}
-                  className="block w-full px-4 py-2 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors duration-300 text-center"
+                  className="block w-full px-4 py-2 text-red-400 hover:bg-gray-200 hover:text-red-300 transition-colors duration-300 text-center"
                 >
                   Cerrar sesión
                 </button>
