@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Clock, AlertCircle } from "lucide-react";
 import { CreditCard as PaymentIcon } from "lucide-react"; // Importa el ícono de pago
-import AppointmentCard from "./AppointmentCard";
+import PagoCard from "./PagoCard";
 import API_BASE_URL from "../../js/urlHelper";
 
-const AppointmentsList = ({ userId, token }) => {
+const PagoLista = ({ userId, token }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,7 +66,7 @@ const AppointmentsList = ({ userId, token }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {appointments.map((appointment) => (
-        <AppointmentCard
+        <PagoCard
         key={appointment.idCita}
         appointment={appointment}
         paymentId={appointment.idPago} // Pasar idPago como prop
@@ -76,4 +76,4 @@ const AppointmentsList = ({ userId, token }) => {
   );
 };
 
-export default AppointmentsList;
+export default PagoLista;

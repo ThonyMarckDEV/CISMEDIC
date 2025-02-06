@@ -4,7 +4,7 @@ import MercadoPago from "../../components/clienteComponents/MercadoPago";
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 
-const AppointmentCard = ({ appointment, invisible }) => {
+const PagoCard = ({ appointment, invisible }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [downloadError, setDownloadError] = useState(null);
 
@@ -173,4 +173,4 @@ const AppointmentCard = ({ appointment, invisible }) => {
   );
 };
 
-export default AppointmentCard;
+export default PagoCard;

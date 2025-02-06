@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import jwtUtils from "../../utilities/jwtUtils";
 import SweetAlert from "../../components/SweetAlert";
-import AppointmentsList from "../../components/clienteComponents/AppointmentsList";
+import PagoLista from "../../components/clienteComponents/PagoLista";
 
 const MisPagos = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,7 +54,7 @@ const MisPagos = () => {
           </div>
         </div>
 
-        <AppointmentsList userId={userId} token={token} />
+        <PagoLista userId={userId} token={token} />
       </div>
     </SidebarCliente>
   );
