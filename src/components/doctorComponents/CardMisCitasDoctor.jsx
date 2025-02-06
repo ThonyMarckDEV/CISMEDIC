@@ -1,7 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { User, Tag, Calendar } from "lucide-react";
+import API_BASE_URL from "../../js/urlHelper";
+import jwtUtils from "../../utilities/jwtUtils";
 
-const CardMisCitasDoctor= ({ appointment }) => {
+const CardMisCitasDoctor = ({ appointment }) => {
+  const [selectedEstado, setSelectedEstado] = useState("Seleccione una opción");
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const token = jwtUtils.getTokenFromCookie();
+
+  // Función para manejar el cambio en el ComboBox
+  const handleEstadoChange = (e) => {
+    const newState = e.target.value;
+    setSelectedEstado(newState);
+    setIsButtonDisabled(newState !== "completada");
+  };
+
+  // Función para manejar el clic en el botón "Actualizar Estado"
+  const handleUpdateEstado = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/citas/${appointment.idCita}/actualizar-estado`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ estado: selectedEstado }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar el estado");
+      }
+
+      const data = await response.json();
+      console.log("Estado actualizado:", data);
+      alert(`Estado actualizado a "${selectedEstado}" para la cita #${appointment.idCita}`);
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al actualizar el estado");
+    }
+  };
+
   return (
     <div
       key={appointment.idCita}
@@ -15,8 +53,9 @@ const CardMisCitasDoctor= ({ appointment }) => {
           </span>
           <div
             className={`px-3 py-1 rounded-full text-sm font-medium ${
-              appointment.estado === 'pagado' ? 'bg-blue-50 text-blue-700' :
-              'bg-gray-100 text-gray-700'
+              appointment.estado === "pagado"
+                ? "bg-blue-50 text-blue-700"
+                : "bg-gray-100 text-gray-700"
             }`}
           >
             {appointment.estado}
@@ -25,6 +64,7 @@ const CardMisCitasDoctor= ({ appointment }) => {
       </div>
       {/* Card Content */}
       <div className="p-6 space-y-4">
+        {/* Detalles de la cita */}
         <div className="flex items-center gap-3 text-gray-700">
           <User className="h-5 w-5 text-green-600" />
           <div>
@@ -62,11 +102,42 @@ const CardMisCitasDoctor= ({ appointment }) => {
           <div>
             <p className="text-sm text-gray-500">Fecha y Hora</p>
             <p className="font-medium">
-              {new Date(appointment.fecha).toLocaleDateString()} -{' '}
+              {new Date(appointment.fecha).toLocaleDateString()} -{" "}
               {appointment.horaInicio}
             </p>
           </div>
         </div>
+
+         {/* ComboBox para cambiar el estado */}
+         <div className="flex items-center gap-3">
+          <label htmlFor={`estado-${appointment.idCita}`} className="text-sm text-gray-500">
+            Cambiar estado:
+          </label>
+          <select
+            id={`estado-${appointment.idCita}`}
+            value={selectedEstado}
+            onChange={handleEstadoChange}
+            className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+          >
+            <option value="Seleccione una opción" disabled>
+              Seleccione una opción
+            </option>
+            <option value="completada">Completada</option>
+          </select>
+        </div>
+
+        {/* Botón para actualizar el estado */}
+        <button
+          onClick={handleUpdateEstado}
+          disabled={isButtonDisabled}
+          className={`w-full px-4 py-2 text-sm font-medium rounded-md ${
+            isButtonDisabled
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`}
+        >
+          Actualizar Estado
+        </button>
       </div>
     </div>
   );
