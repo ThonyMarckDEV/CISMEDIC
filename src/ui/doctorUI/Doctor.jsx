@@ -56,7 +56,7 @@ const Doctor = () => {
           </div>
 
           {/* Calendario de disponibilidad */}
-          <div className="rounded-lg shadow-md bg-white p-6">
+          <div className="rounded-lg shadow-md bg-white p-6 h-[750px]"> {/* Aumentar la altura aquí */}
             <h2 className="text-xl font-bold mb-4 text-center">Calendario de Disponibilidad</h2>
             <DoctorCalendar />
           </div>
