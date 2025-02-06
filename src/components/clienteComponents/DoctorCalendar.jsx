@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
 import "react-day-picker/dist/style.css"; // Importa los estilos predeterminados
+import jwtUtils from '../../utilities/jwtUtils';
 
 const DoctorCalendar = ({ doctorId }) => {
   const [availableSlots, setAvailableSlots] = useState({});
@@ -10,15 +11,29 @@ const DoctorCalendar = ({ doctorId }) => {
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/doctor-schedule/${doctorId}/week`);
+        const token = jwtUtils.getTokenFromCookie();
+        const response = await fetch(`${API_BASE_URL}/api/doctor-schedule/${doctorId}/week`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`, // Envía el token en el encabezado
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Error fetching available slots");
+        }
+  
         const data = await response.json();
         setAvailableSlots(data.availableSlots);
       } catch (error) {
         console.error("Error fetching available slots:", error);
       }
     };
+  
     fetchAvailableSlots();
   }, [doctorId]);
+
 
   // Función para cambiar al mes anterior
   const goToPreviousMonth = () => {

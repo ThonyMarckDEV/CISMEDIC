@@ -42,7 +42,14 @@ const Familiares = () => {
   const fetchFamiliares = async (idUsuario) => {
     setIsLoadingFullScreen(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/familiares/listar/${idUsuario}`);
+      const token = jwtUtils.getTokenFromCookie();
+      const response = await fetch(`${API_BASE_URL}/api/familiares/listar/${idUsuario}`,{
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`, // Envía el token en el encabezado
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setFamiliares(data);
     } catch (error) {
@@ -61,55 +68,61 @@ const Familiares = () => {
   };
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      // Verificar el límite de familiares
-      if (!canAddMoreFamiliares()) {
-          SweetAlert.showMessageAlert(
-              'Límite alcanzado',
-              'No puedes agregar más de 4 familiares.',
-              'warning'
-          );
-          return;
-      }
+    // Verificar el límite de familiares
+    if (!canAddMoreFamiliares()) {
+        SweetAlert.showMessageAlert(
+            'Límite alcanzado',
+            'No puedes agregar más de 4 familiares.',
+            'warning'
+        );
+        return;
+    }
 
-      setIsLoadingFullScreen(true);
-      try {
-          const url = editMode
-              ? `${API_BASE_URL}/api/familiares/actualizar/${editId}`
-              : `${API_BASE_URL}/api/familiares/crear`;
-          const method = editMode ? "PUT" : "POST";
-          const response = await fetch(url, {
-              method,
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(formData),
-          });
-          const data = await response.json();
-          if (response.ok) {
-              SweetAlert.showMessageAlert(
-                  'Éxito',
-                  editMode ? "Familiar actualizado" : "Familiar agregado",
-                  'success'
-              );
-              fetchFamiliares(formData.idUsuario);
-              resetForm();
-          } else {
-              SweetAlert.showMessageAlert(
-                  'Error',
-                  data.message || "Error al procesar la solicitud",
-                  'error'
-              );
-          }
-      } catch (error) {
-          SweetAlert.showMessageAlert(
-              'Error',
-              "Error en la solicitud",
-              'error'
-          );
-      } finally {
-          setIsLoadingFullScreen(false);
-      }
-  };
+    setIsLoadingFullScreen(true);
+    try {
+        const token = jwtUtils.getTokenFromCookie();
+        const url = editMode
+            ? `${API_BASE_URL}/api/familiares/actualizar/${editId}`
+            : `${API_BASE_URL}/api/familiares/crear`;
+        const method = editMode ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+            method,
+            headers: {
+                "Authorization": `Bearer ${token}`, // Envía el token en el encabezado
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            SweetAlert.showMessageAlert(
+                'Éxito',
+                editMode ? "Familiar actualizado" : "Familiar agregado",
+                'success'
+            );
+            fetchFamiliares(formData.idUsuario);
+            resetForm();
+        } else {
+            SweetAlert.showMessageAlert(
+                'Error',
+                data.message || "Error al procesar la solicitud",
+                'error'
+            );
+        }
+    } catch (error) {
+        SweetAlert.showMessageAlert(
+            'Error',
+            "Error en la solicitud",
+            'error'
+        );
+    } finally {
+        setIsLoadingFullScreen(false);
+    }
+};
 
   const handleEdit = (familiar) => {
     setFormData({
@@ -140,8 +153,13 @@ const Familiares = () => {
     if (result.isConfirmed) {
       setIsLoadingFullScreen(true);
       try {
+        const token = jwtUtils.getTokenFromCookie();
         const response = await fetch(`${API_BASE_URL}/api/familiares/eliminar/${idFamiliarUsuario}`, {
           method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`, // Envía el token en el encabezado
+            "Content-Type": "application/json",
+          },
         });
         if (response.ok) {
           SweetAlert.showMessageAlert(
