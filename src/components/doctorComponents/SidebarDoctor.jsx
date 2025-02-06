@@ -8,7 +8,7 @@ import { useCitas } from '../../context/CitasContextDoctor';
 const navigation = [
   { name: "Inicio", href: "/doctor", icon: Home },
   { name: "Mis Citas", href: "/doctor/miscitas", icon: FileText, notificationKey: 'citas' },
-  { name: "Historial Citas", href: "/doctor/historialcitas", icon: HistoryIcon},
+  { name: "Historial Citas Atendidas", href: "/doctor/historialcitas", icon: HistoryIcon},
 ];
   
 const SidebarDoctor = ({ children }) => {

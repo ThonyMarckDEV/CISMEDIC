@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { User, Tag, Calendar } from "lucide-react";
 
 const CardHistorialCitasDoctor = ({ appointment }) => {
@@ -7,6 +7,9 @@ const CardHistorialCitasDoctor = ({ appointment }) => {
     const date = new Date(`${dateString}T12:00:00`);
     return date.toLocaleDateString();
   };
+
+  // Estado para controlar si el tooltip está visible
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div
@@ -20,19 +23,29 @@ const CardHistorialCitasDoctor = ({ appointment }) => {
             Cita #{appointment.idCita}
           </span>
           <div
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
+            className={`px-3 py-1 rounded-full text-sm font-medium relative ${
               appointment.estado === "completada"
                 ? "bg-green-50 text-green-700"
                 : appointment.estado === "cancelada"
-                ? "bg-red-50 text-red-700"
+                ? "bg-red-50 text-red-700 cursor-pointer"
                 : "bg-gray-100 text-gray-700"
             }`}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
           >
             {appointment.estado}
+            {/* Tooltip para mostrar el motivo de la cancelación */}
+            {showTooltip && appointment.estado === "cancelada" && (
+              <div
+                className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg p-3 z-10"
+              >
+                <p className="text-sm text-gray-500">Motivo de cancelación:</p>
+                <p className="text-sm font-medium">{appointment.motivo}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
       {/* Card Content */}
       <div className="p-6 space-y-4">
         {/* Detalles de la cita */}
@@ -45,7 +58,6 @@ const CardHistorialCitasDoctor = ({ appointment }) => {
             </p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <User className="h-5 w-5 text-green-600" />
           <div>
@@ -53,17 +65,6 @@ const CardHistorialCitasDoctor = ({ appointment }) => {
             <p className="font-medium">{appointment.dni}</p>
           </div>
         </div>
-
-        {/* <div className="flex items-center gap-3 text-gray-700">
-          <User className="h-5 w-5 text-green-600" />
-          <div>
-            <p className="text-sm text-gray-500">Doctor</p>
-            <p className="font-medium">
-              {appointment.doctorNombre} {appointment.doctorApellidos}
-            </p>
-          </div>
-        </div> */}
-
         <div className="flex items-center gap-3 text-gray-700">
           <Tag className="h-5 w-5 text-green-600" />
           <div>
@@ -71,7 +72,6 @@ const CardHistorialCitasDoctor = ({ appointment }) => {
             <p className="font-medium">{appointment.especialidad}</p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <Calendar className="h-5 w-5 text-green-600" />
           <div>
