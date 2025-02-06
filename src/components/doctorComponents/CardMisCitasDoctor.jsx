@@ -212,15 +212,6 @@ const CardMisCitasDoctor = ({ appointment }) => {
               <label>
                 <input
                   type="checkbox"
-                  value="moroso"
-                  checked={selectedMotivo === "moroso"}
-                  onChange={handleMotivoChange}
-                />
-                Moroso
-              </label>
-              <label>
-                <input
-                  type="checkbox"
                   value="otro"
                   checked={selectedMotivo === "otro"}
                   onChange={handleMotivoChange}
