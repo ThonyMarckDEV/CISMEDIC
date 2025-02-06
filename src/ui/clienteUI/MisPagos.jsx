@@ -42,7 +42,7 @@ const MisPagos = () => {
                 Bienvenido, {userName || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
-                Administra tus pagos y citas médicas
+                Administra tus pagos.
               </p>
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
