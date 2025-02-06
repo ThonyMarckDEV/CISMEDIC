@@ -292,7 +292,7 @@ const MisHorarios = () => {
           </form>
         </div>
 
-        <div className="flex-1 p-8 bg-gray-100 overflow-auto">
+        <div className="rounded-lg shadow-md bg-white p-6 h-[750px]"> {/* Aumentar la altura aquí */}
           <h2 className="text-2xl font-bold mb-4">Calendario de Horarios</h2>
           <CalendarioHorarios
             horarios={horarios}
