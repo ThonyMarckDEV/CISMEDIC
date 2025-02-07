@@ -14,10 +14,9 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
   // Convertir horarios a eventos para el calendario
   const eventos = Array.isArray(horarios)
     ? horarios.map((horario) => ({
-        id: horario.idHorario,
-        title: `S/ ${horario.costo}`,
-        start: new Date(`${horario.fecha}T${horario.hora_inicio}`),
-        end: new Date(`${horario.fecha}T${horario.hora_inicio}`),
+        title: `Horario: ${moment(`${horario.fecha}T${horario.hora_inicio}`).format('HH:mm')}`,
+        start: new Date(`${horario.fecha}T${horario.hora_inicio}`), // Mínimo requerido por react-big-calendar
+        end: new Date(`${horario.fecha}T${horario.hora_inicio}`),   // Mínimo requerido por react-big-calendar
         horario,
       }))
     : [];
@@ -29,9 +28,7 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
         title: 'Detalles del horario',
         html: `
           <div class="text-left">
-            <p class="mb-2"><span class="font-semibold">Fecha:</span> ${moment(event.start).format('DD/MM/YYYY')}</p>
-            <p class="mb-2"><span class="font-semibold">Hora:</span> ${moment(event.start).format('HH:mm')}</p>
-            <p class="mb-2"><span class="font-semibold">Costo:</span> S/ ${event.horario.costo}</p>
+            <p><span class="font-semibold">Horario:</span> ${moment(event.start).format('HH:mm')}</p>
             <p><span class="font-semibold">Estado:</span> ${event.horario.estadoCita}</p>
           </div>
         `,
@@ -44,14 +41,11 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       });
       return;
     }
-
     Swal.fire({
       title: 'Opciones de horario',
       html: `
         <div class="text-left">
-          <p class="mb-2"><span class="font-semibold">Fecha:</span> ${moment(event.start).format('DD/MM/YYYY')}</p>
-          <p class="mb-2"><span class="font-semibold">Hora:</span> ${moment(event.start).format('HH:mm')}</p>
-          <p class="mb-2"><span class="font-semibold">Costo:</span> S/ ${event.horario.costo}</p>
+          <p><span class="font-semibold">Horario:</span> ${moment(event.start).format('HH:mm')}</p>
           <p><span class="font-semibold">Estado:</span> ${event.horario.estadoCita || 'disponible'}</p>
         </div>
       `,
@@ -89,7 +83,6 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
       transition: 'all 0.2s ease',
     };
-
     if (event.horario.estadoCita === 'ocupado') {
       style.backgroundColor = '#4F46E5'; // Azul para eventos ocupados
       style.pointerEvents = 'none'; // Deshabilitar interacción
@@ -101,8 +94,16 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
       };
     }
-
     return { style };
+  };
+
+  // Personalizar el renderizado de los eventos
+  const EventComponent = ({ event }) => {
+    return (
+      <div className="text-center w-full truncate">
+        {event.title}
+      </div>
+    );
   };
 
   return (
@@ -142,7 +143,6 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
               <span className="text-sm text-gray-600 font-medium">Disponible</span>
             </div>
           </div>
-
           {/* Contenedor del calendario */}
           <div className="h-[600px] overflow-y-auto rounded-xl shadow-sm border border-gray-200 md:w-auto w-[310px] bg-white">
             <Calendar
@@ -156,6 +156,9 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
               selectable
               popup
               eventPropGetter={eventPropGetter}
+              components={{
+                event: EventComponent, // Personalización del renderizado de eventos
+              }}
               messages={{
                 today: 'Hoy',
                 previous: 'Anterior',
