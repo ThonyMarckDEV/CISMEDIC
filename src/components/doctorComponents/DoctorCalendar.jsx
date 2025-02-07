@@ -99,7 +99,6 @@ const CalendarioHorariosDoctor = () => {
     };
     if (event.horario.estadoCita === 'ocupado') {
       style.backgroundColor = '#4F46E5'; // Azul para eventos ocupados
-      style.pointerEvents = 'none';
     } else {
       style.backgroundColor = '#10B981'; // Verde para eventos disponibles
     }
