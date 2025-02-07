@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
-import "react-day-picker/dist/style.css"; // Importa los estilos predeterminados
 import jwtUtils from '../../utilities/jwtUtils';
 
 const DoctorCalendar = ({ doctorId }) => {
@@ -19,21 +18,20 @@ const DoctorCalendar = ({ doctorId }) => {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (!response.ok) {
           throw new Error("Error fetching available slots");
         }
-  
+
         const data = await response.json();
         setAvailableSlots(data.availableSlots);
       } catch (error) {
         console.error("Error fetching available slots:", error);
       }
     };
-  
+
     fetchAvailableSlots();
   }, [doctorId]);
-
 
   // Función para cambiar al mes anterior
   const goToPreviousMonth = () => {
@@ -78,70 +76,80 @@ const DoctorCalendar = ({ doctorId }) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto">
       {/* Título del calendario */}
-      <h1 className="text-3xl font-bold text-center mb-4">Disponibilidad de doctor seleccionado</h1>
+      <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">
+        Disponibilidad del Doctor
+      </h1>
 
       {/* Encabezado del calendario */}
-      <div className="mb-4 flex justify-between items-center">
+      <div className="mb-6 flex justify-between items-center">
         {/* Botón Anterior */}
         <button
           onClick={goToPreviousMonth}
-          className={`p-2 rounded ${
-            isCurrentMonth() ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-green-700 text-white"
+          className={`p-3 rounded-full transition duration-300 ${
+            isCurrentMonth() ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
           }`}
-          disabled={isCurrentMonth()} // Deshabilitar el botón si estamos en el mes actual
+          disabled={isCurrentMonth()}
         >
-          Anterior
+          &lt;
         </button>
-        <div className="text-2xl font-bold text-center">
+
+        {/* Mes y Año */}
+        <div className="text-2xl font-semibold text-gray-900">
           {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
         </div>
+
         {/* Botón Siguiente */}
-        <button onClick={goToNextMonth} className="p-2 bg-green-700 text-white rounded">
-          Siguiente
+        <button
+          onClick={goToNextMonth}
+          className="p-3 rounded-full bg-gray-900 text-white hover:bg-gray-700 transition duration-300"
+        >
+          &gt;
         </button>
       </div>
 
       {/* Leyenda de disponibilidad */}
-      <div className="mb-4">
+      <div className="mb-6 flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-500"></div>
-          <span>Días con disponibilidad de horarios</span>
+          <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
+          <span className="text-sm font-medium text-gray-700">Días disponibles</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-300"></div>
-          <span>Días sin disponibilidad</span>
+          <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+          <span className="text-sm font-medium text-gray-700">Días no disponibles</span>
         </div>
       </div>
 
       {/* Nota adicional */}
-      <div className="mb-4 text-sm text-gray-600">
-        Nota: Los días marcados en verde tienen disponibilidad de horarios. Puede consultar en el
-        formulario la disponibilidad de horas para esos días.
+      <div className="mb-6 text-sm text-gray-600 text-center">
+        Los días marcados en verde tienen disponibilidad de horarios.
       </div>
 
       {/* Días de la semana */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-2 text-center text-gray-700 font-medium">
         {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
-          <div key={day} className="text-center font-bold">
+          <div key={day} className="text-sm">
             {day}
           </div>
         ))}
       </div>
 
       {/* Días del mes */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-2 mt-2">
+        {/* Espacios vacíos antes del primer día del mes */}
         {Array(firstDayOfMonth)
           .fill(null)
           .map((_, index) => (
             <div key={`empty-${index}`} className="p-2"></div>
           ))}
+
+        {/* Días del mes */}
         {days.map((day) => (
           <div
             key={day}
-            className={`p-2 text-center border ${
-              isDateAvailable(day) ? "bg-green-500 text-white" : "bg-gray-300"
+            className={`p-3 text-center rounded-full transition duration-300 ${
+              isDateAvailable(day) ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-gray-200 text-gray-500"
             }`}
           >
             {day}
