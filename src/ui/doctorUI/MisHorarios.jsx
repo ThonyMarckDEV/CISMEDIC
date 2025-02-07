@@ -125,9 +125,11 @@ const MisHorarios = () => {
           editMode ? "Horario actualizado" : "Horario agregado",
           'success'
         );
+        resetForm();
         setTimeout(() => {
           window.location.reload();
         }, 1000);
+
       } else {
         throw new Error(data.message || "Error al procesar la solicitud");
       }
