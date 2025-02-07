@@ -8,6 +8,7 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 import { useCitas } from '../../context/CitasContext';
 import { usePagos } from '../../context/PagosContext';
 import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
+import { getDate } from "date-fns/getDate";
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -28,6 +29,8 @@ const ClienteNuevaCita = () => {
 
   const { setCantidadCitas } = useCitas();
   const { setCantidadPagos } = usePagos();
+
+  const [fechaMinima, setFechaMinima] = useState('');
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
@@ -195,6 +198,18 @@ const ClienteNuevaCita = () => {
       fetchHorariosDisponibles(idDoctor, selectedFecha);
     }
   };
+
+  // Función para obtener la fecha actual en el huso horario de Perú (PET)
+  const getFechaActualPeru = () => {
+    const options = { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' };
+    const fechaPeru = new Date().toLocaleDateString('en-CA', options); // Formato YYYY-MM-DD
+    return fechaPeru;
+  };
+
+  // Establecer la fecha mínima al cargar el componente
+  useEffect(() => {
+    setFechaMinima(getFechaActualPeru());
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -473,21 +488,22 @@ const ClienteNuevaCita = () => {
                 </select>
               </div>
   
-              {/* Date Selection */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha de la Cita
-                </label>
-                <input
-                  type="date"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
-                  min={new Date().toISOString().split("T")[0]}
-                  value={fecha}
-                  onChange={handleFechaChange}
-                  required
-                  disabled={!idDoctor}
-                />
-              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Fecha de la Cita
+                  </label>
+                  <input
+                    type="date"
+                    id="fecha"
+                    name="fecha"
+                    min={fechaMinima}
+                    value={fecha}
+                    onChange={handleFechaChange}
+                    required
+                    disabled={!idDoctor}
+                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
   
               {/* Available Times */}
               <div className="bg-gray-50 p-4 rounded-lg">
