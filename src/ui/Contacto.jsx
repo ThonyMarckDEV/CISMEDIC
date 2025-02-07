@@ -9,7 +9,7 @@ import pinImage from '../img/marcador.png';
 import API_BASE_URL from '../js/urlHelper';
 import LoaderScreen from '../components/home/LoadingScreen';
 import SweetAlert from '../components/SweetAlert';
-import laEmpresa from '../img/2.jpg';
+import laEmpresa from '../img/banner.jpg';
 
 const Contacto = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
