@@ -81,7 +81,7 @@ const Historialpagos = () => {
 
         {/* Filtros */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
+          {/* <div>
             <label htmlFor="filtroEstado" className="text-sm text-gray-500">
               Filtrar por estado:
             </label>
@@ -93,9 +93,9 @@ const Historialpagos = () => {
             >
               <option value="todas">Todas</option>
               <option value="pagado">Pagados</option>
-              <option value="pendiente">Pendientes</option>
+              <option value="pendiente">Cancelados</option>
             </select>
-          </div>
+          </div> */}
           <div>
             <label htmlFor="filtroIdPago" className="text-sm text-gray-500">
               Filtrar por ID de pago:
