@@ -207,12 +207,12 @@ const MisHorarios = () => {
       {isLoadingFullScreen && <LoadingScreen />}
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
         
-        {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
+              {/* Header */}
+              <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
             <div className="relative z-10">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {userName || "Usuario"}
+                Bienvenido, {nombreUsuario || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
                 Aquí puedes gestionar tus horarios.
