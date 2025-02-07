@@ -35,7 +35,7 @@ const VerificarCorreo = () => {
 
           if (verifyResponse.ok && verifyResult.success) {
             SweetAlert.showMessageAlert('Éxito', 'Correo verificado exitosamente. Redirigiendo...', 'success');
-            setTimeout(() => navigate('/'), 1500);
+            setTimeout(() => navigate('/'), 3000);
           } else {
             SweetAlert.showMessageAlert('Error', 'Error verificando el correo.', 'error');
           }
