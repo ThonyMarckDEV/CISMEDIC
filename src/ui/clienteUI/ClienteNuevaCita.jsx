@@ -110,6 +110,24 @@ const ClienteNuevaCita = () => {
     }
   };
 
+  const handleDateSelect = (selectedDate) => {
+    setFecha(selectedDate);
+    if (idDoctor && selectedDate) {
+      fetchHorariosDisponibles(idDoctor, selectedDate);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.toLocaleDateString('es-ES', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+  };
+  
   const fetchDoctoresPorEspecialidad = async (especialidadId) => {
     try {
       const response = await fetch(
@@ -489,21 +507,33 @@ const ClienteNuevaCita = () => {
               </div>
   
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Fecha de la Cita
-                  </label>
-                  <input
-                    type="date"
-                    id="fecha"
-                    name="fecha"
-                    min={fechaMinima}
-                    value={fecha}
-                    onChange={handleFechaChange}
-                    required
-                    disabled={!idDoctor}
-                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Fecha de la Cita
+                </label>
+                <div className="flex items-center justify-between">
+                  <div className="flex-grow">
+                    {fecha ? (
+                      <span className="text-lg font-medium text-gray-700">
+                        {formatDate(fecha)}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 italic">No se ha seleccionado fecha</span>
+                    )}
+                  </div>
+                  {fecha && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFecha('');
+                        setHorariosDisponibles([]);
+                      }}
+                      className="ml-4 px-3 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200"
+                    >
+                      Limpiar fecha
+                    </button>
+                  )}
                 </div>
+              </div>
   
               {/* Available Times */}
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -563,13 +593,13 @@ const ClienteNuevaCita = () => {
               </button>
             </form>
           </div>
-  
-          {/* Calendario Visual */}
-          {idDoctor && (
-            <div className="w-full md:w-1/3 order-first md:order-last mb-6 md:mb-0">
-              <DoctorCalendar doctorId={idDoctor} />
-            </div>
-          )}
+
+        {/* Calendario Visual */}
+        {idDoctor && (
+              <div className="w-full md:w-1/3 order-first md:order-last mb-6 md:mb-0">
+                <DoctorCalendar doctorId={idDoctor} onDateSelect={handleDateSelect} />
+              </div>
+            )}
         </div>
         </div>
       </div>
