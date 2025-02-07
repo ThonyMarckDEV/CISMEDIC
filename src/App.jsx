@@ -16,6 +16,7 @@ import ScrollToTopButton from './components/home/ScrollToTopButton';
 // Componentes Home
 import Home from './ui/Home';
 import Contacto from './ui/Contacto';
+import StaffMedico from './ui/StaffMedico';
 // UIS
 import Login from './ui/Login';
 import VerificarCorreoToken from './ui/VerificarCorreoToken';
@@ -106,6 +107,8 @@ function AppContent() {
       <Route path="/register" element={<ProtectedRouteHome element={<Register />} />} />
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
       <Route path="/contacto" element={<Contacto />} />
+      <Route path="/staffmedico" element={<StaffMedico />} />
+      
 
       {/* Rutas del cliente (envueltas en PagosProvider y CitasProvider) */}
       <Route
