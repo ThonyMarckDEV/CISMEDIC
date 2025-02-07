@@ -212,7 +212,7 @@ const MisHorarios = () => {
           <div className="px-8 py-12 relative">
             <div className="relative z-10">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {nombreUsuario || "Usuario"}
+                Bienvenido, {nombreUsuario   || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
                 Aquí puedes gestionar tus horarios.
