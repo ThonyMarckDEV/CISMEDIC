@@ -26,6 +26,8 @@ import ClienteMisCitas from './ui/clienteUI/MisCitas';
 import ClienteMisPagos from './ui/clienteUI/MisPagos';
 import ClienteFamiliares from './ui/clienteUI/Familiares';
 import ClienteResultados from './ui/clienteUI/ResultadosLaboratorio';
+import HistorialCitasCliente from './ui/clienteUI/HistorialCitas';
+import HistorialPagosCliente from './ui/clienteUI/HistorialPagos';
 // UI Doctor
 import Doctor from './ui/doctorUI/Doctor';
 import MisCitasDoctor from './ui/doctorUI/MisCitasDoctor';
@@ -166,6 +168,28 @@ function AppContent() {
           </PagosProvider>
         }
       />
+      <Route
+        path="/cliente/historialcitas"
+        element={
+          <PagosProvider>
+            <CitasProvider>
+              <ProtectedRouteCliente element={<HistorialCitasCliente />} />
+            </CitasProvider>
+          </PagosProvider>
+        }
+      />
+      <Route
+        path="/cliente/historialpagos"
+        element={
+          <PagosProvider>
+            <CitasProvider>
+              <ProtectedRouteCliente element={<HistorialPagosCliente />} />
+            </CitasProvider>
+          </PagosProvider>
+        }
+      />
+
+
 
       {/* Rutas del doctor */}
       <Route

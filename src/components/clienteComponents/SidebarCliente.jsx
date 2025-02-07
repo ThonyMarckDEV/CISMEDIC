@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
@@ -12,7 +12,8 @@ const navigation = [
   { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Familiares", href: "/cliente/familiares", icon: User },
   { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
-   //{ name: "Ayuda", href: "/ayuda", icon: HelpCircle },
+  { name: "Historial Citas", href: "/cliente/historialcitas", icon: TimerIcon },
+  { name: "Historial Pagos", href: "/cliente/historialpagos", icon: HistoryIcon },
 ];
 
 const SidebarCliente = ({ children }) => {
