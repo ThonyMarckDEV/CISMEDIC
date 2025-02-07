@@ -57,12 +57,25 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const handleDateClick = (day) => {
     if (isDateAvailable(day)) {
       // Creamos la fecha en la zona horaria local
-      const selectedDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), day));
+      const selectedDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), day))
       // Formateamos la fecha manualmente para evitar problemas con zonas horarias
-      const formattedDate = `${selectedDate.getUTCFullYear()}-${String(selectedDate.getUTCMonth() + 1).padStart(2, '0')}-${String(selectedDate.getUTCDate()).padStart(2, '0')}`;
-      onDateSelect(formattedDate);
+      const formattedDate = `${selectedDate.getUTCFullYear()}-${String(selectedDate.getUTCMonth() + 1).padStart(2, "0")}-${String(selectedDate.getUTCDate()).padStart(2, "0")}`
+      onDateSelect(formattedDate)
+
+      // Comprobamos si es un dispositivo móvil
+      if (window.innerWidth <= 768) {
+        // Asumimos que 768px es el punto de corte para móviles
+        // Usamos setTimeout para asegurarnos de que el desplazamiento ocurra después de que React actualice el DOM
+        setTimeout(() => {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth",
+          })
+        }, 100)
+      }
     }
-  };
+  }
+
 
   return (
     <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto">
