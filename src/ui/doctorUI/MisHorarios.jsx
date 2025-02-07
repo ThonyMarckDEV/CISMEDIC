@@ -178,7 +178,9 @@ const MisHorarios = () => {
         
         if (response.ok) {
           SweetAlert.showMessageAlert('Éxito', "Horario eliminado", 'success');
-          await fetchHorarios(formData.idDoctor);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         } else {
           throw new Error("Error al eliminar el horario");
         }
