@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import API_BASE_URL from '../../js/urlHelper';
 import SweetAlert from '../../components/SweetAlert';
-import LoaderScreen from '../../components/LoaderScreen';
+import LoaderScreen from '../../components/home/LoadingScreen';
 
 const Paso2 = ({ onNext }) => {
   const [nombres, setNombres] = useState('');
