@@ -11,6 +11,7 @@ const localizer = momentLocalizer(moment);
 const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
   const [isLoading] = useState(false);
 
+  // Convertir horarios a eventos para el calendario
   const eventos = Array.isArray(horarios)
     ? horarios.map((horario) => ({
         id: horario.idHorario,
@@ -21,6 +22,7 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       }))
     : [];
 
+  // Manejar la selección de un evento en el calendario
   const handleSelectEvent = (event) => {
     if (event.horario.estadoCita !== 'disponible') {
       Swal.fire({
@@ -37,8 +39,8 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
         confirmButtonText: 'Aceptar',
         customClass: {
           popup: 'rounded-lg',
-          confirmButton: 'bg-indigo-600 hover:bg-indigo-700'
-        }
+          confirmButton: 'bg-indigo-600 hover:bg-indigo-700',
+        },
       });
       return;
     }
@@ -59,8 +61,8 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       confirmButtonColor: '#4F46E5',
       cancelButtonColor: '#DC2626',
       customClass: {
-        popup: 'rounded-lg'
-      }
+        popup: 'rounded-lg',
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         onEdit(event.horario);
@@ -70,6 +72,7 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
     });
   };
 
+  // Personalizar los estilos de los eventos
   const eventPropGetter = (event) => {
     const style = {
       backgroundColor: '',
@@ -79,23 +82,23 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      height: '60px',
-      padding: '4px 8px',
-      fontSize: '12px',
+      minHeight: '39px', // Altura mínima para todos los eventos
+      padding: '8px', // Aumentar el padding para mejorar la legibilidad
+      fontSize: '14px', // Tamaño de fuente más grande
       fontWeight: '500',
       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-      transition: 'all 0.2s ease'
+      transition: 'all 0.2s ease',
     };
 
     if (event.horario.estadoCita === 'ocupado') {
-      style.backgroundColor = '#4F46E5';
-      style.pointerEvents = 'none';
+      style.backgroundColor = '#4F46E5'; // Azul para eventos ocupados
+      style.pointerEvents = 'none'; // Deshabilitar interacción
     } else {
-      style.backgroundColor = '#10B981';
+      style.backgroundColor = '#10B981'; // Verde para eventos disponibles
       style.cursor = 'pointer';
       style[':hover'] = {
         transform: 'translateY(-1px)',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
       };
     }
 
@@ -108,14 +111,27 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
         <div className="flex items-center justify-center h-[600px]">
           <div className="text-gray-600">
             <svg className="animate-spin h-8 w-8 mr-3" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             <span className="text-sm font-medium">Cargando horarios...</span>
           </div>
         </div>
       ) : (
         <>
+          {/* Leyenda */}
           <div className="flex gap-6 mb-6">
             <div className="flex items-center">
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-600 mr-2"></span>
@@ -126,6 +142,8 @@ const CalendarioHorarios = ({ horarios, onEdit, onDelete }) => {
               <span className="text-sm text-gray-600 font-medium">Disponible</span>
             </div>
           </div>
+
+          {/* Contenedor del calendario */}
           <div className="h-[600px] overflow-y-auto rounded-xl shadow-sm border border-gray-200 md:w-auto w-[310px] bg-white">
             <Calendar
               localizer={localizer}
