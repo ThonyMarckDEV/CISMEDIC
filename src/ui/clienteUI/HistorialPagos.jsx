@@ -13,6 +13,7 @@ const Historialpagos = () => {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroIdPago, setFiltroIdPago] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("");
+  const [filtroDNI, setFiltroDNI] = useState(""); // Nuevo filtro: DNI
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
@@ -28,6 +29,7 @@ const Historialpagos = () => {
         nombre: filtroNombre,
         idPago: filtroIdPago,
         fecha: filtroFecha,
+        dni: filtroDNI, // Agregar filtro DNI
       });
       const response = await fetch(
         `${API_BASE_URL}/api/cliente/historialpagos/${userId}?${params}`,
@@ -54,7 +56,7 @@ const Historialpagos = () => {
   // Efecto para cargar los pagos al cambiar los filtros
   useEffect(() => {
     fetchPayments();
-  }, [filtroEstado, filtroNombre, filtroIdPago, filtroFecha]);
+  }, [filtroEstado, filtroNombre, filtroIdPago, filtroFecha, filtroDNI]);
 
   return (
     <SidebarDoctor>
@@ -72,8 +74,8 @@ const Historialpagos = () => {
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
               <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
+                <circle cx="80" cy="20" r="15" fill="white" />
+                <circle cx="20" cy="80" r="25" fill="white" />
               </svg>
             </div>
           </div>
@@ -81,21 +83,30 @@ const Historialpagos = () => {
 
         {/* Filtros */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* <div>
-            <label htmlFor="filtroEstado" className="text-sm text-gray-500">
-              Filtrar por estado:
+          <div>
+            <label htmlFor="filtroNombre" className="text-sm text-gray-500">
+              Filtrar por nombre:
             </label>
-            <select
-              id="filtroEstado"
-              value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value)}
+            <input
+              id="filtroNombre"
+              type="text"
+              value={filtroNombre}
+              onChange={(e) => setFiltroNombre(e.target.value)}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
-            >
-              <option value="todas">Todas</option>
-              <option value="pagado">Pagados</option>
-              <option value="pendiente">Cancelados</option>
-            </select>
-          </div> */}
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroDNI" className="text-sm text-gray-500">
+              Filtrar por DNI:
+            </label>
+            <input
+              id="filtroDNI"
+              type="text"
+              value={filtroDNI}
+              onChange={(e) => setFiltroDNI(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
           <div>
             <label htmlFor="filtroIdPago" className="text-sm text-gray-500">
               Filtrar por ID de pago:

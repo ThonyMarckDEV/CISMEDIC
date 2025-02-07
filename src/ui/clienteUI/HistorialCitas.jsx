@@ -19,7 +19,7 @@ const HistorialCitas = () => {
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
 
-  // Función para obtener las citas del doctor
+  // Función para obtener las citas del cliente
   const fetchAppointments = async () => {
     try {
       if (!userId || !token) {
@@ -76,8 +76,8 @@ const HistorialCitas = () => {
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
               <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
+                <circle cx="80" cy="20" r="15" fill="white" />
+                <circle cx="20" cy="80" r="25" fill="white" />
               </svg>
             </div>
           </div>
@@ -133,6 +133,30 @@ const HistorialCitas = () => {
               type="time"
               value={filtroHora}
               onChange={(e) => setFiltroHora(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroNombre" className="text-sm text-gray-500">
+              Filtrar por nombre:
+            </label>
+            <input
+              id="filtroNombre"
+              type="text"
+              value={filtroNombre}
+              onChange={(e) => setFiltroNombre(e.target.value)}
+              className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="filtroDni" className="text-sm text-gray-500">
+              Filtrar por DNI:
+            </label>
+            <input
+              id="filtroDni"
+              type="text"
+              value={filtroDni}
+              onChange={(e) => setFiltroDni(e.target.value)}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
             />
           </div>
