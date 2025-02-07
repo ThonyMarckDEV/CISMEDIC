@@ -4,6 +4,7 @@ import Slider from '../components/home/Slider';
 import Footer from '../components/home/Footer';
 import Specialties from '../components/home/Specialties';
 import AppDownload from '../components/home/AppDownload';
+import VideoSection from '../components/home/VideoSection';
 import { motion } from 'framer-motion';
 
 const Home = () => {
@@ -20,7 +21,7 @@ const Home = () => {
     <div className="text-white">
       {/* Navbar */}
       <Navbar />
-  
+      
       {/* Slider con texto superpuesto */}
       <div className="relative mt-20">
         <Slider />
@@ -33,6 +34,15 @@ const Home = () => {
         variants={fadeInUp}
       >
         <Specialties />
+      </motion.div>
+
+      {/* Video Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <VideoSection />
       </motion.div>
 
       {/* App Download Section */}
