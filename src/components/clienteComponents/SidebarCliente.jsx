@@ -9,8 +9,8 @@ import { usePagos } from '../../context/PagosContext';
 const navigation = [
   { name: "Inicio", href: "/cliente", icon: Home },
   { name: "Nueva cita", href: "/cliente/nuevacita", icon: Calendar },
-  { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Familiares", href: "/cliente/familiares", icon: User },
+  { name: "Mis Citas", href: "/cliente/miscitas", icon: FileText, notificationKey: 'citas' },
   { name: "Mis Pagos", href: "/cliente/mispagos", icon: CreditCard, notificationKey: 'pagos' },
   { name: "Historial Citas", href: "/cliente/historialcitas", icon: TimerIcon },
   { name: "Historial Pagos", href: "/cliente/historialpagos", icon: HistoryIcon },
