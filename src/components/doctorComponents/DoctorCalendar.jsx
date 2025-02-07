@@ -15,6 +15,7 @@ const CalendarioHorariosDoctor = () => {
   const [horarios, setHorarios] = useState([]);
   const [isLoading, setIsLoadingFullScreen] = useState(false);
 
+  // Función para obtener los horarios del doctor desde el backend
   const fetchHorarios = async (idDoctor) => {
     setIsLoadingFullScreen(true);
     try {
@@ -46,6 +47,7 @@ const CalendarioHorariosDoctor = () => {
     }
   }, []);
 
+  // Convertir horarios a eventos para el calendario
   const eventos = Array.isArray(horarios)
     ? horarios.map((horario) => ({
         id: horario.idHorario,
@@ -56,9 +58,10 @@ const CalendarioHorariosDoctor = () => {
       }))
     : [];
 
+  // Manejar la selección de un evento en el calendario
   const handleSelectEvent = (event) => {
     Swal.fire({
-      title: 'Detalles de la Cita',
+      title: 'Detalles',
       html: `
         <div class="space-y-3 text-left">
           <p class="text-gray-700"><span class="font-medium">Fecha:</span> ${moment(event.start).format('DD MMMM, YYYY')}</p>
@@ -72,33 +75,34 @@ const CalendarioHorariosDoctor = () => {
       customClass: {
         container: 'font-sans',
         popup: 'rounded-lg',
-        confirmButton: 'bg-indigo-600 hover:bg-indigo-700'
-      }
+        confirmButton: 'bg-indigo-600 hover:bg-indigo-700',
+      },
     });
   };
 
+  // Personalizar los estilos de los eventos
   const eventPropGetter = (event) => {
     const style = {
       backgroundColor: '',
       color: 'white',
       borderRadius: '6px',
       border: 'none',
-      display: 'block',
-      height: '50px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '39px', // Altura mínima para todos los eventos
       padding: '8px',
       fontSize: '13px',
       fontWeight: '500',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
       transition: 'all 0.2s ease',
     };
-
     if (event.horario.estadoCita === 'ocupado') {
-      style.backgroundColor = '#4F46E5';
+      style.backgroundColor = '#4F46E5'; // Azul para eventos ocupados
       style.pointerEvents = 'none';
     } else {
-      style.backgroundColor = '#10B981';
+      style.backgroundColor = '#10B981'; // Verde para eventos disponibles
     }
-
     return { style };
   };
 
@@ -108,14 +112,19 @@ const CalendarioHorariosDoctor = () => {
         <div className="flex items-center justify-center h-[600px]">
           <div className="text-gray-600">
             <svg className="animate-spin h-8 w-8 mr-3" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             <span>Cargando horarios...</span>
           </div>
         </div>
       ) : (
         <>
+          {/* Leyenda */}
           <div className="flex gap-6 mb-6">
             <div className="flex items-center">
               <span className="inline-block w-3 h-3 rounded-full bg-indigo-600 mr-2"></span>
@@ -126,7 +135,8 @@ const CalendarioHorariosDoctor = () => {
               <span className="text-sm text-gray-600">Disponible</span>
             </div>
           </div>
-          
+
+          {/* Contenedor del calendario */}
           <div className="h-[600px] overflow-y-auto rounded-lg">
             <Calendar
               localizer={localizer}
@@ -156,6 +166,23 @@ const CalendarioHorariosDoctor = () => {
           </div>
         </>
       )}
+      {/* Estilos globales para ajustar el tamaño de los eventos */}
+      <style jsx global>{`
+        .rbc-event {
+          min-height: 50px; /* Altura mínima para todos los eventos */
+          padding: 8px; /* Espaciado interno para mejorar la legibilidad */
+          font-size: 13px; /* Tamaño de fuente más grande */
+          line-height: 1.4; /* Mejor espaciado entre líneas */
+        }
+
+        .rbc-time-content .rbc-row-segment {
+          min-height: 50px; /* Altura mínima para los segmentos en la vista "week" y "day" */
+        }
+
+        .rbc-month-view .rbc-row-segment {
+          min-height: 50px; /* Altura mínima para los segmentos en la vista "month" */
+        }
+      `}</style>
     </div>
   );
 };
