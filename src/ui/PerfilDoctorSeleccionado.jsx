@@ -104,6 +104,16 @@ const PerfilDoctorSeleccionado = () => {
         </div>
       </div>
 
+            {/* Nombre y Especialidad */}
+            <div className="mt-24 text-center">
+        <h1 className="text-3xl font-bold text-gray-900">
+          {profileData.nombre}
+        </h1>
+        <p className="text-lg text-green-600 font-medium mt-2">
+          {profileData.especialidad}
+        </p>
+      </div>
+
       {/* Main Content Grid */}
       <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Birth Date and Age Card */}
