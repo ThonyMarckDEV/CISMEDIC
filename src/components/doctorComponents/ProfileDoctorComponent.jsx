@@ -5,6 +5,7 @@ import banner from '../../img/local.jpeg';
 import jwtUtils from "../../utilities/jwtUtils";
 import LoaderScreen from '../../components/home/LoadingScreen';
 import sweetAlert from '../SweetAlert';
+import imgperfil from '../../img/defualtpefil.jpg';
 
 const PerfilDoctorComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -186,7 +187,7 @@ const PerfilDoctorComponent = () => {
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
               <img
                 src={
-                  profileData.foto_perfil ? `${API_BASE_URL}/storage/${profileData.foto_perfil}` : "/placeholder.jpg"
+                  profileData.foto_perfil ? `${API_BASE_URL}/storage/${profileData.foto_perfil}` : imgperfil
                 }
                 alt="Profile"
                 className="h-full w-full object-cover"

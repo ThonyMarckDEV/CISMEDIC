@@ -5,6 +5,7 @@ import API_BASE_URL from "../js/urlHelper";
 import banner from '../img/local.jpeg';
 import jwtUtils from "../utilities/jwtUtils";
 import Navbar from "../components/home/NavBar";
+import imgperfil from '../img/defualtpefil.jpg';
 
 const PerfilDoctorSeleccionado = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +94,7 @@ const PerfilDoctorSeleccionado = () => {
                   src={
                     profileData.foto_perfil
                       ? `${API_BASE_URL}/storage/${profileData.foto_perfil}`
-                      : "/placeholder.jpg"
+                      : imgperfil
                   }
                   alt="Profile"
                   className="h-full w-full object-cover"
