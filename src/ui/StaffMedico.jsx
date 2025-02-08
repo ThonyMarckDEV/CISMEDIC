@@ -22,7 +22,6 @@ export default function MedicalStaffDirectory() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -36,8 +35,6 @@ export default function MedicalStaffDirectory() {
       } catch (error) {
         console.error('Error fetching doctors:', error);
         setDoctors([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -58,9 +55,6 @@ export default function MedicalStaffDirectory() {
     fetchSpecialties();
   }, [searchTerm, selectedSpecialty]);
 
-  if (loading) {
-    return <LoaderScreen />;
-  }
 
   const handleDoctorDetails = (doctorId) => {
     // Redirige a una página de detalles del doctor
