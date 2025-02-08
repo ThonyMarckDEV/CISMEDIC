@@ -81,13 +81,15 @@ const NextAppointmentCard = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Próxima Cita</h2>
         </div>
 
-        <div className="space-y-6">
+        {/* Grid de 2x2 */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Fecha */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
             <Calendar className="h-6 w-6 text-green-600" />
             <div className="flex flex-col">
@@ -98,6 +100,7 @@ const NextAppointmentCard = () => {
             </div>
           </div>
 
+          {/* Hora */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
             <Clock className="h-6 w-6 text-green-600" />
             <div className="flex flex-col">
@@ -106,6 +109,7 @@ const NextAppointmentCard = () => {
             </div>
           </div>
 
+          {/* Doctor */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
             <Stethoscope className="h-6 w-6 text-green-600" />
             <div className="flex flex-col">
@@ -119,6 +123,7 @@ const NextAppointmentCard = () => {
             </div>
           </div>
 
+          {/* Paciente */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
             <User className="h-6 w-6 text-green-600" />
             <div className="flex flex-col">

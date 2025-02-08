@@ -75,10 +75,9 @@ const Cliente = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
             <NextAppointmentCard />
-            {/* Your existing cards */}
-          </div>
+   
 
         </div>
       </div>
