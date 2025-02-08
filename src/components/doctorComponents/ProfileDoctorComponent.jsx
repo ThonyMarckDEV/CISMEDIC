@@ -39,6 +39,7 @@ const PerfilDoctorComponent = () => {
     return `${year}-${month}-${day}`;
   };
 
+ 
   const fetchProfileData = async () => {
     const token = jwtUtils.getTokenFromCookie();
     const idDoctor = jwtUtils.getIdUsuario(token);
@@ -50,7 +51,7 @@ const PerfilDoctorComponent = () => {
         },
       });
       const data = await response.json();
-  
+
       // Formatear la fecha antes de establecer el estado
       setProfileData({
         ...data,
@@ -217,8 +218,20 @@ const PerfilDoctorComponent = () => {
         </div>
       </div>
 
-      {/* Edit Button */}
+      
+      {/* Nombre y Especialidad */}
       <div className="mt-24 text-center">
+        <h1 className="text-3xl font-bold text-gray-900">
+          {profileData.nombre}
+        </h1>
+        <p className="text-lg text-green-600 font-medium mt-2">
+          {profileData.especialidad}
+        </p>
+      </div>
+
+
+      {/* Edit Button */}
+      <div className="mt-5 text-center">
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md"
