@@ -9,6 +9,7 @@ import { useCitas } from '../../context/CitasContext';
 import { usePagos } from '../../context/PagosContext';
 import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
 import { getDate } from "date-fns/getDate";
+import DoctorSelect from './DoctorSelect';
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -194,18 +195,17 @@ const ClienteNuevaCita = () => {
     }
   };
 
-  const handleDoctorChange = (e) => {
-    const doctorId = e.target.value;
+  const handleDoctorChange = (doctor) => {
+    const doctorId = doctor.idUsuario.toString();
     setIdDoctor(doctorId);
     setFecha("");
     setHorariosDisponibles([]);
-    const selectedDoc = doctores.find(d => d.idUsuario.toString() === doctorId);
-    setSelectedDoctor(selectedDoc);
-
+    setSelectedDoctor(doctor);
+  
     // Hacer scroll al principio de la página
     window.scrollTo({
-        top: 30,
-        behavior: 'smooth' // Esto hace que el scroll sea suave
+      top: 30,
+      behavior: 'smooth'
     });
   };
 
@@ -485,7 +485,7 @@ const ClienteNuevaCita = () => {
                 </select>
               </div>
   
-              {/* Doctor Selection */}
+              {/* Doctor Selection
               <div className="bg-gray-50 p-4 rounded-lg">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Médico Especialista
@@ -504,6 +504,20 @@ const ClienteNuevaCita = () => {
                     </option>
                   ))}
                 </select>
+              </div> */}
+
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Médico Especialista
+                </label>
+                <DoctorSelect
+                  doctors={doctores}
+                  value={idDoctor}
+                  onChange={handleDoctorChange}
+                  disabled={!selectedEspecialidad}
+                  apiBaseUrl={API_BASE_URL}
+                />
               </div>
   
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
