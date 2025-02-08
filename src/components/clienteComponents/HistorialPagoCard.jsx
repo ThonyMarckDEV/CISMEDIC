@@ -23,7 +23,6 @@ const HistorialPagoCard = ({ payment }) => {
       if (!token) {
         throw new Error('No se encontró el token de autenticación');
       }
-
       const response = await fetch(
         `${API_BASE_URL}/api/descargar-boleta/${payment.idCita}`,
         {
@@ -35,7 +34,6 @@ const HistorialPagoCard = ({ payment }) => {
           }
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error('Error Response:', response.status, errorData);
@@ -43,24 +41,20 @@ const HistorialPagoCard = ({ payment }) => {
         setDownloadError(errorMessage);
         throw new Error(errorMessage);
       }
-
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/pdf')) {
         throw new Error('El formato del comprobante no es válido');
       }
-
       const blob = await response.blob();
       if (blob.size === 0) {
         throw new Error('El archivo PDF está vacío');
       }
-
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `boleta_pago_${payment.idPago}.pdf`);
       document.body.appendChild(link);
       link.click();
-
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
@@ -76,19 +70,25 @@ const HistorialPagoCard = ({ payment }) => {
   const estado = payment?.estado || 'pendiente';
   const showPDFDownload = estado === 'pagado';
 
+  // Función para formatear fechas considerando la zona horaria local
   const formatDate = (dateString) => {
     if (!dateString) return 'Fecha no disponible';
     try {
-      return new Date(dateString).toLocaleDateString('es-ES', {
+      const date = new Date(dateString);
+      // Ajustar la fecha según la zona horaria local
+      const options = {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
-      });
+        day: 'numeric',
+        timeZone: 'UTC' // Asegurarse de que no haya desfase por zona horaria
+      };
+      return new Intl.DateTimeFormat('es-ES', options).format(date);
     } catch (error) {
       return 'Fecha inválida';
     }
   };
 
+  // Función para formatear horas
   const formatTime = (timeString) => {
     if (!timeString) return 'Hora no disponible';
     return timeString.substring(0, 5); // Obtiene solo HH:mm
@@ -115,7 +115,6 @@ const HistorialPagoCard = ({ payment }) => {
           </div>
         </div>
       </div>
-
       {/* Card Content */}
       <div className="p-6 space-y-4">
         {/* Detalles del Cliente */}
@@ -128,7 +127,6 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         </div>
-
         {/* DNI */}
         <div className="flex items-center gap-3 text-gray-700">
           <IdCard className="h-5 w-5 text-green-600" />
@@ -137,7 +135,6 @@ const HistorialPagoCard = ({ payment }) => {
             <p className="font-medium">{payment.dni || 'No disponible'}</p>
           </div>
         </div>
-
         {/* Especialidad */}
         <div className="flex items-center gap-3 text-gray-700">
           <Stethoscope className="h-5 w-5 text-green-600" />
@@ -146,7 +143,6 @@ const HistorialPagoCard = ({ payment }) => {
             <p className="font-medium">{payment.especialidad || 'No disponible'}</p>
           </div>
         </div>
-
         {/* Detalles del Pago */}
         <div className="flex items-center gap-3 text-gray-700">
           <CreditCard className="h-5 w-5 text-green-600" />
@@ -155,7 +151,6 @@ const HistorialPagoCard = ({ payment }) => {
             <p className="font-medium">S/.{parseFloat(payment.monto || 0).toFixed(2)}</p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <Calendar className="h-5 w-5 text-green-600" />
           <div>
@@ -165,7 +160,6 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         </div>
-
         <div className="flex items-center gap-3 text-gray-700">
           <Clock className="h-5 w-5 text-green-600" />
           <div>
@@ -186,7 +180,6 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         </div>
-
         {payment.tipo_comprobante && (
           <div className="flex items-center gap-3 text-gray-700">
             <p className="text-sm">
@@ -195,7 +188,6 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         )}
-
         {payment.tipo_pago && (
           <div className="flex items-center gap-3 text-gray-700">
             <p className="text-sm">
@@ -204,7 +196,6 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         )}
-
         {showPDFDownload && (
           <div className="flex items-center gap-3 text-gray-700">
             <DownloadCloud className="h-5 w-5 text-green-600" />
