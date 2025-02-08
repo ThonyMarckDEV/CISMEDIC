@@ -4,6 +4,7 @@ import { Calendar, FileText, ChevronRight } from "lucide-react"
 import Sidebar from "../../components/clienteComponents/SidebarCliente"
 import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
+import NextAppointmentCard from './NextAppointmentCard';
 
 const Cliente = () => {
   const [nombreUsuario, setNombreUsuario] = useState("")
@@ -72,6 +73,11 @@ const Cliente = () => {
                 <ChevronRight className="h-5 w-5" />
               </button>
             </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <NextAppointmentCard />
+            {/* Your existing cards */}
           </div>
 
         </div>
