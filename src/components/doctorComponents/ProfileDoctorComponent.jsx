@@ -1,207 +1,316 @@
-import { useState, useEffect } from "react";
-import { User, Award, BookOpen, Building, Globe, Clock, Upload, Save } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Building, GraduationCap, Stethoscope, Languages, Star, Edit, Plus, Trash2 } from "lucide-react";
 import API_BASE_URL from "../../js/urlHelper";
+import banner from '../../img/local.jpeg';
 import jwtUtils from "../../utilities/jwtUtils";
 
 const PerfilDoctorComponent = () => {
-  const [perfil, setPerfil] = useState({
-    anos_experiencia: "",
-    formacion: "",
-    especialidades: "",
-    lugares_trabajo: "",
-    logros: "",
-    idiomas: "",
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    nombre: "",
+    email: "",
     foto_perfil: "",
-    tarifa_consulta: ""
+    especialidad: "",
+    subespecialidad: "",
+    experiencia: "",
+    educacion: [],
+    idiomas: [],
   });
-  const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
-
-  const token = jwtUtils.getTokenFromCookie();
-  const userId = jwtUtils.getIdUsuario(token);
-
+  const [tempEducacion, setTempEducacion] = useState([]);
+  const [tempIdiomas, setTempIdiomas] = useState([]);
+  const [newIdioma, setNewIdioma] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/doctors/profile/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    fetchProfileData();
+  }, []);
 
-        if (!response.ok) {
-          throw new Error("Error al cargar el perfil");
-        }
-
-        const data = await response.json();
-        setPerfil(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [userId, token]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPerfil((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchProfileData = async () => {
+    const token = jwtUtils.getTokenFromCookie();
+    const idDoctor = jwtUtils.getIdUsuario(token);
     try {
-      const response = await fetch(`${API_BASE_URL}/doctors/profile/${userId}`, {
-        method: "PUT",
+      const response = await fetch(`${API_BASE_URL}/api/doctor/perfil/${idDoctor}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(perfil),
       });
+      const data = await response.json();
+      setProfileData(data);
+      setTempEducacion(data.educacion);
+      setTempIdiomas(data.idiomas);
+    } catch (error) {
+      setError("Error al cargar el perfil");
+    }
+  };
 
-      if (!response.ok) {
-        throw new Error("Error al actualizar el perfil");
-      }
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("foto", file);
+    try {
+      const token = jwtUtils.getTokenFromCookie();
+      const idDoctor = jwtUtils.getIdUsuario(token);
+      const response = await fetch(`${API_BASE_URL}/api/doctor/actualizar-foto/${idDoctor}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      const data = await response.json();
+      setProfileData({ ...profileData, foto_perfil: data.ruta });
+    } catch (error) {
+      setError("Error al actualizar la foto");
+    }
+  };
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-      setEditing(false);
-    } catch (err) {
-      console.error(err);
+  const handleAddEducacion = () => {
+    setTempEducacion([...tempEducacion, { titulo: "", institucion: "", anio: "" }]);
+  };
+
+  const handleRemoveEducacion = (index) => {
+    setTempEducacion(tempEducacion.filter((_, i) => i !== index));
+  };
+
+  const handleAddIdioma = () => {
+    if (newIdioma.trim()) {
+      setTempIdiomas([...tempIdiomas, newIdioma.trim()]);
+      setNewIdioma("");
+    }
+  };
+
+  const handleRemoveIdioma = (index) => {
+    setTempIdiomas(tempIdiomas.filter((_, i) => i !== index));
+  };
+
+  const handleSave = async () => {
+    try {
+      // Actualizar idiomas
+      const token = jwtUtils.getTokenFromCookie();
+      const idDoctor = jwtUtils.getIdUsuario(token);
+      await fetch(`${API_BASE_URL}/api/doctor/actualizar-idiomas/${idDoctor}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idiomas: tempIdiomas }),
+      });
+      // Actualizar educación
+      await fetch(`${API_BASE_URL}/api/doctor/actualizar-educacion/${idDoctor}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ educacion: tempEducacion }),
+      });
+      setIsEditing(false);
+      fetchProfileData();
+    } catch (error) {
+      setError("Error al guardar los cambios");
     }
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-green-700 mb-2">Perfil Profesional</h1>
-            <p className="text-gray-600">Gestiona tu información profesional y presencia online</p>
-          </div>
-          <button
-            onClick={() => setEditing(!editing)}
-            className="border-2 border-green-700 text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-sm hover:shadow-md"
-          >
-            {editing ? "Cancelar" : "Editar Perfil"}
-          </button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Banner and Profile Photo */}
+      <div className="relative h-64">
+        <div className="absolute inset-0">
+          <img
+            src={banner}
+            alt="Medical Banner"
+            className="w-full h-full object-cover opacity-20"
+          />
         </div>
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2">
+          <div className="relative group">
+            <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
+              <img
+                src={profileData.foto_perfil || "/placeholder.jpg"}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {isEditing && (
+              <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer">
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                />
+                <Edit className="h-8 w-8 text-white" />
+              </label>
+            )}
+          </div>
+        </div>
+      </div>
 
-        {success && (
-          <div className="bg-green-50 border-l-4 border-green-700 text-green-700 p-6 rounded-lg shadow-md mb-8 animate-fade-in">
-            ✨ Perfil actualizado exitosamente
+      {/* Edit Button */}
+      <div className="mt-24 text-center">
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md"
+        >
+          {isEditing ? "Cancelar Edición" : "Editar Perfil"}
+        </button>
+      </div>
+
+      {/* Profile Content */}
+      <div className="mt-8 px-4 sm:px-6 lg:px-8">
+        {error && (
+          <div className="bg-red-100 text-red-800 p-4 rounded-md mb-4">
+            {error}
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 transition-all duration-300">
-          <div className="flex flex-col lg:flex-row gap-12">
-            <div className="lg:w-1/3">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden shadow-inner border-2 border-gray-100">
-                {perfil.foto_perfil ? (
-                  <img
-                    src={perfil.foto_perfil}
-                    alt="Foto de perfil"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="h-32 w-32 text-gray-400" />
+        {/* Main Content Grid */}
+        <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Educación */}
+          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+            <div className="p-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5 text-green-700" />
+                  Educación
+                </h2>
+                {isEditing && (
+                  <button
+                    onClick={handleAddEducacion}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1"
+                  >
+                    <Plus className="h-4 w-4" /> Agregar
+                  </button>
                 )}
               </div>
-              {editing && (
-                <button className="w-full mt-6 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium">
-                  <Upload className="mr-2 h-5 w-5 inline-block" />
-                  Subir Foto
-                </button>
-              )}
+              <div className="mt-4 space-y-4">
+                {(isEditing ? tempEducacion : profileData.educacion).map(
+                  (edu, index) => (
+                    <div key={index} className="border-l-2 border-green-200 pl-4">
+                      {isEditing ? (
+                        <div className="space-y-2">
+                          <input
+                            value={edu.titulo}
+                            onChange={(e) => {
+                              const newEducacion = [...tempEducacion];
+                              newEducacion[index].titulo = e.target.value;
+                              setTempEducacion(newEducacion);
+                            }}
+                            placeholder="Título"
+                            className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                          />
+                          <input
+                            value={edu.institucion}
+                            onChange={(e) => {
+                              const newEducacion = [...tempEducacion];
+                              newEducacion[index].institucion = e.target.value;
+                              setTempEducacion(newEducacion);
+                            }}
+                            placeholder="Institución"
+                            className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                          />
+                          <div className="flex items-center gap-2">
+                            <input
+                              value={edu.anio}
+                              onChange={(e) => {
+                                const newEducacion = [...tempEducacion];
+                                newEducacion[index].anio = e.target.value;
+                                setTempEducacion(newEducacion);
+                              }}
+                              placeholder="Año"
+                              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-24"
+                            />
+                            <button
+                              onClick={() => handleRemoveEducacion(index)}
+                              className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <h3 className="text-sm font-medium text-gray-900">{edu.titulo}</h3>
+                          <p className="text-sm text-gray-500">{edu.institucion}</p>
+                          <p className="text-xs text-green-700">{edu.anio}</p>
+                        </>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
+          </div>
 
-            <form onSubmit={handleSubmit} className="lg:w-2/3 space-y-6">
-              <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${loading ? 'opacity-50' : ''}`}>
-                <div className="p-6 rounded-xl">
-                  <label className="text-sm font-medium text-gray-700 block mb-2">Años de Experiencia</label>
-                  <div className="flex items-center">
-                    <Award className="h-6 w-6 text-green-700 mr-3" />
-                    <input
-                      name="anos_experiencia"
-                      value={perfil.anos_experiencia}
-                      onChange={handleInputChange}
-                      disabled={!editing || loading}
-                      className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
-                      placeholder="Ej: 15"
-                    />
+          {/* Idiomas */}
+          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+            <div className="p-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <Languages className="h-5 w-5 text-green-700" />
+                  Idiomas
+                </h2>
+              </div>
+              <div className="mt-4">
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={newIdioma}
+                        onChange={(e) => setNewIdioma(e.target.value)}
+                        placeholder="Agregar idioma"
+                        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                      />
+                      <button
+                        onClick={handleAddIdioma}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1"
+                      >
+                        <Plus className="h-4 w-4" /> Agregar
+                      </button>
+                    </div>
+                    {tempIdiomas.map((idioma, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center border-l-2 border-green-200 pl-4"
+                      >
+                        <p className="text-sm text-gray-900">{idioma}</p>
+                        <button
+                          onClick={() => handleRemoveIdioma(index)}
+                          className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                </div>
-
+                ) : (
+                  <ul className="space-y-2">
+                    {profileData.idiomas.map((idioma, index) => (
+                      <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
+                        <Languages className="h-4 w-4 text-green-700" />
+                        {idioma}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-
-              <div className="p-6 rounded-xl">
-                <label className="text-sm font-medium text-gray-700 block mb-2">Formación Académica</label>
-                <div className="flex items-start">
-                  <BookOpen className="h-6 w-6 text-green-700 mr-3 mt-2" />
-                  <textarea
-                    name="formacion"
-                    value={perfil.formacion}
-                    onChange={handleInputChange}
-                    disabled={!editing || loading}
-                    className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
-                    rows={4}
-                    placeholder="Detalla tu formación académica..."
-                  />
-                </div>
-              </div>
-
-              <div className="p-6 rounded-xl">
-                <label className="text-sm font-medium text-gray-700 block mb-2">Especialidad</label>
-                <textarea
-                  name="especialidades"
-                  value={perfil.especialidades}
-                  onChange={handleInputChange}
-                  disabled={!editing || loading}
-                  className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
-                  rows={3}
-                  placeholder="Lista tus especialidades..."
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-xl">
-                  <label className="text-sm font-medium text-gray-700 block mb-2">Idiomas</label>
-                  <div className="flex items-center">
-                    <Globe className="h-6 w-6 text-green-700 mr-3" />
-                    <input
-                      name="idiomas"
-                      value={perfil.idiomas}
-                      onChange={handleInputChange}
-                      disabled={!editing || loading}
-                      className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
-                      placeholder="Ej: Español, Inglés"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {editing && (
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium mt-8"
-                  disabled={loading}
-                >
-                  <Save className="mr-2 h-5 w-5 inline-block" />
-                  Guardar Cambios
-                </button>
-              )}
-            </form>
+            </div>
           </div>
         </div>
+
+        {/* Save Button */}
+        {isEditing && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={handleSave}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

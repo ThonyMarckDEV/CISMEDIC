@@ -15,15 +15,7 @@ const PerfilDoctor = () => {
 
   return (
     <SidebarCliente>
-      <div className="flex flex-col p-6 gap-6 md:-ml-64">
-       
-        {/* Loading State */}
-        {/* {loading && (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-            <Clock className="h-8 w-8 animate-spin text-green-600" />
-            <p>Cargando tu perfil...</p>
-          </div>
-        )} */}
+      <div className="md:-ml-64">
         <PerfilDoctorComponent />
       </div>
     </SidebarCliente>
