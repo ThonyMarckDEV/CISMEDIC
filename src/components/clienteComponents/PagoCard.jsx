@@ -133,8 +133,10 @@ const PagoCard = ({ appointment, invisible }) => {
      
       // Cerrar el modal y recargar la página
       setShowCancelModal(false);
-      window.location.reload();
       SweetAlert.showMessageAlert('Exito!','Cita cancelada Exitosamente','success');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
       setCancelError(error.message);
