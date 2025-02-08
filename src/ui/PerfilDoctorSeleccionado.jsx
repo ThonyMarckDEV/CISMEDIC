@@ -94,8 +94,7 @@ const PerfilDoctorSeleccionado = () => {
                   src={
                     profileData.foto_perfil
                       ? `${API_BASE_URL}/storage/${profileData.foto_perfil}`
-                      : imgperfil
-                  }
+                      : imgperfil}
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
