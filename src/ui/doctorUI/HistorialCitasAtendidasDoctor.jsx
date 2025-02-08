@@ -147,8 +147,15 @@ const HistorialCitasAtendidasDoctor = () => {
               id="filtroIdCita"
               type="text"
               value={filtroIdCita}
-              onChange={(e) => setFiltroIdCita(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números
+                if (/^\d*$/.test(inputValue)) {
+                  setFiltroIdCita(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345"
             />
           </div>
           <div>
