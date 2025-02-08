@@ -17,6 +17,8 @@ import ScrollToTopButton from './components/home/ScrollToTopButton';
 import Home from './ui/Home';
 import Contacto from './ui/Contacto';
 import StaffMedico from './ui/StaffMedico';
+import PerfilDoctorSeleccionado from './ui/PerfilDoctorSeleccionado';
+
 // UIS
 import Login from './ui/Login';
 import VerificarCorreoToken from './ui/VerificarCorreoToken';
@@ -29,7 +31,7 @@ import ClienteFamiliares from './ui/clienteUI/Familiares';
 import ClienteResultados from './ui/clienteUI/ResultadosLaboratorio';
 import HistorialCitasCliente from './ui/clienteUI/HistorialCitas';
 import HistorialPagosCliente from './ui/clienteUI/HistorialPagos';
-import PerfilCliente from './ui/clienteUI/PerfilCliente';
+
 // UI Doctor
 import Doctor from './ui/doctorUI/Doctor';
 import MisCitasDoctor from './ui/doctorUI/MisCitasDoctor';
@@ -112,7 +114,8 @@ function AppContent() {
       <Route path="/verificar-correo-token" element={<VerificarCorreoToken />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/staffmedico" element={<StaffMedico />} />
-      
+      {/* Ruta dinámica para el perfil del doctor */}
+      <Route path="/perfildoctor/:idDoctor" element={<PerfilDoctorSeleccionado />} />
 
       {/* Rutas del cliente (envueltas en PagosProvider y CitasProvider) */}
       <Route
@@ -195,18 +198,6 @@ function AppContent() {
           </PagosProvider>
         }
       />
-      <Route
-        path="/cliente/perfil"
-        element={
-          <PagosProvider>
-            <CitasProvider>
-              <ProtectedRouteCliente element={<PerfilCliente />} />
-            </CitasProvider>
-          </PagosProvider>
-        }
-      />
-
-
 
       {/* Rutas del doctor */}
       <Route
