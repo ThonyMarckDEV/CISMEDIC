@@ -91,8 +91,15 @@ const Historialpagos = () => {
               id="filtroNombre"
               type="text"
               value={filtroNombre}
-              onChange={(e) => setFiltroNombre(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean letras del alfabeto (sin números ni caracteres especiales)
+                if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(inputValue)) {
+                  setFiltroNombre(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: Juan Pérez"
             />
           </div>
           <div>
@@ -103,8 +110,16 @@ const Historialpagos = () => {
               id="filtroDNI"
               type="text"
               value={filtroDNI}
-              onChange={(e) => setFiltroDNI(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números y máximo 8 dígitos
+                if (/^\d*$/.test(inputValue) && inputValue.length <= 8) {
+                  setFiltroDNI(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345678"
+              maxLength={8} // Máximo 8 caracteres
             />
           </div>
           <div>
@@ -115,8 +130,15 @@ const Historialpagos = () => {
               id="filtroIdPago"
               type="text"
               value={filtroIdPago}
-              onChange={(e) => setFiltroIdPago(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números
+                if (/^\d*$/.test(inputValue)) {
+                  setFiltroIdPago(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345"
             />
           </div>
           <div>

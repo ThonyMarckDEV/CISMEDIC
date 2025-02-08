@@ -102,14 +102,21 @@ const HistorialCitasAtendidasDoctor = () => {
           </div>
           <div>
             <label htmlFor="filtroNombre" className="text-sm text-gray-500">
-              Filtrar por nombre:
+              Filtrar por nombre paciente:
             </label>
             <input
               id="filtroNombre"
               type="text"
               value={filtroNombre}
-              onChange={(e) => setFiltroNombre(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean letras del alfabeto (sin números ni caracteres especiales)
+                if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(inputValue)) {
+                  setFiltroNombre(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: Juan Pérez" // Placeholder para guiar al usuario
             />
           </div>
           <div>
@@ -120,8 +127,16 @@ const HistorialCitasAtendidasDoctor = () => {
               id="filtroDni"
               type="text"
               value={filtroDni}
-              onChange={(e) => setFiltroDni(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números y máximo 8 dígitos
+                if (/^\d*$/.test(inputValue) && inputValue.length <= 8) {
+                  setFiltroDni(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345678"
+              maxLength={8} // Máximo 8 caracteres
             />
           </div>
           <div>

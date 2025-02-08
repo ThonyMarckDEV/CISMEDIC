@@ -113,8 +113,15 @@ const HistorialCitas = () => {
               id="filtroIdCita"
               type="text"
               value={filtroIdCita}
-              onChange={(e) => setFiltroIdCita(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números
+                if (/^\d*$/.test(inputValue)) {
+                  setFiltroIdCita(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345"
             />
           </div>
           <div>
@@ -149,8 +156,14 @@ const HistorialCitas = () => {
               id="filtroNombre"
               type="text"
               value={filtroNombre}
-              onChange={(e) => setFiltroNombre(e.target.value)}
-              placeholder="Ejemplo: Anthony o Karen"
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean letras del alfabeto (sin números ni caracteres especiales)
+                if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(inputValue)) {
+                  setFiltroNombre(inputValue);
+                }
+              }}
+              placeholder="Ejemplo: Anthony o Karen" // Placeholder para guiar al usuario
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
             />
           </div>
@@ -162,8 +175,16 @@ const HistorialCitas = () => {
               id="filtroDni"
               type="text"
               value={filtroDni}
-              onChange={(e) => setFiltroDni(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Validar que solo sean números y máximo 8 dígitos
+                if (/^\d*$/.test(inputValue) && inputValue.length <= 8) {
+                  setFiltroDni(inputValue);
+                }
+              }}
               className="ml-2 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-green-500"
+              placeholder="Ej: 12345678" // Placeholder para guiar al usuario
+              maxLength={8} // Máximo 8 caracteres
             />
           </div>
         </div>
