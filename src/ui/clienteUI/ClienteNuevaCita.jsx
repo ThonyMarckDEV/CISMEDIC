@@ -484,28 +484,6 @@ const ClienteNuevaCita = () => {
                   ))}
                 </select>
               </div>
-  
-              {/* Doctor Selection
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Médico Especialista
-                </label>
-                <select
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
-                  value={idDoctor}
-                  onChange={handleDoctorChange}
-                  required
-                  disabled={!selectedEspecialidad}
-                >
-                  <option value="">Seleccione un doctor</option>
-                  {doctores.map((doctor) => (
-                    <option key={doctor.idUsuario} value={doctor.idUsuario}>
-                      Dr(a). {doctor.nombres} {doctor.apellidos}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
-
 
               <div className="bg-gray-50 p-4 rounded-lg">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
