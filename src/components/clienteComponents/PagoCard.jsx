@@ -3,6 +3,7 @@ import { User, Tag, Calendar, CreditCard, DownloadCloud, XCircle } from "lucide-
 import MercadoPago from "../../components/clienteComponents/MercadoPago";
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
+import SweetAlert from '../SweetAlert';
 
 const PagoCard = ({ appointment, invisible }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -106,8 +107,8 @@ const PagoCard = ({ appointment, invisible }) => {
       const motivoFinal = motivoSeleccionado === "Otro" ? otroMotivo : motivoSeleccionado;
   
       const url = `${API_BASE_URL}/api/cancelar-cita/${appointment.idCita}`;
-      console.log("URL de la solicitud:", url); // Verifica la URL
-      console.log("Datos enviados:", { motivo: motivoFinal, idCliente: idCliente }); // Verifica los datos
+      //console.log("URL de la solicitud:", url); // Verifica la URL
+      //console.log("Datos enviados:", { motivo: motivoFinal, idCliente: idCliente }); // Verifica los datos
   
       const response = await fetch(url, {
         method: 'PUT',
@@ -121,19 +122,23 @@ const PagoCard = ({ appointment, invisible }) => {
         }),
       });
   
-      console.log("Respuesta del servidor:", response); // Verifica la respuesta
+     // console.log("Respuesta del servidor:", response); // Verifica la respuesta
   
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cancelar la cita');
+        SweetAlert.showMessageAlert('Error!','Error al cancelar la cita','error');
       }
-  
+
+     
       // Cerrar el modal y recargar la página
       setShowCancelModal(false);
       window.location.reload();
+      SweetAlert.showMessageAlert('Exito!','Cita cancelada Exitosamente','success');
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
       setCancelError(error.message);
+      SweetAlert.showMessageAlert('Error!','Error al cancelar la cita' + error,'error');
     } finally {
       setIsLoading(false);
     }
