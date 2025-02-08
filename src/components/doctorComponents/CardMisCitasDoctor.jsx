@@ -95,7 +95,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
 
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       SweetAlert.showMessageAlert(
