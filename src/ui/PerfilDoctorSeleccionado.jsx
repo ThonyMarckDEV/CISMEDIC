@@ -82,11 +82,12 @@ const PerfilDoctorSeleccionado = () => {
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2">
+        {/* Foto de perfil */}
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 z-10"> {/* Añadimos z-10 para asegurar que esté delante */}
           <div className="relative group">
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
               {isLoading ? (
-                <div className="animate-pulse bg-gray-300 h-full w-full"></div>
+                <div className="animate-pulse bg-gray-300 h-full w-full rounded-full"></div>
               ) : (
                 <img
                   src={
