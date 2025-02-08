@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { User, Award, BookOpen, Building, Globe, Clock, Upload, Save } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import API_BASE_URL from "../../js/urlHelper";
+import jwtUtils from "../../utilities/jwtUtils";
 
 const PerfilDoctorComponent = () => {
   const [perfil, setPerfil] = useState({
@@ -14,70 +11,101 @@ const PerfilDoctorComponent = () => {
     lugares_trabajo: "",
     logros: "",
     idiomas: "",
-    horario_atencion: "",
     foto_perfil: "",
     tarifa_consulta: ""
   });
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  const token = jwtUtils.getTokenFromCookie();
+  const userId = jwtUtils.getIdUsuario(token);
+
+
   useEffect(() => {
-    // Aquí iría la llamada a la API para obtener los datos del perfil
-    setLoading(false);
-  }, []);
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/doctors/profile/${userId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al cargar el perfil");
+        }
+
+        const data = await response.json();
+        setPerfil(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [userId, token]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPerfil(prev => ({
+    setPerfil((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para guardar los cambios
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
-    setEditing(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/doctors/profile/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(perfil),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar el perfil");
+      }
+
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+      setEditing(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Clock className="h-8 w-8 animate-spin text-green-700" />
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-green-700">Perfil Profesional</h1>
-        <Button
-          onClick={() => setEditing(!editing)}
-          variant="outline"
-          className="border-green-700 text-green-700 hover:bg-green-50"
-        >
-          {editing ? "Cancelar" : "Editar Perfil"}
-        </Button>
-      </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto p-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-green-700 mb-2">Perfil Profesional</h1>
+            <p className="text-gray-600">Gestiona tu información profesional y presencia online</p>
+          </div>
+          <button
+            onClick={() => setEditing(!editing)}
+            className="border-2 border-green-700 text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-sm hover:shadow-md"
+          >
+            {editing ? "Cancelar" : "Editar Perfil"}
+          </button>
+        </div>
 
-      {success && (
-        <Alert className="bg-green-50 border-green-700">
-          <AlertDescription className="text-green-700">
-            Perfil actualizado exitosamente
-          </AlertDescription>
-        </Alert>
-      )}
+        {success && (
+          <div className="bg-green-50 border-l-4 border-green-700 text-green-700 p-6 rounded-lg shadow-md mb-8 animate-fade-in">
+            ✨ Perfil actualizado exitosamente
+          </div>
+        )}
 
-      <Card className="bg-white shadow-lg">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-1/3">
-              <div className="aspect-square rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl p-8 transition-all duration-300">
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="lg:w-1/3">
+              <div className="aspect-square rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden shadow-inner border-2 border-gray-100">
                 {perfil.foto_perfil ? (
                   <img
                     src={perfil.foto_perfil}
@@ -85,126 +113,96 @@ const PerfilDoctorComponent = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="h-20 w-20 text-gray-400" />
+                  <User className="h-32 w-32 text-gray-400" />
                 )}
               </div>
               {editing && (
-                <Button className="w-full mt-4 bg-green-700 hover:bg-green-800">
-                  <Upload className="mr-2 h-4 w-4" />
+                <button className="w-full mt-6 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium">
+                  <Upload className="mr-2 h-5 w-5 inline-block" />
                   Subir Foto
-                </Button>
+                </button>
               )}
             </div>
 
-            <form onSubmit={handleSubmit} className="md:w-2/3 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Años de Experiencia</label>
-                  <div className="flex items-center mt-1">
-                    <Award className="h-5 w-5 text-green-700 mr-2" />
-                    <Input
+            <form onSubmit={handleSubmit} className="lg:w-2/3 space-y-6">
+              <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${loading ? 'opacity-50' : ''}`}>
+                <div className="p-6 rounded-xl">
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Años de Experiencia</label>
+                  <div className="flex items-center">
+                    <Award className="h-6 w-6 text-green-700 mr-3" />
+                    <input
                       name="anos_experiencia"
                       value={perfil.anos_experiencia}
                       onChange={handleInputChange}
-                      disabled={!editing}
-                      className="border-green-700 focus:ring-green-700"
+                      disabled={!editing || loading}
+                      className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
+                      placeholder="Ej: 15"
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Tarifa por Consulta</label>
-                  <Input
-                    name="tarifa_consulta"
-                    value={perfil.tarifa_consulta}
-                    onChange={handleInputChange}
-                    disabled={!editing}
-                    className="border-green-700 focus:ring-green-700"
-                    type="number"
-                  />
-                </div>
+
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">Formación Académica</label>
-                <div className="flex items-start mt-1">
-                  <BookOpen className="h-5 w-5 text-green-700 mr-2 mt-2" />
-                  <Textarea
+              <div className="p-6 rounded-xl">
+                <label className="text-sm font-medium text-gray-700 block mb-2">Formación Académica</label>
+                <div className="flex items-start">
+                  <BookOpen className="h-6 w-6 text-green-700 mr-3 mt-2" />
+                  <textarea
                     name="formacion"
                     value={perfil.formacion}
                     onChange={handleInputChange}
-                    disabled={!editing}
-                    className="border-green-700 focus:ring-green-700"
-                    rows={3}
+                    disabled={!editing || loading}
+                    className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
+                    rows={4}
+                    placeholder="Detalla tu formación académica..."
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">Especialidades</label>
-                <Textarea
+              <div className="p-6 rounded-xl">
+                <label className="text-sm font-medium text-gray-700 block mb-2">Especialidad</label>
+                <textarea
                   name="especialidades"
                   value={perfil.especialidades}
                   onChange={handleInputChange}
-                  disabled={!editing}
-                  className="border-green-700 focus:ring-green-700"
-                  rows={2}
+                  disabled={!editing || loading}
+                  className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
+                  rows={3}
+                  placeholder="Lista tus especialidades..."
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">Lugares de Trabajo</label>
-                <div className="flex items-start mt-1">
-                  <Building className="h-5 w-5 text-green-700 mr-2 mt-2" />
-                  <Textarea
-                    name="lugares_trabajo"
-                    value={perfil.lugares_trabajo}
-                    onChange={handleInputChange}
-                    disabled={!editing}
-                    className="border-green-700 focus:ring-green-700"
-                    rows={2}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Idiomas</label>
-                  <div className="flex items-center mt-1">
-                    <Globe className="h-5 w-5 text-green-700 mr-2" />
-                    <Input
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-xl">
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Idiomas</label>
+                  <div className="flex items-center">
+                    <Globe className="h-6 w-6 text-green-700 mr-3" />
+                    <input
                       name="idiomas"
                       value={perfil.idiomas}
                       onChange={handleInputChange}
-                      disabled={!editing}
-                      className="border-green-700 focus:ring-green-700"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Horario de Atención</label>
-                  <div className="flex items-center mt-1">
-                    <Clock className="h-5 w-5 text-green-700 mr-2" />
-                    <Input
-                      name="horario_atencion"
-                      value={perfil.horario_atencion}
-                      onChange={handleInputChange}
-                      disabled={!editing}
-                      className="border-green-700 focus:ring-green-700"
+                      disabled={!editing || loading}
+                      className="border-2 border-green-200 focus:ring-green-500 focus:border-green-500 block w-full px-4 py-3 rounded-lg shadow-sm"
+                      placeholder="Ej: Español, Inglés"
                     />
                   </div>
                 </div>
               </div>
 
               {editing && (
-                <Button type="submit" className="w-full bg-green-700 hover:bg-green-800">
-                  <Save className="mr-2 h-4 w-4" />
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium mt-8"
+                  disabled={loading}
+                >
+                  <Save className="mr-2 h-5 w-5 inline-block" />
                   Guardar Cambios
-                </Button>
+                </button>
               )}
             </form>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

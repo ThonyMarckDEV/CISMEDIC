@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, XCircle } from "lucide-react";
-import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
+import SidebarCliente from "../../components/doctorComponents/SidebarDoctor";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
 import PerfilDoctorComponent from "../../components/doctorComponents/ProfileDoctorComponent";
@@ -18,12 +18,12 @@ const PerfilDoctor = () => {
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
        
         {/* Loading State */}
-        {loading && (
+        {/* {loading && (
           <div className="text-center text-gray-500 flex flex-col items-center justify-center gap-2">
             <Clock className="h-8 w-8 animate-spin text-green-600" />
             <p>Cargando tu perfil...</p>
           </div>
-        )}
+        )} */}
         <PerfilDoctorComponent />
       </div>
     </SidebarCliente>
