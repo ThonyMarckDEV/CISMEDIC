@@ -29,11 +29,13 @@ import ClienteFamiliares from './ui/clienteUI/Familiares';
 import ClienteResultados from './ui/clienteUI/ResultadosLaboratorio';
 import HistorialCitasCliente from './ui/clienteUI/HistorialCitas';
 import HistorialPagosCliente from './ui/clienteUI/HistorialPagos';
+import PerfilCliente from './ui/clienteUI/PerfilCliente';
 // UI Doctor
 import Doctor from './ui/doctorUI/Doctor';
 import MisCitasDoctor from './ui/doctorUI/MisCitasDoctor';
 import HistorialCitasAtendidasDoctor from './ui/doctorUI/HistorialCitasAtendidasDoctor';
 import HorariosDoctor from './ui/doctorUI/MisHorarios';
+import PerfilDoctor from './ui/doctorUI/PerfilDoctor';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -46,6 +48,8 @@ import ProtectedRouteRolDoctor from './utilities/ProtectedRouteRolDoctor';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
+
+
 
 function AppContent() {
   const location = useLocation();
@@ -191,6 +195,16 @@ function AppContent() {
           </PagosProvider>
         }
       />
+      <Route
+        path="/cliente/perfil"
+        element={
+          <PagosProvider>
+            <CitasProvider>
+              <ProtectedRouteCliente element={<PerfilCliente />} />
+            </CitasProvider>
+          </PagosProvider>
+        }
+      />
 
 
 
@@ -230,6 +244,15 @@ function AppContent() {
             </CitasProviderDoctor>
         }
       />
+      <Route
+        path="/doctor/perfil"
+        element={
+            <CitasProviderDoctor>
+              <ProtectedRouteRolDoctor element={<PerfilDoctor/>} />
+            </CitasProviderDoctor>
+        }
+      />
+
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />

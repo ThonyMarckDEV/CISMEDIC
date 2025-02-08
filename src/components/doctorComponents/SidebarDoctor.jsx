@@ -66,7 +66,7 @@ const SidebarDoctor = ({ children }) => {
             <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-50 w-48">
               <ul className="text-gray-700">
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-center">
-                  <Link to="/perfil" className="block w-full h-full">
+                  <Link to="/doctor/perfil" className="block w-full h-full">
                     Perfil
                   </Link>
                 </li>
