@@ -169,27 +169,9 @@ const PerfilDoctorComponent = () => {
     }
   };
 
-  // Esqueleto de carga
-  const SkeletonCard = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-green-100 animate-pulse">
-      <div className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="text-center flex-1 space-y-2">
-            <div className="h-4 bg-gray-300 rounded w-24 mx-auto"></div>
-            <div className="h-6 bg-gray-300 rounded w-16 mx-auto"></div>
-          </div>
-          <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
-          <div className="text-center flex-1 space-y-2">
-            <div className="h-4 bg-gray-300 rounded w-24 mx-auto"></div>
-            <div className="h-6 bg-gray-300 rounded w-16 mx-auto"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
+    return (
     <div className="min-h-screen bg-gray-50">
+      {isLoading && <LoaderScreen />}
       {/* Banner and Profile Photo */}
       <div className="relative h-64">
         <div className="absolute inset-0">
@@ -199,254 +181,29 @@ const PerfilDoctorComponent = () => {
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        {/* Foto de perfil */}
-        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 z-10">
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2">
           <div className="relative group">
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
-              {isLoading ? (
-                <div className="animate-pulse bg-gray-300 h-full w-full rounded-full"></div>
-              ) : (
-                <img
-                  src={
-                    profileData.foto_perfil
-                      ? `${API_BASE_URL}/storage/${profileData.foto_perfil}`
-                      : "/placeholder.jpg"
-                  }
-                  alt="Profile"
-                  className="h-full w-full object-cover"
-                />
-              )}
+              <img
+                src={
+                  profileData.foto_perfil ? `${API_BASE_URL}/storage/${profileData.foto_perfil}` : "/placeholder.jpg"
+                }
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
             </div>
+            {isEditing && (
+              <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer">
+                <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
+                <Edit className="h-8 w-8 text-white" />
+              </label>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {/* Birth Date and Age Card */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-start">
-                {/* Birth Date Section */}
-                <div className="text-center flex-1">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
-                    <Calendar className="h-5 w-5 text-green-700" />
-                    Fecha de Nacimiento
-                  </h2>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      value={tempNacimiento}
-                      onChange={(e) => setTempNacimiento(e.target.value)}
-                      className="text-xl font-bold text-green-600 border border-gray-300 rounded px-2 py-1 text-center"
-                    />
-                  ) : (
-                    <p className="text-xl font-bold text-green-600">
-                      {profileData.nacimiento
-                        ? new Date(profileData.nacimiento).toLocaleDateString()
-                        : "No especificado"}
-                    </p>
-                  )}
-                </div>
-                {/* Vertical Green Line */}
-                <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
-                {/* Age Section */}
-                <div className="text-center flex-1">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
-                    <User className="h-5 w-5 text-green-700" />
-                    Edad
-                  </h2>
-                  <p className="text-xl font-bold text-green-600">
-                    {profileData.edad ? `${profileData.edad} años` : "No especificado"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Experience and Languages Card */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-start">
-                {/* Experience Section */}
-                <div className="text-center flex-1">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
-                    <Clock className="h-5 w-5 text-green-700" />
-                    Experiencia
-                  </h2>
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="number"
-                        value={tempExperiencia}
-                        onChange={(e) => setTempExperiencia(e.target.value)}
-                        className="w-20 text-3xl font-bold text-green-600 border border-gray-300 rounded px-2 py-1 text-center"
-                        min="0"
-                      />
-                      años
-                    </>
-                  ) : (
-                    <p className="text-3xl font-bold text-green-600">{profileData.experiencia} años</p>
-                  )}
-                </div>
-                {/* Vertical Green Line */}
-                <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
-                {/* Languages Section */}
-                <div className="text-center flex-1">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
-                    <Languages className="h-5 w-5 text-green-700" />
-                    Idiomas
-                  </h2>
-                  <p className="text-3xl font-bold text-green-600">{profileData.cantidadIdiomas}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Educación */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-green-700" />
-                  Educación
-                </h2>
-                {isEditing && (
-                  <button onClick={handleAddEducacion} className="bg-green-500 hover:bg-green-600 text-white p-2 rounded">
-                    Agregar
-                  </button>
-                )}
-              </div>
-              <div className="mt-4 space-y-4">
-                {(isEditing ? tempEducacion : profileData.educacion).map((edu, index) => (
-                  <div key={index} className="border-l-2 border-green-200 pl-4">
-                    {isEditing ? (
-                      <>
-                        <input
-                          type="text"
-                          value={edu.titulo}
-                          onChange={(e) => {
-                            const newEducacion = [...tempEducacion];
-                            newEducacion[index].titulo = e.target.value;
-                            setTempEducacion(newEducacion);
-                          }}
-                          placeholder="Título"
-                          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
-                        />
-                        <input
-                          type="text"
-                          value={edu.institucion}
-                          onChange={(e) => {
-                            const newEducacion = [...tempEducacion];
-                            newEducacion[index].institucion = e.target.value;
-                            setTempEducacion(newEducacion);
-                          }}
-                          placeholder="Institución"
-                          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full mt-2"
-                        />
-                        <input
-                          type="text"
-                          value={edu.anio}
-                          onChange={(e) => {
-                            const newEducacion = [...tempEducacion];
-                            newEducacion[index].anio = e.target.value;
-                            setTempEducacion(newEducacion);
-                          }}
-                          placeholder="Año"
-                          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-24 mt-2"
-                        />
-                        <button
-                          onClick={() => handleRemoveEducacion(index)}
-                          className="bg-red-500 hover:bg-red-600 text-white p-1 rounded mt-2"
-                        >
-                          Eliminar
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <h3 className="text-sm font-medium text-gray-900">{edu.titulo}</h3>
-                        <p className="text-sm text-gray-500">{edu.institucion}</p>
-                        <p className="text-xs text-green-700">{edu.anio}</p>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Idiomas */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <Languages className="h-5 w-5 text-green-700" />
-                  Idiomas
-                </h2>
-              </div>
-              <div className="mt-4">
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      value={newIdioma}
-                      onChange={(e) => setNewIdioma(e.target.value)}
-                      placeholder="Agregar idioma"
-                      className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
-                    />
-                    <button
-                      onClick={handleAddIdioma}
-                      className="bg-green-500 hover:bg-green-600 text-white p-2 rounded mt-2"
-                    >
-                      Agregar
-                    </button>
-                    <ul className="space-y-2 mt-2">
-                      {tempIdiomas.map((idioma, index) => (
-                        <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
-                          {idioma}
-                          <button
-                            onClick={() => handleRemoveIdioma(index)}
-                            className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                          >
-                            Eliminar
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <ul className="space-y-2">
-                    {profileData.idiomas.map((idioma, index) => (
-                      <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
-                        <Languages className="h-4 w-4 text-green-700" />
-                        {idioma}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Edit Button */}
-      <div className="mt-6 text-center">
+      <div className="mt-24 text-center">
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md"
@@ -455,19 +212,229 @@ const PerfilDoctorComponent = () => {
         </button>
       </div>
 
+      {/* Main Content Grid */}
+      <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {/* Birth Date and Age Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-start">
+              {/* Birth Date Section */}
+              <div className="text-center flex-1">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
+                  <Calendar className="h-5 w-5 text-green-700" />
+                  Fecha de Nacimiento
+                </h2>
+                {isEditing ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <input
+                      type="date"
+                      value={tempNacimiento}
+                      onChange={(e) => setTempNacimiento(e.target.value)}
+                      className="text-xl font-bold text-green-600 border border-gray-300 rounded px-2 py-1 text-center"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xl font-bold text-green-600">
+                    {profileData.nacimiento ? new Date(profileData.nacimiento).toLocaleDateString() : "No especificado"}
+                  </p>
+                )}
+              </div>
+
+              {/* Vertical Green Line */}
+              <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
+
+              {/* Age Section */}
+              <div className="text-center flex-1">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
+                  <User className="h-5 w-5 text-green-700" />
+                  Edad
+                </h2>
+                <p className="text-xl font-bold text-green-600">
+                  {profileData.edad ? `${profileData.edad} años` : "No especificado"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Experience and Languages Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-start">
+              {/* Experience Section */}
+              <div className="text-center flex-1">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
+                  <Clock className="h-5 w-5 text-green-700" />
+                  Experiencia
+                </h2>
+                {isEditing ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <input
+                      type="number"
+                      value={tempExperiencia}
+                      onChange={(e) => setTempExperiencia(e.target.value)}
+                      className="w-20 text-3xl font-bold text-green-600 border border-gray-300 rounded px-2 py-1 text-center"
+                      min="0"
+                    />
+                    <span className="text-3xl font-bold text-green-600">años</span>
+                  </div>
+                ) : (
+                  <p className="text-3xl font-bold text-green-600">{profileData.experiencia} años</p>
+                )}
+              </div>
+
+              {/* Vertical Green Line */}
+              <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
+
+              {/* Languages Section */}
+              <div className="text-center flex-1">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-2">
+                  <Languages className="h-5 w-5 text-green-700" />
+                  Idiomas
+                </h2>
+                <p className="text-3xl font-bold text-green-600">{profileData.cantidadIdiomas}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Educación */}
+        <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-green-700" />
+                Educación
+              </h2>
+              {isEditing && (
+                <button
+                  onClick={handleAddEducacion}
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" /> Agregar
+                </button>
+              )}
+            </div>
+            <div className="mt-4 space-y-4">
+              {(isEditing ? tempEducacion : profileData.educacion).map((edu, index) => (
+                <div key={index} className="border-l-2 border-green-200 pl-4">
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      <input
+                        value={edu.titulo}
+                        onChange={(e) => {
+                          const newEducacion = [...tempEducacion]
+                          newEducacion[index].titulo = e.target.value
+                          setTempEducacion(newEducacion)
+                        }}
+                        placeholder="Título"
+                        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                      />
+                      <input
+                        value={edu.institucion}
+                        onChange={(e) => {
+                          const newEducacion = [...tempEducacion]
+                          newEducacion[index].institucion = e.target.value
+                          setTempEducacion(newEducacion)
+                        }}
+                        placeholder="Institución"
+                        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                      />
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={edu.anio}
+                          onChange={(e) => {
+                            const newEducacion = [...tempEducacion]
+                            newEducacion[index].anio = e.target.value
+                            setTempEducacion(newEducacion)
+                          }}
+                          placeholder="Año"
+                          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-24"
+                        />
+                        <button
+                          onClick={() => handleRemoveEducacion(index)}
+                          className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h3 className="text-sm font-medium text-gray-900">{edu.titulo}</h3>
+                      <p className="text-sm text-gray-500">{edu.institucion}</p>
+                      <p className="text-xs text-green-700">{edu.anio}</p>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Idiomas */}
+        <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <Languages className="h-5 w-5 text-green-700" />
+                Idiomas
+              </h2>
+            </div>
+            <div className="mt-4">
+              {isEditing ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={newIdioma}
+                      onChange={(e) => setNewIdioma(e.target.value)}
+                      placeholder="Agregar idioma"
+                      className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500 w-full"
+                    />
+                    <button
+                      onClick={handleAddIdioma}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1"
+                    >
+                      <Plus className="h-4 w-4" /> Agregar
+                    </button>
+                  </div>
+                  {tempIdiomas.map((idioma, index) => (
+                    <div key={index} className="flex justify-between items-center border-l-2 border-green-200 pl-4">
+                      <p className="text-sm text-gray-900">{idioma}</p>
+                      <button
+                        onClick={() => handleRemoveIdioma(index)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {profileData.idiomas.map((idioma, index) => (
+                    <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
+                      <Languages className="h-4 w-4 text-green-700" />
+                      {idioma}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Save Button */}
       {isEditing && (
-        <div className="mt-6 text-center">
-          <button
-            onClick={handleSave}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
-          >
+        <div className="mt-8 text-center">
+          <button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md">
             Guardar Cambios
           </button>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PerfilDoctorComponent;
+export default PerfilDoctorComponent
