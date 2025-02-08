@@ -3,15 +3,16 @@ import { Building, GraduationCap, Stethoscope, Languages, Star, Edit, Plus, Tras
 import API_BASE_URL from "../../js/urlHelper";
 import banner from '../../img/local.jpeg';
 import jwtUtils from "../../utilities/jwtUtils";
+import LoaderScreen from '../../components/home/LoadingScreen';
 
 const PerfilDoctorComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState({
     nombre: "",
     email: "",
     foto_perfil: "",
     especialidad: "",
-    subespecialidad: "",
     experiencia: "",
     educacion: [],
     idiomas: [],
@@ -46,8 +47,13 @@ const PerfilDoctorComponent = () => {
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+  
+    setIsLoading(true);
+    setError("");
+  
     const formData = new FormData();
     formData.append("foto", file);
+  
     try {
       const token = jwtUtils.getTokenFromCookie();
       const idDoctor = jwtUtils.getIdUsuario(token);
@@ -58,10 +64,20 @@ const PerfilDoctorComponent = () => {
         },
         body: formData,
       });
+  
+      if (!response.ok) {
+        throw new Error("Error al actualizar la foto");
+      }
+  
       const data = await response.json();
       setProfileData({ ...profileData, foto_perfil: data.ruta });
+  
+      // Recargar la página después de actualizar la foto
+      window.location.reload();
     } catch (error) {
-      setError("Error al actualizar la foto");
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,6 +131,7 @@ const PerfilDoctorComponent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+       {isLoading && <LoaderScreen />}
       {/* Banner and Profile Photo */}
       <div className="relative h-64">
         <div className="absolute inset-0">
@@ -127,11 +144,11 @@ const PerfilDoctorComponent = () => {
         <div className="absolute -bottom-20 left-1/2 -translate-x-1/2">
           <div className="relative group">
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
-              <img
-                src={profileData.foto_perfil || "/placeholder.jpg"}
-                alt="Profile"
-                className="h-full w-full object-cover"
-              />
+            <img
+              src={profileData.foto_perfil ? `${API_BASE_URL}/storage/${profileData.foto_perfil}` : "/placeholder.jpg"}
+              alt="Profile"
+              className="h-full w-full object-cover"
+            />
             </div>
             {isEditing && (
               <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer">
