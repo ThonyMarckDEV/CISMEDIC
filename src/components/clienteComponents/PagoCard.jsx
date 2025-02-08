@@ -8,10 +8,23 @@ import SweetAlert from '../SweetAlert';
 const PagoCard = ({ appointment, invisible }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [downloadError, setDownloadError] = useState(null);
-  const [showCancelModal, setShowCancelModal] = useState(false); // Estado para mostrar/ocultar el modal de cancelación
-  const [motivoSeleccionado, setMotivoSeleccionado] = useState(""); // Estado para el motivo seleccionado
-  const [otroMotivo, setOtroMotivo] = useState(""); // Estado para el motivo "Otro"
-  const [cancelError, setCancelError] = useState(null); // Estado para manejar errores de cancelación
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [motivoSeleccionado, setMotivoSeleccionado] = useState("");
+  const [otroMotivo, setOtroMotivo] = useState("");
+  const [cancelError, setCancelError] = useState(null);
+
+  // Función para formatear la fecha correctamente
+  const formatDate = (dateString) => {
+    if (!dateString) return "Fecha no disponible";
+
+    // Asegúrate de que la fecha esté en formato YYYY-MM-DD
+    const date = new Date(dateString + 'T00:00:00'); // Agregar 'T00:00:00' para evitar ajustes de zona horaria
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   // Función para manejar la descarga del PDF
   const handleDownloadPDF = async () => {
@@ -32,12 +45,11 @@ const PagoCard = ({ appointment, invisible }) => {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/pdf',
-            'Cache-Control': 'no-cache' // Evitar caché
+            'Cache-Control': 'no-cache'
           }
         }
       );
       
-      // Manejar errores HTTP
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error('Error Response:', response.status, errorData);
@@ -47,7 +59,6 @@ const PagoCard = ({ appointment, invisible }) => {
         throw new Error(errorMessage);
       }
 
-      // Verificar el tipo de contenido
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/pdf')) {
         throw new Error('El formato del comprobante no es válido');
@@ -59,7 +70,6 @@ const PagoCard = ({ appointment, invisible }) => {
         throw new Error('El archivo PDF está vacío');
       }
 
-      // Crear y ejecutar la descarga
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -67,7 +77,6 @@ const PagoCard = ({ appointment, invisible }) => {
       document.body.appendChild(link);
       link.click();
       
-      // Limpieza
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
@@ -107,9 +116,6 @@ const PagoCard = ({ appointment, invisible }) => {
       const motivoFinal = motivoSeleccionado === "Otro" ? otroMotivo : motivoSeleccionado;
   
       const url = `${API_BASE_URL}/api/cancelar-cita/${appointment.idCita}`;
-      //console.log("URL de la solicitud:", url); // Verifica la URL
-      //console.log("Datos enviados:", { motivo: motivoFinal, idCliente: idCliente }); // Verifica los datos
-  
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
@@ -122,16 +128,12 @@ const PagoCard = ({ appointment, invisible }) => {
         }),
       });
   
-     // console.log("Respuesta del servidor:", response); // Verifica la respuesta
-  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cancelar la cita');
         SweetAlert.showMessageAlert('Error!','Error al cancelar la cita','error');
       }
 
-     
-      // Cerrar el modal y recargar la página
       setShowCancelModal(false);
       SweetAlert.showMessageAlert('Exito!','Cita cancelada Exitosamente','success');
       setTimeout(() => {
@@ -147,7 +149,7 @@ const PagoCard = ({ appointment, invisible }) => {
   };
 
   const showPDFDownload = appointment.estado === 'pagado' || appointment.estado === 'completada';
-  const showCancelButton = appointment.estado === 'pago pendiente'; // Solo mostrar en estado "pago pendiente"
+  const showCancelButton = appointment.estado === 'pago pendiente';
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
@@ -216,7 +218,7 @@ const PagoCard = ({ appointment, invisible }) => {
           <div>
             <p className="text-sm text-gray-500">Fecha y Hora</p>
             <p className="font-medium">
-              {new Date(appointment.fecha).toLocaleDateString()} - {appointment.horaInicio}
+              {formatDate(appointment.fecha)} - {appointment.horaInicio}
             </p>
           </div>
         </div>
@@ -241,7 +243,6 @@ const PagoCard = ({ appointment, invisible }) => {
           </div>
         )}
 
-        {/* Botón para cancelar cita */}
         {showCancelButton && (
           <button
             onClick={() => setShowCancelModal(true)}
