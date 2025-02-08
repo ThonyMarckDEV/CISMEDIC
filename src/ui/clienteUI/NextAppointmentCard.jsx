@@ -72,12 +72,17 @@ const NextAppointmentCard = () => {
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('es-ES', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
+
+    // Asegurarse de que la fecha se maneje en el huso horario correcto
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC', // Forzar el uso de UTC
+    };
+
+    return date.toLocaleDateString('es-ES', options);
   };
 
   return (
