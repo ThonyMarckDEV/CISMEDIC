@@ -41,6 +41,7 @@ import PerfilDoctor from './ui/doctorUI/PerfilDoctor';
 
 // UI Admin
 import Admin from './ui/adminUI/Admin';
+import SubirResultados from './ui/adminUI/SubirResultados';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -54,6 +55,7 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
+
 
 
 function AppContent() {
@@ -269,6 +271,13 @@ function AppContent() {
         }
       />
 
+      {/* Rutas del admin */}
+      <Route
+        path="/admin/subirresultados"
+        element={
+          <ProtectedRouteRolAdmin element={<SubirResultados />} />
+        }
+      />
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />
