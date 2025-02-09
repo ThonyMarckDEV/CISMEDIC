@@ -54,9 +54,11 @@ const Login = ({ closeLoginModal }) => {
         // Redirigir según el rol
         if (userRole === 'superadmin') {
             window.location.href = '/superAdmin';
-        } else if (userRole === 'doctor') {
+        }else if (userRole === 'admin') {
+          window.location.href = '/admin';
+        }else if (userRole === 'doctor') {
             window.location.href = '/doctor';
-        } else if(userRole === 'cliente'){
+        }else if(userRole === 'cliente'){
             window.location.href = '/cliente';
         }else{
           console.error('Rol no reconocido:', userRole);

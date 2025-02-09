@@ -50,10 +50,10 @@ import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteRolDoctor from './utilities/ProtectedRouteRolDoctor';
+import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolDoctor';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
-
 
 
 function AppContent() {
@@ -255,7 +255,7 @@ function AppContent() {
         path="/doctor/perfil"
         element={
             <CitasProviderDoctor>
-              <ProtectedRouteRolDoctor element={<PerfilDoctor/>} />
+              <ProtectedRouteRolDoctor element={<PerfilDoctor />} />
             </CitasProviderDoctor>
         }
       />
@@ -265,7 +265,7 @@ function AppContent() {
       <Route
         path="/admin"
         element={
-              <ProtectedRouteRolDoctor element={<PerfilDoctor/>} />
+          <ProtectedRouteRolAdmin element={<Admin />} />
         }
       />
 
