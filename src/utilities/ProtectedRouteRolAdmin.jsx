@@ -3,8 +3,9 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import jwtUtils from '../utilities/jwtUtils'; // Utilidad para emailVerified
 
+
 const ProtectedRouteRolAdmin = ({ element }) => {
-  // Obtener el JWT desde localStorage
+  // Obtener el JWT desde la cookie
   const token = jwtUtils.getTokenFromCookie();
 
   if (!token) {
@@ -15,17 +16,16 @@ const ProtectedRouteRolAdmin = ({ element }) => {
   try {
     // Decodificar el JWT
     const userRole = jwtUtils.getUserRole(token); // Extraer el rol del token
-   
-     if (userRole === 'superAdmin'){
-      return <Navigate to="/superAdmin" />;
-    }else if (userRole === 'cliente'){
+
+    if (userRole === 'cliente') {
       return <Navigate to="/cliente" />;
-    }else if (userRole === 'admin'){
-      return <Navigate to="/admin" />;
+    }else if(userRole === 'doctor') {
+      return <Navigate to="/doctor" />;
+    }else if(userRole === 'superadmin') {
+      return <Navigate to="/superadmin" />;
     }
 
     return element;
-    
   } catch (error) {
     console.error('Error al decodificar el token:', error);
     return <Navigate to="/" />; // Token inválido

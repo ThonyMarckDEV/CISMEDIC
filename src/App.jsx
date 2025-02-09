@@ -39,6 +39,9 @@ import HistorialCitasAtendidasDoctor from './ui/doctorUI/HistorialCitasAtendidas
 import HorariosDoctor from './ui/doctorUI/MisHorarios';
 import PerfilDoctor from './ui/doctorUI/PerfilDoctor';
 
+// UI Admin
+import Admin from './ui/adminUI/Admin';
+
 // UI AUTH
 import Register from './ui/Register';
 
@@ -254,6 +257,15 @@ function AppContent() {
             <CitasProviderDoctor>
               <ProtectedRouteRolDoctor element={<PerfilDoctor/>} />
             </CitasProviderDoctor>
+        }
+      />
+
+
+      {/* Rutas del admin */}
+      <Route
+        path="/admin"
+        element={
+              <ProtectedRouteRolDoctor element={<PerfilDoctor/>} />
         }
       />
 
