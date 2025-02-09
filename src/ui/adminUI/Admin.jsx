@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { NotebookTextIcon} from "lucide-react"
+import { NotebookTextIcon, FileText, ChevronRight } from "lucide-react"
 import SidebarAdmin from "../../components/adminComponents/SidebarAdmin"
 import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
@@ -52,7 +52,7 @@ const Admin = () => {
               </div>
               <p className="text-gray-700">¿Te gustaría subir los resultados de un paciente?</p>
               <button className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium bg-green-600 text-white hover:bg-green-700 focus:outline-none">
-                <Link to="/admin/subirresultados">Subir resultados de un paciente.</Link> {/* Usa Link para la navegación */}
+                <Link to="/cliente/subirresultados">Subir resultados de un paciente.</Link> {/* Usa Link para la navegación */}
               </button>
             </div>
           </div>
