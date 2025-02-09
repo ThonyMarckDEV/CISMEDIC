@@ -50,7 +50,7 @@ import ProtectedRouteHome from './utilities/ProtectedRouteHome';
 import ProtectedRouteCliente from './utilities/ProtectedRouteRolCliente';
 import ProtectedRouteRolSuperAdmin from './utilities/ProtectedRouteRolSuperAdmin';
 import ProtectedRouteRolDoctor from './utilities/ProtectedRouteRolDoctor';
-import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolDoctor';
+import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';

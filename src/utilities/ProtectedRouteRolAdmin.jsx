@@ -26,6 +26,7 @@ const ProtectedRouteRolAdmin = ({ element }) => {
     }
 
     return element;
+    
   } catch (error) {
     console.error('Error al decodificar el token:', error);
     return <Navigate to="/" />; // Token inválido
