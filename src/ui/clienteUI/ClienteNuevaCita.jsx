@@ -236,6 +236,17 @@ const ClienteNuevaCita = () => {
         setError("Por favor, complete todos los campos.");
         return;
     }
+
+    // Validar que se haya seleccionado un familiar si la cita es para familiar
+    if (citaParaFamiliar && !idFamiliarUsuario) {
+        SweetAlert.showMessageAlert(
+            'Error',
+            'No se ha seleccionado familiar para la cita',
+            'error'
+        );
+        return;
+    }
+
     const token = getToken();
     if (!token) {
         setError("No se pudo obtener el token de autenticación.");
