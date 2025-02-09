@@ -10,7 +10,7 @@ const navigation = [
   { name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
 ];
 
-const SidebarAdmin = ({ }) => {
+const SidebarCliente = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
@@ -65,6 +65,11 @@ const SidebarAdmin = ({ }) => {
           {isProfileMenuOpen && (
             <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md overflow-hidden z-50 w-48">
               <ul className="text-gray-700">
+                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-center">
+                  <Link to="/cliente/perfil" className="block w-full h-full">
+                    Perfil
+                  </Link>
+                </li> */}
                 <button
                   onClick={() => {
                     logout();
@@ -129,9 +134,14 @@ const SidebarAdmin = ({ }) => {
           </div>
         </div>
 
+        {/* Main Content */}
+        <div className="flex-1 p-4 md:ml-64">
+          {/* Children Content */}
+          {children}
+        </div>
       </div>
     </div>
   );
 };
 
-export default SidebarAdmin;
+export default SidebarCliente;
