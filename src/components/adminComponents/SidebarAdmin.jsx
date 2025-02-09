@@ -3,8 +3,7 @@ import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, 
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
-import { useCitas } from '../../context/CitasContext';
-import { usePagos } from '../../context/PagosContext';
+
 
 const navigation = [
   { name: "Inicio", href: "/admin", icon: Home },
@@ -16,8 +15,6 @@ const SidebarCliente = ({ children }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
   const location = useLocation();
-  const { cantidadCitas } = useCitas();
-  const { cantidadPagos } = usePagos();
 
   // Función para cerrar la sidebar al hacer clic fuera de ella
   useEffect(() => {
@@ -113,17 +110,6 @@ const SidebarCliente = ({ children }) => {
                     >
                       <item.icon className="h-5 w-5" />
                       <span>{item.name}</span>
-                      {/* Mostrar notificaciones solo en "Mis Citas" y "Mis Pagos" */}
-                      {item.notificationKey === 'citas' && cantidadCitas > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-auto">
-                          {cantidadCitas}
-                        </span>
-                      )}
-                      {item.notificationKey === 'pagos' && cantidadPagos > 0 && (
-                        <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-auto">
-                          {cantidadPagos}
-                        </span>
-                      )}
                     </Link>
                   </li>
                 ))}
