@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
-import { Calendar, Download, XCircle } from "lucide-react";
+// ResultadosLaboratorio.jsx
+import React, { useState, useEffect } from "react";
+import { Calendar, XCircle } from "lucide-react";
 import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
+import ResultadoCard from "../../components/adminComponents/ResultadoCard"; // Importamos el componente separado
 
 const ResultadosLaboratorio = () => {
   const [loading, setLoading] = useState(true);
@@ -43,10 +45,6 @@ const ResultadosLaboratorio = () => {
 
     fetchResultados();
   }, [filtroFechaInicio, filtroFechaFin]);
-
-  const handleDescargar = (url) => {
-    window.open(url, "_blank");
-  };
 
   return (
     <SidebarCliente>
@@ -104,21 +102,7 @@ const ResultadosLaboratorio = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {resultados.map((resultado) => (
-              <div
-                key={resultado.idResultados}
-                className="bg-white shadow-lg rounded-lg p-6 flex flex-col gap-4"
-              >
-                <div>
-                  <h3 className="text-xl font-semibold">{resultado.nombres || "Sin nombre"}</h3>
-                  <p className="text-gray-500">{resultado.fecha_cita}</p>
-                </div>
-                <button
-                  onClick={() => handleDescargar(resultado.url_descarga)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-green-700 transition"
-                >
-                  <Download size={16} /> Descargar
-                </button>
-              </div>
+              <ResultadoCard key={resultado.idResultados} resultado={resultado} />
             ))}
           </div>
         )}
