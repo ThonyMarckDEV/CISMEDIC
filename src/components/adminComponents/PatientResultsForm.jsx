@@ -75,31 +75,6 @@ const LuxuryResultsForm = () => {
     }
   };
 
-  // const validateForm = () => {
-  //   if (!selectedFile) {
-  //     setError('Por favor, seleccione un archivo de resultados.');
-  //     return false;
-  //   }
-  //   if (!appointmentDate) {
-  //     setError('Por favor, seleccione la fecha de la cita.');
-  //     return false;
-  //   }
-  //   if (isNewPatient) {
-  //     if (!firstName || !lastName || !dni) {
-  //       setError('Por favor, complete todos los datos del paciente nuevo.');
-  //       return false;
-  //     }
-  //     if (!contactInfo) {
-  //       setError(`Por favor, ingrese ${contactMethod === 'email' ? 'un correo electrónico' : 'un número de WhatsApp'}.`);
-  //       return false;
-  //     }
-  //   } else if (!selectedPatient) {
-  //     setError('Por favor, seleccione un paciente.');
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
