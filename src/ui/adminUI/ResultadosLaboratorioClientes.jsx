@@ -77,38 +77,64 @@ const ResultadosLaboratorioClientes= () => {
           </div>
         </div>
 
-         {/* Búsqueda y Filtros */}
-         <div className="flex flex-col md:flex-row gap-4 items-start">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por DNI, nombre, apellidos o ID"
-            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-96"
-          />
-          <input
-            type="date"
-            value={filtroFechaInicio}
-            onChange={(e) => setFiltroFechaInicio(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
-          />
-          <input
-            type="date"
-            value={filtroFechaFin}
-            onChange={(e) => setFiltroFechaFin(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
-          />
-          <button
-            onClick={() => {
-              setFiltroFechaInicio("");
-              setFiltroFechaFin("");
-              setSearchTerm("");
-            }}
-            className="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2 w-full md:w-auto"
-          >
-            <XCircle size={16} /> Limpiar Filtros
-          </button>
+        <div className="flex flex-col md:flex-row gap-4 items-start">
+          {/* Campo de búsqueda */}
+          <div className="w-full md:w-96">
+            <label htmlFor="search" className="text-sm font-medium text-gray-700 mb-1 block">
+              Buscar por DNI, nombre, apellidos o ID
+            </label>
+            <input
+              id="search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar..."
+              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          {/* Fecha de inicio */}
+          <div className="w-full md:w-auto">
+            <label htmlFor="filtroFechaInicio" className="text-sm font-medium text-gray-700 mb-1 block">
+              Fecha de inicio
+            </label>
+            <input
+              id="filtroFechaInicio"
+              type="date"
+              value={filtroFechaInicio}
+              onChange={(e) => setFiltroFechaInicio(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          {/* Fecha de fin */}
+          <div className="w-full md:w-auto">
+            <label htmlFor="filtroFechaFin" className="text-sm font-medium text-gray-700 mb-1 block">
+              Fecha de fin
+            </label>
+            <input
+              id="filtroFechaFin"
+              type="date"
+              value={filtroFechaFin}
+              onChange={(e) => setFiltroFechaFin(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          {/* Botones */}
+          <div className="flex flex-col justify-end mt-3 md:mt-7">
+            {/* Botón para limpiar filtros */}
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setFiltroFechaInicio('');
+                setFiltroFechaFin('');
+              }}
+              className="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2 w-full md:w-auto hover:bg-red-600 transition-colors"
+            >
+              <XCircle size={16} />
+              Limpiar Filtros
+            </button>
+          </div>
         </div>
+
 
         {/* Loading State */}
         {loading && (
