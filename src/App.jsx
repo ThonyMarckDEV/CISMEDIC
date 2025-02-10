@@ -42,6 +42,7 @@ import PerfilDoctor from './ui/doctorUI/PerfilDoctor';
 // UI Admin
 import Admin from './ui/adminUI/Admin';
 import SubirResultados from './ui/adminUI/SubirResultados';
+import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioClientes';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -278,6 +279,15 @@ function AppContent() {
           <ProtectedRouteRolAdmin element={<SubirResultados />} />
         }
       />
+
+      <Route
+        path="/admin/resultadosclientes"
+        element={
+          <ProtectedRouteRolAdmin element={<ResultadosLaboratoriosClientes />} />
+        }
+      />
+
+
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />

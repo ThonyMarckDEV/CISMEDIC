@@ -1,22 +1,23 @@
 // ResultadosLaboratorio.jsx
 import React, { useState, useEffect } from "react";
 import { Calendar, XCircle } from "lucide-react";
-import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
+import SidebarCliente from "../../components/adminComponents/SidebarAdmin";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import ResultadoCard from "../../components/clienteComponents/ResultadoCard"; // Importamos el componente separado
+import ResultadoCard from "../../components/adminComponents/ResultadoCard"; // Importamos el componente separado
 
-const ResultadosLaboratorio = () => {
+const ResultadosLaboratorioClientes= () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [resultados, setResultados] = useState([]);
   const [filtroFechaInicio, setFiltroFechaInicio] = useState("");
   const [filtroFechaFin, setFiltroFechaFin] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
   const userName = jwtUtils.getNombres(token);
-
+  
   useEffect(() => {
     const fetchResultados = async () => {
       try {
@@ -24,9 +25,10 @@ const ResultadosLaboratorio = () => {
         const queryParams = new URLSearchParams({
           fecha_inicio: filtroFechaInicio,
           fecha_fin: filtroFechaFin,
+          search: searchTerm,
         }).toString();
 
-        const response = await fetch(`${API_BASE_URL}/api/cliente/resultados/${userId}?${queryParams}`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin/resultados?${queryParams}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,8 +45,13 @@ const ResultadosLaboratorio = () => {
       }
     };
 
-    fetchResultados();
-  }, [filtroFechaInicio, filtroFechaFin]);
+    // Debounce para la búsqueda
+    const timeoutId = setTimeout(() => {
+      fetchResultados();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [filtroFechaInicio, filtroFechaFin, searchTerm]);
 
   return (
     <SidebarCliente>
@@ -70,32 +77,38 @@ const ResultadosLaboratorio = () => {
           </div>
         </div>
 
-          {/* Filtros */}
-          <div className="flex flex-col md:flex-row gap-4 items-start">
-              <input
-                type="date"
-                value={filtroFechaInicio}
-                onChange={(e) => setFiltroFechaInicio(e.target.value)}
-                placeholder="Fecha inicio"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
-              />
-              <input
-                type="date"
-                value={filtroFechaFin}
-                onChange={(e) => setFiltroFechaFin(e.target.value)}
-                placeholder="Fecha fin"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
-              />
-              <button
-                onClick={() => {
-                  setFiltroFechaInicio("");
-                  setFiltroFechaFin("");
-                }}
-                className="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2 w-full md:w-auto"
-              >
-                <XCircle size={16} /> Limpiar Filtros
-              </button>
-            </div>
+         {/* Búsqueda y Filtros */}
+         <div className="flex flex-col md:flex-row gap-4 items-start">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por DNI, nombre, apellidos o ID"
+            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-96"
+          />
+          <input
+            type="date"
+            value={filtroFechaInicio}
+            onChange={(e) => setFiltroFechaInicio(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
+          />
+          <input
+            type="date"
+            value={filtroFechaFin}
+            onChange={(e) => setFiltroFechaFin(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto"
+          />
+          <button
+            onClick={() => {
+              setFiltroFechaInicio("");
+              setFiltroFechaFin("");
+              setSearchTerm("");
+            }}
+            className="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2 w-full md:w-auto"
+          >
+            <XCircle size={16} /> Limpiar Filtros
+          </button>
+        </div>
 
         {/* Loading State */}
         {loading && (
@@ -122,4 +135,4 @@ const ResultadosLaboratorio = () => {
   );
 };
 
-export default ResultadosLaboratorio;
+export default ResultadosLaboratorioClientes;
