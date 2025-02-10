@@ -3,6 +3,7 @@ import { Search, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 import Swal from 'sweetalert2';
+import LoaderScreen from '../home/LoadingScreen';
 
 const LuxuryResultsForm = () => {
   const [patients, setPatients] = useState([]);
@@ -20,7 +21,8 @@ const LuxuryResultsForm = () => {
   const [observaciones, setObservaciones] = useState('');
   const [lastName, setLastName] = useState('');
   const [dni, setDni] = useState('');
-  const [title, setTitle] = useState(''); // Nuevo estado para el título
+  const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const searchPatients = async () => {
@@ -29,7 +31,7 @@ const LuxuryResultsForm = () => {
           const token = jwtUtils.getTokenFromCookie();
           const response = await fetch(`${API_BASE_URL}/api/pacientes/search?busqueda=${searchTerm}`, {
             headers: {
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           });
           if (!response.ok) throw new Error('Error en la búsqueda');
@@ -42,36 +44,31 @@ const LuxuryResultsForm = () => {
         }
       }
     };
-
     const timeoutId = setTimeout(searchPatients, 500);
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-
     if (file) {
-      const allowedExtensions = ["pdf"];
-      const fileExtension = file.name.split(".").pop().toLowerCase();
-
+      const allowedExtensions = ['pdf'];
+      const fileExtension = file.name.split('.').pop().toLowerCase();
       if (!allowedExtensions.includes(fileExtension)) {
         Swal.fire({
-          icon: "error",
-          title: "Formato inválido",
-          text: "Solo se permiten archivos en formato PDF.",
+          icon: 'error',
+          title: 'Formato inválido',
+          text: 'Solo se permiten archivos en formato PDF.',
         });
         return;
       }
-
       if (file.size > 10 * 1024 * 1024) {
         Swal.fire({
-          icon: "error",
-          title: "Archivo demasiado grande",
-          text: "El archivo no debe superar los 10MB.",
+          icon: 'error',
+          title: 'Archivo demasiado grande',
+          text: 'El archivo no debe superar los 10MB.',
         });
         return;
       }
-
       setSelectedFile(file);
     }
   };
@@ -79,119 +76,117 @@ const LuxuryResultsForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
-  
+    setIsLoading(true); // Activar el loader
+
     // Validar campos requeridos
     if (!selectedFile) {
       Swal.fire({
-        icon: "error",
-        title: "Archivo requerido",
-        text: "Debes subir un documento de resultados.",
+        icon: 'error',
+        title: 'Archivo requerido',
+        text: 'Debes subir un documento de resultados.',
       });
+      setIsLoading(false); // Desactivar el loader
       return;
     }
-  
     if (!appointmentDate) {
       Swal.fire({
-        icon: "error",
-        title: "Fecha requerida",
-        text: "Debes seleccionar una fecha de cita.",
+        icon: 'error',
+        title: 'Fecha requerida',
+        text: 'Debes seleccionar una fecha de cita.',
       });
+      setIsLoading(false); // Desactivar el loader
       return;
     }
     if (!title.trim()) {
       Swal.fire({
-        icon: "error",
-        title: "Título requerido",
-        text: "Debes ingresar un título para la cita.",
+        icon: 'error',
+        title: 'Título requerido',
+        text: 'Debes ingresar un título para la cita.',
       });
+      setIsLoading(false); // Desactivar el loader
       return;
     }
-  
     if (isNewPatient) {
       if (!firstName.trim() || !lastName.trim() || !dni.trim() || !contactMethod || !contactInfo.trim()) {
         Swal.fire({
-          icon: "error",
-          title: "Campos obligatorios",
-          text: "Todos los campos son obligatorios para pacientes nuevos.",
+          icon: 'error',
+          title: 'Campos obligatorios',
+          text: 'Todos los campos son obligatorios para pacientes nuevos.',
         });
+        setIsLoading(false); // Desactivar el loader
         return;
       }
     } else {
       if (!selectedPatient) {
         Swal.fire({
-          icon: "error",
-          title: "Paciente requerido",
-          text: "Debes seleccionar un paciente existente.",
+          icon: 'error',
+          title: 'Paciente requerido',
+          text: 'Debes seleccionar un paciente existente.',
         });
+        setIsLoading(false); // Desactivar el loader
         return;
       }
     }
-  
-    setLoading(true);
+
     const token = jwtUtils.getTokenFromCookie();
     const formData = new FormData();
-  
-    formData.append("archivo", selectedFile);
-    formData.append("fechaCita", appointmentDate);
-    formData.append("esPacienteNuevo", isNewPatient ? "1" : "0");
-    formData.append("titulo", title); // Agregar título
-    formData.append("observaciones", observaciones);
-  
+    formData.append('archivo', selectedFile);
+    formData.append('fechaCita', appointmentDate);
+    formData.append('esPacienteNuevo', isNewPatient ? '1' : '0');
+    formData.append('titulo', title);
+    formData.append('observaciones', observaciones);
     if (isNewPatient) {
-      formData.append("nombres", firstName);
-      formData.append("apellidos", lastName);
-      formData.append("dni", dni);
-      formData.append("metodoContacto", contactMethod);
-      formData.append("infoContacto", contactInfo);
+      formData.append('nombres', firstName);
+      formData.append('apellidos', lastName);
+      formData.append('dni', dni);
+      formData.append('metodoContacto', contactMethod);
+      formData.append('infoContacto', contactInfo);
     } else {
-      formData.append("idPaciente", selectedPatient?.idUsuario);
+      formData.append('idPaciente', selectedPatient?.idUsuario);
     }
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/subir-resultados`, {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
-  
       const data = await response.json();
-  
       if (!response.ok) {
-        throw new Error(data.mensaje || "Error al subir los resultados");
+        throw new Error(data.mensaje || 'Error al subir los resultados');
       }
-  
-      // Reset form on success
+
+      // Mostrar mensaje de éxito
+      Swal.fire({
+        icon: 'success',
+        title: 'Resultados subidos',
+        text: 'Los resultados se han subido exitosamente.',
+      });
+
+      // Resetear el formulario
       setSelectedPatient(null);
       setSelectedFile(null);
-      setAppointmentDate("");
-      setContactInfo("");
-      setSearchTerm("");
-      setFirstName("");
-      setLastName("");
-      setDni("");
+      setAppointmentDate('');
+      setContactInfo('');
+      setSearchTerm('');
+      setFirstName('');
+      setLastName('');
+      setDni('');
       setError(null);
-      setTitle(""); // Limpiar título
-      setObservaciones("");
-
-  
-      Swal.fire({
-        icon: "success",
-        title: "Resultados subidos",
-        text: "Los resultados se han subido exitosamente.",
-      });
+      setTitle('');
+      setObservaciones('');
     } catch (error) {
-      setError("Error al subir los resultados. Por favor, intente nuevamente.");
-      console.error("Error subiendo resultados:", error);
-  
+      setError('Error al subir los resultados. Por favor, intente nuevamente.');
+      console.error('Error subiendo resultados:', error);
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al subir los resultados. Inténtalo de nuevo.",
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al subir los resultados. Inténtalo de nuevo.',
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false); // Desactivar el loader
     }
   };
 
@@ -356,7 +351,6 @@ const LuxuryResultsForm = () => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
               >
                 <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
               </select>
             </div>
             <div>
@@ -438,6 +432,7 @@ const LuxuryResultsForm = () => {
           {loading ? 'Subiendo...' : 'Subir Resultados'}
         </button>
       </form>
+      {isLoading && <LoaderScreen />}
     </div>
   );
 };
