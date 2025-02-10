@@ -189,6 +189,7 @@ const LuxuryResultsForm = () => {
       setError(null);
       setObservaciones("");
 
+  
       Swal.fire({
         icon: "success",
         title: "Resultados subidos",
