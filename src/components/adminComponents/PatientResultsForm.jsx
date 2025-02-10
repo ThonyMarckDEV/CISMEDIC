@@ -20,6 +20,7 @@ const LuxuryResultsForm = () => {
   const [observaciones, setObservaciones] = useState('');
   const [lastName, setLastName] = useState('');
   const [dni, setDni] = useState('');
+  const [title, setTitle] = useState(''); // Nuevo estado para el título
 
   useEffect(() => {
     const searchPatients = async () => {
@@ -97,6 +98,14 @@ const LuxuryResultsForm = () => {
       });
       return;
     }
+    if (!title.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Título requerido",
+        text: "Debes ingresar un título para la cita.",
+      });
+      return;
+    }
   
     if (isNewPatient) {
       if (!firstName.trim() || !lastName.trim() || !dni.trim() || !contactMethod || !contactInfo.trim()) {
@@ -125,6 +134,7 @@ const LuxuryResultsForm = () => {
     formData.append("archivo", selectedFile);
     formData.append("fechaCita", appointmentDate);
     formData.append("esPacienteNuevo", isNewPatient ? "1" : "0");
+    formData.append("titulo", title); // Agregar título
     formData.append("observaciones", observaciones);
   
     if (isNewPatient) {
@@ -162,6 +172,7 @@ const LuxuryResultsForm = () => {
       setLastName("");
       setDni("");
       setError(null);
+      setTitle(""); // Limpiar título
       setObservaciones("");
 
   
@@ -184,272 +195,223 @@ const LuxuryResultsForm = () => {
     }
   };
 
-  const handleNameChange = (e) => {
-    const value = e.target.value;
-    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
-      setFirstName(value);
-    }
-  };
-  
-  const handleLastNameChange = (e) => {
-    const value = e.target.value;
-    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
-      setLastName(value);
-    }
-  };
-
-  const handleDniChange = (e) => {
-    const value = e.target.value;
-    if (/^\d{0,8}$/.test(value)) {
-      setDni(value);
-    }
-  };
-  
-  
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border">
-        <div className="p-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
-            Subir Resultados Médicos
-          </h2>
+      <h1 className="text-2xl font-bold mb-6">Subir Resultados Médicos</h1>
 
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              <p>{error}</p>
-            </div>
+      {/* Error and Success Messages */}
+      {error && <div className="bg-red-100 text-red-700 p-4 rounded mb-4">{error}</div>}
+      {success && <div className="bg-green-100 text-green-700 p-4 rounded mb-4">Resultados subidos exitosamente</div>}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Título */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Título de la Cita</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            placeholder="Ingrese el título de la cita"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          />
+        </div>
+
+        {/* Patient Search Section */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Búsqueda de Paciente</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            disabled={isNewPatient}
+            placeholder="Buscar paciente por nombre o DNI"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          />
+          {searchTerm.length > 2 && patients.length > 0 && !isNewPatient && (
+            <ul className="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-md">
+              {patients.map((patient) => (
+                <li
+                  key={patient.idUsuario}
+                  onClick={() => setSelectedPatient(patient)}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                >
+                  {patient.nombres} {patient.apellidos} - DNI: {patient.dni}
+                </li>
+              ))}
+            </ul>
           )}
+        </div>
 
-          {success && (
-            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              <p>Resultados subidos exitosamente</p>
+        {/* New Patient Toggle */}
+        <div>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={isNewPatient}
+              onChange={(e) => {
+                setIsNewPatient(e.target.checked);
+                if (e.target.checked) {
+                  setSelectedPatient(null);
+                  setSearchTerm('');
+                } else {
+                  setFirstName('');
+                  setLastName('');
+                  setDni('');
+                  setContactInfo('');
+                }
+              }}
+              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+            />
+            <span className="ml-2 text-sm text-gray-700">Paciente nuevo</span>
+          </label>
+        </div>
+
+        {/* New Patient Fields */}
+        {isNewPatient && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nombres</label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+                    setFirstName(value);
+                  }
+                }}
+                required
+                placeholder="Ingrese nombres"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              />
             </div>
-          )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Apellidos</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+                    setLastName(value);
+                  }
+                }}
+                required
+                placeholder="Ingrese apellidos"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">DNI</label>
+              <input
+                type="text"
+                value={dni}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,8}$/.test(value)) {
+                    setDni(value);
+                  }
+                }}
+                required
+                placeholder="Ingrese DNI"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Método de Contacto</label>
+              <select
+                value={contactMethod}
+                onChange={(e) => setContactMethod(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              >
+                <option value="email">Email</option>
+                <option value="whatsapp">WhatsApp</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                {contactMethod === 'email' ? 'Correo Electrónico' : 'Número de WhatsApp'}
+              </label>
+              <input
+                type="text"
+                value={contactInfo}
+                onChange={(e) => setContactInfo(e.target.value)}
+                required
+                placeholder={contactMethod === 'email' ? 'ejemplo@correo.com' : '+51 999999999'}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Patient Search Section */}
-              <div className="md:col-span-2 bg-white/50 p-6 rounded-xl shadow-sm border border-gray-100">
-                <label className="block text-lg font-medium text-gray-700 mb-3">
-                  Búsqueda de Paciente
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    className="pl-12 w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                    placeholder="Buscar por nombre o DNI..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    disabled={isNewPatient}
-                  />
+        {/* Observations */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Observaciones</label>
+          <textarea
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
+            required
+            placeholder="Ingrese observaciones adicionales"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          />
+        </div>
+
+        {/* Appointment Date & File Upload */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Fecha de la Cita</label>
+            <input
+              type="date"
+              value={appointmentDate}
+              onChange={(e) => setAppointmentDate(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Documento de Resultados</label>
+            <div className="mt-1 flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className="space-y-1 text-center">
+                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="flex text-sm text-gray-600">
+                  <label
+                    htmlFor="file-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500"
+                  >
+                    <span>Subir archivo</span>
+                    <input id="file-upload" name="file-upload" type="file" accept=".pdf" onChange={handleFileChange} className="sr-only" />
+                  </label>
+                  <p className="pl-1">o arrastrar y soltar</p>
                 </div>
-
-                {searchTerm.length > 2 && patients.length > 0 && !isNewPatient && (
-                  <div className="mt-3 max-h-60 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg divide-y divide-gray-100">
-                    {patients.map((patient) => (
-                      <button
-                        key={patient.idUsuario}
-                        type="button"
-                        className="w-full px-6 py-4 text-left hover:bg-green-50 focus:bg-green-50 transition-colors duration-150"
-                        onClick={() => setSelectedPatient(patient)}
-                      >
-                        <p className="text-lg font-medium text-gray-800">
-                          {patient.nombres} {patient.apellidos}
-                        </p>
-                        <p className="text-sm text-gray-500">DNI: {patient.dni}</p>
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <p className="text-xs text-gray-500">Solo PDF hasta: 10MB</p>
               </div>
-
-              {/* New Patient Toggle */}
-              <div className="md:col-span-2">
-                <label className="flex items-center space-x-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    className="h-6 w-6 rounded-lg border-2 border-gray-300 text-green-600 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition-colors duration-200 cursor-pointer"
-                    checked={isNewPatient}
-                    onChange={(e) => {
-                      setIsNewPatient(e.target.checked);
-                      if (e.target.checked) {
-                        setSelectedPatient(null);
-                        setSearchTerm('');
-                      } else {
-                        setFirstName('');
-                        setLastName('');
-                        setDni('');
-                        setContactInfo('');
-                      }
-                    }}
-                  />
-                  <span className="text-lg text-gray-700 group-hover:text-gray-900 transition-colors duration-200">
-                    Paciente nuevo
-                  </span>
-                </label>
-              </div>
-
-              {/* New Patient Fields */}
-              {isNewPatient && (
-                <>
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-lg font-medium text-gray-700 mb-2">
-                        Nombres
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                        value={firstName}
-                        onChange={handleNameChange}
-                        required={isNewPatient}
-                        placeholder="Ejemplo: Juan"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-lg font-medium text-gray-700 mb-2">
-                        Apellidos
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                        value={lastName}
-                        onChange={handleLastNameChange}
-                        required={isNewPatient}
-                        placeholder="Ejemplo: Pérez"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-lg font-medium text-gray-700 mb-2">
-                        DNI
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                        value={dni}
-                        onChange={handleDniChange}
-                        required={isNewPatient}
-                        maxLength={8}
-                        placeholder="Ejemplo: 12345678"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-lg font-medium text-gray-700 mb-2">
-                        Método de Contacto
-                      </label>
-                      <select
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                        value={contactMethod}
-                        onChange={(e) => setContactMethod(e.target.value)}
-                      >
-                        <option value="email">Email</option>
-                        {/* <option value="whatsapp">WhatsApp</option> */}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-lg font-medium text-gray-700 mb-2">
-                        {contactMethod === 'email' ? 'Correo Electrónico' : 'Número de WhatsApp'}
-                      </label>
-                      <input
-                        type={contactMethod === 'email' ? 'email' : 'tel'}
-                        className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                        value={contactInfo}
-                        onChange={(e) => setContactInfo(e.target.value)}
-                        placeholder={contactMethod === 'email' ? 'ejemplo@correo.com' : '+51 999999999'}
-                        required={isNewPatient}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              <div>
-                <label className="block text-lg font-medium text-gray-700 mb-2">
-                  Observaciones
-                </label>
-                <textarea
-                  className="w-full h-24 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                  value={observaciones}
-                  onChange={(e) => setObservaciones(e.target.value)}
-                  placeholder="Ingrese observaciones adicionales (opcional)"
+            </div>
+            {selectedFile && (
+              <div className="mt-2 flex items-center">
+                <span className="text-sm text-gray-500">{selectedFile.name}</span>
+                <X
+                  onClick={() => setSelectedFile(null)}
+                  className="ml-2 h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-200"
                 />
               </div>
-
-              {/* Appointment Date & File Upload */}
-              <div className="md:col-span-2 space-y-8">
-                <div>
-                  <label className="block text-lg font-medium text-gray-700 mb-2">
-                    Fecha de la Cita
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
-                    value={appointmentDate}
-                    onChange={(e) => setAppointmentDate(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-lg font-medium text-gray-700 mb-2">
-                    Documento de Resultados
-                  </label>
-                  <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-green-500 transition-colors duration-200">
-                    <div className="space-y-2 text-center">
-                      <Upload className="mx-auto h-16 w-16 text-gray-400" />
-                      <div className="flex text-lg text-gray-600">
-                        <label className="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 transition-colors duration-200">
-                          <span>Subir archivo</span>
-                          <input
-                            type="file"
-                            className="sr-only"
-                            onChange={handleFileChange}
-                            accept=".pdf"
-                          />
-                        </label>
-                        <p className="pl-1">o arrastrar y soltar</p>
-                      </div>
-                      <p className="text-sm text-gray-500">Solo PDF hasta:10MB</p>
-                    </div>
-                  </div>
-                  {selectedFile && (
-                    <div className="mt-3 flex items-center p-3 bg-green-50 rounded-xl">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                      <span className="text-sm text-gray-600 truncate flex-1">{selectedFile.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFile(null)}
-                        className="ml-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
-                      >
-                        <X className="h-5 w-5" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-14 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-lg font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
-            >
-              {loading ? 'Subiendo...' : 'Subir Resultados'}
-            </button>
-          </form>
+            )}
+          </div>
         </div>
-      </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          {loading ? 'Subiendo...' : 'Subir Resultados'}
+        </button>
+      </form>
     </div>
   );
 };
 
 export default LuxuryResultsForm;
+
+
