@@ -102,63 +102,133 @@ const LuxuryResultsForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
-
-    if (!validateForm()) return;
-
+  
+    // Validar campos requeridos
+    if (!selectedFile) {
+      Swal.fire({
+        icon: "error",
+        title: "Archivo requerido",
+        text: "Debes subir un documento de resultados.",
+      });
+      return;
+    }
+  
+    if (!appointmentDate) {
+      Swal.fire({
+        icon: "error",
+        title: "Fecha requerida",
+        text: "Debes seleccionar una fecha de cita.",
+      });
+      return;
+    }
+  
+    if (isNewPatient) {
+      if (!firstName.trim() || !lastName.trim() || !dni.trim() || !contactMethod || !contactInfo.trim()) {
+        Swal.fire({
+          icon: "error",
+          title: "Campos obligatorios",
+          text: "Todos los campos son obligatorios para pacientes nuevos.",
+        });
+        return;
+      }
+    } else {
+      if (!selectedPatient) {
+        Swal.fire({
+          icon: "error",
+          title: "Paciente requerido",
+          text: "Debes seleccionar un paciente existente.",
+        });
+        return;
+      }
+    }
+  
     setLoading(true);
     const token = jwtUtils.getTokenFromCookie();
     const formData = new FormData();
-    
-    formData.append('archivo', selectedFile);
-    formData.append('fechaCita', appointmentDate);
-    formData.append('esPacienteNuevo', isNewPatient ? '1' : '0');
-
+  
+    formData.append("archivo", selectedFile);
+    formData.append("fechaCita", appointmentDate);
+    formData.append("esPacienteNuevo", isNewPatient ? "1" : "0");
+  
     if (isNewPatient) {
-      formData.append('nombres', firstName);
-      formData.append('apellidos', lastName);
-      formData.append('dni', dni);
-      formData.append('metodoContacto', contactMethod);
-      formData.append('infoContacto', contactInfo);
+      formData.append("nombres", firstName);
+      formData.append("apellidos", lastName);
+      formData.append("dni", dni);
+      formData.append("metodoContacto", contactMethod);
+      formData.append("infoContacto", contactInfo);
     } else {
-      formData.append('idPaciente', selectedPatient?.idUsuario);
+      formData.append("idPaciente", selectedPatient?.idUsuario);
     }
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}/api/subir-resultados`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
-        throw new Error(data.mensaje || 'Error al subir los resultados');
+        throw new Error(data.mensaje || "Error al subir los resultados");
       }
-
+  
       // Reset form on success
       setSelectedPatient(null);
       setSelectedFile(null);
-      setAppointmentDate('');
-      setContactInfo('');
-      setSearchTerm('');
-      setFirstName('');
-      setLastName('');
-      setDni('');
+      setAppointmentDate("");
+      setContactInfo("");
+      setSearchTerm("");
+      setFirstName("");
+      setLastName("");
+      setDni("");
       setError(null);
-      alert('Resultados subidos exitosamente');
+  
+      Swal.fire({
+        icon: "success",
+        title: "Resultados subidos",
+        text: "Los resultados se han subido exitosamente.",
+      });
     } catch (error) {
-      setError('Error al subir los resultados. Por favor, intente nuevamente.');
-      console.error('Error subiendo resultados:', error);
+      setError("Error al subir los resultados. Por favor, intente nuevamente.");
+      console.error("Error subiendo resultados:", error);
+  
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un problema al subir los resultados. Inténtalo de nuevo.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+      setFirstName(value);
+    }
+  };
+  
+  const handleLastNameChange = (e) => {
+    const value = e.target.value;
+    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+      setLastName(value);
+    }
+  };
+
+  const handleDniChange = (e) => {
+    const value = e.target.value;
+    if (/^\d{0,8}$/.test(value)) {
+      setDni(value);
+    }
+  };
+  
+  
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen">
       <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border">
         <div className="p-8">
           <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
@@ -255,8 +325,9 @@ const LuxuryResultsForm = () => {
                         type="text"
                         className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
                         value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        onChange={handleNameChange}
                         required={isNewPatient}
+                        placeholder="Ejemplo: Juan"
                       />
                     </div>
                     <div>
@@ -267,8 +338,9 @@ const LuxuryResultsForm = () => {
                         type="text"
                         className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
                         value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={handleLastNameChange}
                         required={isNewPatient}
+                        placeholder="Ejemplo: Pérez"
                       />
                     </div>
                   </div>
@@ -282,10 +354,10 @@ const LuxuryResultsForm = () => {
                         type="text"
                         className="w-full h-12 rounded-xl border-2 border-gray-200 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-lg transition-colors duration-200"
                         value={dni}
-                        onChange={(e) => setDni(e.target.value)}
+                        onChange={handleDniChange}
                         required={isNewPatient}
                         maxLength={8}
-                        pattern="\d{8}"
+                        placeholder="Ejemplo: 12345678"
                       />
                     </div>
 
