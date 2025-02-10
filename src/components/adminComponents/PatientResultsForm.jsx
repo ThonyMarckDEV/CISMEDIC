@@ -218,30 +218,60 @@ const LuxuryResultsForm = () => {
         </div>
 
         {/* Patient Search Section */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Búsqueda de Paciente</label>
+        <div className="mt-4">
+          <label htmlFor="patientSearch" className="block text-sm font-medium text-gray-700">
+            Búsqueda de Paciente
+          </label>
           <input
             type="text"
+            id="patientSearch"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              // Si el input de búsqueda está vacío, deseleccionar el paciente
+              if (e.target.value.trim() === "") {
+                setSelectedPatient(null);
+              }
+            }}
             disabled={isNewPatient}
             placeholder="Buscar paciente por nombre o DNI"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
           />
-          {searchTerm.length > 2 && patients.length > 0 && !isNewPatient && (
-            <ul className="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-md">
-              {patients.map((patient) => (
-                <li
-                  key={patient.idUsuario}
-                  onClick={() => setSelectedPatient(patient)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                >
-                  {patient.nombres} {patient.apellidos} - DNI: {patient.dni}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
+
+        {/* Lista de pacientes encontrados */}
+        {searchTerm.length > 2 && patients.length > 0 && !isNewPatient && (
+          <ul className="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-md">
+            {patients.map((patient) => (
+              <li
+                key={patient.idUsuario}
+                onClick={() => setSelectedPatient(patient)}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              >
+                {patient.nombres} {patient.apellidos} - DNI: {patient.dni}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Selected Patient Info */}
+        {selectedPatient && (
+          <div className="bg-green-50 p-4 rounded-md relative">
+            <p className="text-sm text-green-700">
+              Paciente seleccionado: {selectedPatient.nombres} {selectedPatient.apellidos}
+            </p>
+            {/* Botón "X" para eliminar el paciente seleccionado */}
+            <button
+              onClick={() => {
+                setSelectedPatient(null); // Deseleccionar el paciente
+                setSearchTerm(""); // Limpiar el input de búsqueda
+              }}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition-colors duration-200"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
 
         {/* New Patient Toggle */}
         <div>
