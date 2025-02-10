@@ -1,11 +1,13 @@
-import React from 'react';
-import { Eye, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 import Swal from 'sweetalert2';
+import LoaderScreen from '../home/LoadingScreen';
 
-const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
+const ResultadoCardAdmin = ({ resultado}) => {
   const token = jwtUtils.getTokenFromCookie();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
     // Mostrar SweetAlert2 para confirmación
@@ -22,6 +24,7 @@ const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
 
     // Si el usuario confirma, proceder con la eliminación lógica
     if (result.isConfirmed) {
+      setIsLoading(true);
       try {
         const response = await fetch(`${API_BASE_URL}/api/admin/resultados/${resultado.idResultados}`, {
           method: 'DELETE',
@@ -38,9 +41,9 @@ const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
           'El resultado ha sido marcado como eliminado.',
           'success'
         );
-
-        // Llamar al callback onDelete para actualizar la UI
-        onDelete(resultado.idResultados);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
       } catch (error) {
         console.error('Error:', error);
 
@@ -50,6 +53,8 @@ const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
           'Ocurrió un error al eliminar el resultado.',
           'error'
         );
+      }finally{
+        setIsLoading(false);
       }
     }
   };
@@ -60,7 +65,7 @@ const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
         <div>
           <h3 className="text-lg font-semibold text-gray-900">{resultado.titulo}</h3>
           <p className="text-sm text-gray-600">
-            Fecha: {new Date(resultado.fecha_cita).toLocaleDateString()}
+            Fecha: {(resultado.fecha_cita)}
           </p>
           {/* Mostrar información del paciente */}
           <p className="text-sm text-gray-600">
@@ -73,25 +78,17 @@ const ResultadoCardAdmin = ({ resultado, onDelete, isAdmin = false }) => {
           )}
         </div>
         <div className="flex gap-2">
-          <a
-            href={`/storage/${resultado.ruta_archivo}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+          {/* Botón de eliminar */}
+          <button
+            onClick={handleDelete}
+            className="text-red-600 hover:text-red-800 transition-colors"
           >
-            <Eye className="w-5 h-5" />
-          </a>
-          {isAdmin && (
-            <button
-              onClick={handleDelete}
-              className="text-red-600 hover:text-red-800 transition-colors"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          )}
+            <Trash2 className="w-5 h-5" />
+          </button>
         </div>
       </div>
       <p className="text-gray-700">{resultado.observaciones}</p>
+      {isLoading && <LoaderScreen />}
     </div>
   );
 };
