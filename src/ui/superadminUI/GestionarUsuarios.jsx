@@ -50,10 +50,41 @@ const GestionarSUsuarios = () => {
   };
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+  
+    // Validación para campos numéricos
+    if (name === 'dni' || name === 'telefono') {
+      // Solo permite números
+      const numericValue = value.replace(/\D/g, '');
+  
+      // Validar longitud máxima
+      let isValid = true;
+      if (name === 'dni' && numericValue.length > 8) {
+        isValid = false;
+      } else if (name === 'telefono' && numericValue.length > 9) {
+        isValid = false;
+      }
+  
+      // Actualizar el estado de errores
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: isValid ? '' : `El ${name} debe tener máximo ${name === 'dni' ? 8 : 9} dígitos.`,
+      }));
+  
+      // Actualizar el estado del formulario solo si es válido
+      if (isValid) {
+        setFormData({
+          ...formData,
+          [name]: numericValue,
+        });
+      }
+    } else {
+      // Para otros campos, actualizar sin validación
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -106,6 +137,24 @@ const GestionarSUsuarios = () => {
       rol: 'cliente',
     });
     setErrors({}); // Limpiar errores
+  };
+
+  const InputChangeNumeric = (e) => {
+    const { name, value } = e.target;
+  
+    // Allow only numeric input for 'dni' and 'telefono'
+    if (name === 'dni' || name === 'telefono') {
+      const numericValue = value.replace(/\D/g, ''); // Remove non-numeric characters
+      setFormData({
+        ...formData,
+        [name]: numericValue,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   return (
