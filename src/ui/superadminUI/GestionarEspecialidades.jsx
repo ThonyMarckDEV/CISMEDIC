@@ -18,6 +18,8 @@ const GestionarEspecialidades = () => {
   const [editingId, setEditingId] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [charCount, setCharCount] = useState(0); // Estado para el contador de caracteres
+  const maxCharLimit = 100; // Límite máximo de caracteres para la descripción
 
   const getAuthHeaders = () => {
     const token = jwtUtils.getTokenFromCookie();
@@ -52,6 +54,11 @@ const GestionarEspecialidades = () => {
       ...formData,
       [name]: value,
     });
+
+    // Actualizar el contador de caracteres si el campo es "descripcion"
+    if (name === 'descripcion') {
+      setCharCount(value.length);
+    }
   };
 
   const handleEmojiClick = (emojiObject) => {
@@ -151,14 +158,22 @@ const GestionarEspecialidades = () => {
               </div>
 
               <div>
-                <input
-                  type="text"
+                <textarea
                   name="descripcion"
                   placeholder="Descripción"
                   value={formData.descripcion}
                   onChange={handleInputChange}
+                  maxLength={maxCharLimit}
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
+                <div className="text-sm text-gray-500 mt-1">
+                  {charCount}/{maxCharLimit} caracteres
+                </div>
+                {charCount >= maxCharLimit && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Has alcanzado el límite de caracteres.
+                  </p>
+                )}
                 {errors.descripcion && (
                   <p className="text-red-500 text-sm mt-1">{errors.descripcion}</p>
                 )}
@@ -217,6 +232,7 @@ const GestionarEspecialidades = () => {
               descripcion: especialidad.descripcion,
               icono: especialidad.icono,
             });
+            setCharCount(especialidad.descripcion.length); // Actualizar el contador al editar
           }}
           onDelete={async (id) => {
             if (!window.confirm('¿Está seguro de eliminar esta especialidad?')) return;

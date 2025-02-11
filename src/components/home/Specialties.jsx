@@ -1,57 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-
-// Importa los estilos de Swiper
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
-const specialties = [
-  {
-    title: "Medicina General",
-    description: "Atención integral personalizada para tu bienestar integral",
-    icon: "🩺"
-  },
-  {
-    title: "Ginecología",
-    description: "Cuidado especializado con la más alta tecnología y sensibilidad",
-    icon: "👩‍⚕️"
-  },
-  {
-    title: "Pediatría",
-    description: "Acompañamiento profesional en cada etapa del crecimiento",
-    icon: "👶"
-  },
-  {
-    title: "Cardiología",
-    description: "Diagnóstico avanzado y tratamiento de precisión cardiovascular",
-    icon: "❤️"
-  },
-  {
-    title: "Dermatología",
-    description: "Cuidado de la piel con los mejores tratamientos y tecnología",
-    icon: "🧴"
-  },
-  {
-    title: "Ortopedia",
-    description: "Soluciones especializadas para problemas musculoesqueléticos",
-    icon: "🦴"
-  },
-  {
-    title: "Neurología",
-    description: "Atención experta en trastornos del sistema nervioso",
-    icon: "🧠"
-  },
-  {
-    title: "Oftalmología",
-    description: "Cuidado visual con tecnología de vanguardia",
-    icon: "👁️"
-  }
-];
+import API_BASE_URL from '../../js/urlHelper';
 
 const Specialties = () => {
+  const [specialties, setSpecialties] = useState([]); // Estado para almacenar las especialidades
+  const [loading, setLoading] = useState(true); // Estado para manejar la carga
+
+  // Función para obtener las especialidades desde el backend
+  const fetchSpecialties = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/especialidadeshome`);
+      if (!response.ok) {
+        throw new Error('Error al obtener las especialidades');
+      }
+      const data = await response.json();
+      setSpecialties(data); // Guardar las especialidades en el estado
+      setLoading(false); // Indicar que la carga ha terminado
+    } catch (error) {
+      console.error('Error fetching specialties:', error);
+      setLoading(false); // Indicar que la carga ha terminado (incluso si hay un error)
+    }
+  };
+
+  // Ejecutar la función al cargar el componente
+  useEffect(() => {
+    fetchSpecialties();
+  }, []);
+
+  // Mostrar un mensaje de carga mientras se obtienen los datos
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 bg-gray-50 text-center">
+        <p className="text-gray-600">Cargando especialidades...</p>
+      </div>
+    );
+  }
+
+  // Mostrar un mensaje si no hay especialidades
+  if (specialties.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-16 bg-gray-50 text-center">
+        <p className="text-gray-600">No se encontraron especialidades.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-16 bg-gray-50">
       <motion.h2 
@@ -92,12 +90,12 @@ const Specialties = () => {
               }}
               className="bg-white rounded-2xl shadow-1xl p-8 transform transition-all duration-300 hover:scale-105 hover:shadow-3xl border-t-4 border-green-700"
             >
-              <div className="text-5xl mb-6 text-center">{specialty.icon}</div>
+              <div className="text-5xl mb-6 text-center">{specialty.icono}</div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-                {specialty.title}
+                {specialty.nombre}
               </h3>
               <p className="text-gray-600 text-center leading-relaxed">
-                {specialty.description}
+                {specialty.descripcion}
               </p>
             </motion.div>
           </SwiperSlide>
