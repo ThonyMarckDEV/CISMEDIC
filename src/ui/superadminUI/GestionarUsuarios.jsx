@@ -5,6 +5,7 @@ import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSupe
 import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import TablaUsuarios from '../../components/superAdminComponents/TablaUsuarios';
+import API_BASE_URL from "../../js/urlHelper"
 
 const GestionarSUsuarios = () => {
   const [formData, setFormData] = useState({
@@ -21,18 +22,26 @@ const GestionarSUsuarios = () => {
   const [editingId, setEditingId] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState('');
 
+  const getAuthHeaders = () => {
+    const token = jwtUtils.getTokenFromCookie();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
   useEffect(() => {
     fetchUsers();
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = jwtUtils.decodeToken(token);
-      setNombreUsuario(decoded.nombres);
-    }
+    const token = jwtUtils.getTokenFromCookie();
+    const nombres = jwtUtils.getNombres(token);
+    setNombreUsuario(nombres);
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/usuarios');
+      const response = await fetch(`${API_BASE_URL}/api/obtenerusuarios`, {
+        headers: getAuthHeaders()
+      });
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -51,16 +60,14 @@ const GestionarSUsuarios = () => {
     e.preventDefault();
     try {
       const url = editingId 
-        ? `/api/usuarios/${editingId}` 
-        : '/api/usuarios/registro';
+        ? `${API_BASE_URL}/api/actualizarusuarios/${editingId}` 
+        : `${API_BASE_URL}/api/registrousuarios`;
       
       const method = editingId ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(formData),
       });
 
@@ -230,31 +237,32 @@ const GestionarSUsuarios = () => {
 
         {/* Table Component */}
         <TablaUsuarios 
-          users={users} 
-          onEdit={(user) => {
-            setEditingId(user.id);
-            setFormData({
-              nombres: user.nombres,
-              apellidos: user.apellidos,
-              dni: user.dni,
-              correo: user.correo,
-              telefono: user.telefono || '',
-              rol: user.rol,
+        users={users} 
+        onEdit={(user) => {
+          setEditingId(user.idUsuario);
+          setFormData({
+            nombres: user.nombres,
+            apellidos: user.apellidos,
+            dni: user.dni,
+            correo: user.correo,
+            telefono: user.telefono || '',
+            rol: user.rol,
+          });
+        }}
+        onDelete={async (id) => {
+          if (!window.confirm('¿Está seguro de eliminar este usuario?')) return;
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/eliminarusuarios/${id}`, {
+              method: 'DELETE',
+              headers: getAuthHeaders()
             });
-          }}
-          onDelete={async (id) => {
-            if (!window.confirm('¿Está seguro de eliminar este usuario?')) return;
-            try {
-              const response = await fetch(`/api/usuarios/${id}`, {
-                method: 'DELETE',
-              });
-              if (response.ok) {
-                fetchUsers();
-              }
-            } catch (error) {
-              console.error('Error deleting user:', error);
+            if (response.ok) {
+              fetchUsers();
             }
-          }}
+          } catch (error) {
+            console.error('Error deleting user:', error);
+          }
+        }}
         />
       </div>
     </SidebarSuperAdmin>
