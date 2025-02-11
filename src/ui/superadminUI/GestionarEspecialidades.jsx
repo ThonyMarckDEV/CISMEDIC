@@ -29,17 +29,11 @@ const GestionarEspecialidades = () => {
     };
   };
 
-  useEffect(() => {
-    fetchEspecialidades();
-    const token = jwtUtils.getTokenFromCookie();
-    const nombres = jwtUtils.getNombres(token);
-    setNombreUsuario(nombres);
-  }, []);
-
+  // Mover fetchEspecialidades fuera del useEffect
   const fetchEspecialidades = async (searchTerm = '') => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/obtenerespecialidades?search=${searchTerm}`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       const data = await response.json();
       setEspecialidades(data);
@@ -47,6 +41,37 @@ const GestionarEspecialidades = () => {
       console.error('Error fetching especialidades:', error);
     }
   };
+
+  useEffect(() => {
+    // Crear un AbortController para cancelar la solicitud si el componente se desmonta
+    const abortController = new AbortController();
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/obtenerespecialidades`, {
+          headers: getAuthHeaders(),
+          signal: abortController.signal, // Pasar la señal de aborto
+        });
+        const data = await response.json();
+        setEspecialidades(data);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching especialidades:', error);
+        }
+      }
+    };
+
+    fetchData();
+
+    const token = jwtUtils.getTokenFromCookie();
+    const nombres = jwtUtils.getNombres(token);
+    setNombreUsuario(nombres);
+
+    // Cleanup function para cancelar la solicitud si el componente se desmonta
+    return () => {
+      abortController.abort(); // Cancelar la solicitud
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,7 +122,7 @@ const GestionarEspecialidades = () => {
       });
       setEditingId(null);
       setErrors({});
-      fetchEspecialidades();
+      fetchEspecialidades(); // Llamar a fetchEspecialidades después de guardar o actualizar
     } catch (error) {
       console.error('Error:', error);
     }
@@ -242,7 +267,7 @@ const GestionarEspecialidades = () => {
                 headers: getAuthHeaders()
               });
               if (response.ok) {
-                fetchEspecialidades();
+                fetchEspecialidades(); // Llamar a fetchEspecialidades después de eliminar
               }
             } catch (error) {
               console.error('Error deleting especialidad:', error);
