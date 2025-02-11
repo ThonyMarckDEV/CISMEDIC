@@ -46,6 +46,7 @@ import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioCl
 
 //UI SuperAdmin
 import SuperAmin from './ui/superadminUI/SuperAdmin';
+import GestionarUsuarios from './ui/superadminUI/GestionarUsuarios';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -299,12 +300,11 @@ function AppContent() {
       />
 
       <Route
-        path="/admin/resultadosclientes"
+        path="/superadmin/gestionarusuarios"
         element={
-          <ProtectedRouteRolAdmin element={<ResultadosLaboratoriosClientes />} />
+          <ProtectedRouteRolSuperAdmin element={<GestionarUsuarios />} />
         }
       />
-
 
       {/* Ruta de error */}
       <Route path="*" element={<ErrorPage />} />

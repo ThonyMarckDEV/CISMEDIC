@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon, UserCog2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
@@ -7,7 +7,7 @@ import { logout } from '../../js/logout';
 
 const navigation = [
   { name: "Inicio", href: "/superadmin", icon: Home },
-  //{ name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
+  { name: "Gestionar Usuarios", href: "/superadmin/gestionarusuarios", icon: UserCog2 },
 ];
 
 const SidebarSuperAdmin = ({ children }) => {
