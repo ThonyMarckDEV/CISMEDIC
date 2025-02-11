@@ -37,9 +37,9 @@ const GestionarSUsuarios = () => {
     setNombreUsuario(nombres);
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (searchTerm = '') => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/obtenerusuarios`, {
+      const response = await fetch(`${API_BASE_URL}/api/obtenerusuarios?search=${searchTerm}`, {
         headers: getAuthHeaders()
       });
       const data = await response.json();
@@ -92,6 +92,20 @@ const GestionarSUsuarios = () => {
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const handleCancel = () => {
+    setEditingId(null); // Salir del modo edición
+    setFormData({
+      nombres: '',
+      apellidos: '',
+      dni: '',
+      correo: '',
+      telefono: '',
+      password: '',
+      rol: 'cliente',
+    });
+    setErrors({}); // Limpiar errores
   };
 
   return (
@@ -226,12 +240,23 @@ const GestionarSUsuarios = () => {
               )}
             </div>
 
+            <div className="flex flex-col md:flex-row gap-4">
             <button
               type="submit"
               className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               {editingId ? 'Actualizar' : 'Registrar'}
             </button>
+            {editingId && (
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="w-full md:w-auto px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Cancelar
+                </button>
+              )}
+              </div>
           </form>
         </div>
 
