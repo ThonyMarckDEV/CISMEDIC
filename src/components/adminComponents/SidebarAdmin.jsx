@@ -9,7 +9,7 @@ const navigation = [
   { name: "Inicio", href: "/admin", icon: Home },
   { name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
   { name: "Resultados de Clientes", href: "/admin/resultadosclientes", icon: UsersRoundIcon },
-  
+  { name: "Disponibilidad Doctores", href: "/admin/disponibilidaddoctores", icon: Calendar },
 ];
 
 const SidebarAdmin = ({ children }) => {

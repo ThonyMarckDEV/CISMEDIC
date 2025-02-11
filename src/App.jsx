@@ -43,6 +43,7 @@ import PerfilDoctor from './ui/doctorUI/PerfilDoctor';
 import Admin from './ui/adminUI/Admin';
 import SubirResultados from './ui/adminUI/SubirResultados';
 import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioClientes';
+import DisponibilidadDoctores from './ui/adminUI/DisponibilidadDoctores';
 
 //UI SuperAdmin
 import SuperAmin from './ui/superadminUI/SuperAdmin';
@@ -288,6 +289,13 @@ function AppContent() {
         path="/admin/resultadosclientes"
         element={
           <ProtectedRouteRolAdmin element={<ResultadosLaboratoriosClientes />} />
+        }
+      />
+
+      <Route
+        path="/admin/disponibilidaddoctores"
+        element={
+          <ProtectedRouteRolAdmin element={<DisponibilidadDoctores />} />
         }
       />
 
