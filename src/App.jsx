@@ -48,6 +48,7 @@ import DisponibilidadDoctores from './ui/adminUI/DisponibilidadDoctores';
 //UI SuperAdmin
 import SuperAmin from './ui/superadminUI/SuperAdmin';
 import GestionarUsuarios from './ui/superadminUI/GestionarUsuarios';
+import GestionarEspecialidades from './ui/superadminUI/GestionarEspecialidades';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -299,7 +300,7 @@ function AppContent() {
         }
       />
 
-  {/* Rutas del superadmin */}
+    {/* Rutas del superadmin */}
       <Route
         path="/superadmin"
         element={
@@ -311,6 +312,13 @@ function AppContent() {
         path="/superadmin/gestionarusuarios"
         element={
           <ProtectedRouteRolSuperAdmin element={<GestionarUsuarios />} />
+        }
+      />
+
+      <Route
+        path="/superadmin/gestionarespecialidades"
+        element={
+          <ProtectedRouteRolSuperAdmin element={<GestionarEspecialidades />} />
         }
       />
 
