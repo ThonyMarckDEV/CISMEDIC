@@ -6,13 +6,11 @@ import { logout } from '../../js/logout';
 
 
 const navigation = [
-  { name: "Inicio", href: "/admin", icon: Home },
-  { name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
-  { name: "Resultados de Clientes", href: "/admin/resultadosclientes", icon: UsersRoundIcon },
-  
+  { name: "Inicio", href: "/superadmin", icon: Home },
+  //{ name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
 ];
 
-const SidebarAdmin = ({ children }) => {
+const SidebarSuperAdmin = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const sidebarRef = useRef(null);
@@ -113,22 +111,8 @@ const SidebarAdmin = ({ children }) => {
               </ul>
             </nav>
 
-            {/* Footer Section */}
-            <div className="mt-auto p-4">
-              <div className="text-xs text-gray-500">
-                <p>¿Tienes alguna duda o inconveniente?</p>
-                <p>Contáctanos a:</p>
-                <a href="mailto:soporteapp.pe@auna.org" className="text-blue-500 hover:underline">
-                  soporteapp.pe@cismedic.org
-                </a>
-                <p className="mt-2">
-                  <a href="#" className="text-blue-500 hover:underline">
-                    Whatsapp Cismedic
-                  </a>
-                </p>
-              </div>
-            </div>
           </div>
+
         </div>
 
         {/* Main Content */}
@@ -141,4 +125,4 @@ const SidebarAdmin = ({ children }) => {
   );
 };
 
-export default SidebarAdmin;
+export default SidebarSuperAdmin;

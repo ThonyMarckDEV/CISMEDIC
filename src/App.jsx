@@ -44,6 +44,9 @@ import Admin from './ui/adminUI/Admin';
 import SubirResultados from './ui/adminUI/SubirResultados';
 import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioClientes';
 
+//UI SuperAdmin
+import SuperAmin from './ui/superadminUI/SuperAdmin';
+
 // UI AUTH
 import Register from './ui/Register';
 
@@ -287,6 +290,20 @@ function AppContent() {
         }
       />
 
+  {/* Rutas del superadmin */}
+      <Route
+        path="/superadmin"
+        element={
+          <ProtectedRouteRolSuperAdmin element={<SuperAmin />} />
+        }
+      />
+
+      <Route
+        path="/admin/resultadosclientes"
+        element={
+          <ProtectedRouteRolAdmin element={<ResultadosLaboratoriosClientes />} />
+        }
+      />
 
 
       {/* Ruta de error */}
