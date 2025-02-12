@@ -6,6 +6,9 @@ import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import TablaUsuarios from '../../components/superAdminComponents/TablaUsuarios';
 import API_BASE_URL from "../../js/urlHelper"
+import LoaderScreen from '../../components/home/LoadingScreen';
+import SweetAlert from "../../components/SweetAlert"
+import Swal from 'sweetalert2';
 
 const GestionarSUsuarios = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +24,7 @@ const GestionarSUsuarios = () => {
   const [users, setUsers] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAuthHeaders = () => {
     const token = jwtUtils.getTokenFromCookie();
@@ -90,6 +94,7 @@ const GestionarSUsuarios = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const url = editingId 
         ? `${API_BASE_URL}/api/actualizarusuarios/${editingId}` 
         : `${API_BASE_URL}/api/registrousuarios`;
@@ -120,8 +125,11 @@ const GestionarSUsuarios = () => {
       setEditingId(null);
       setErrors({});
       fetchUsers();
+      SweetAlert.showMessageAlert('Éxito', `Usuario ${editingId ? 'actualizado' : 'registrado'} correctamente`, 'success');
     } catch (error) {
       console.error('Error:', error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -137,24 +145,6 @@ const GestionarSUsuarios = () => {
       rol: 'cliente',
     });
     setErrors({}); // Limpiar errores
-  };
-
-  const InputChangeNumeric = (e) => {
-    const { name, value } = e.target;
-  
-    // Allow only numeric input for 'dni' and 'telefono'
-    if (name === 'dni' || name === 'telefono') {
-      const numericValue = value.replace(/\D/g, ''); // Remove non-numeric characters
-      setFormData({
-        ...formData,
-        [name]: numericValue,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
   };
 
   return (
@@ -308,37 +298,74 @@ const GestionarSUsuarios = () => {
               </div>
           </form>
         </div>
+        import Swal from 'sweetalert2';
 
         {/* Table Component */}
         <TablaUsuarios 
-        users={users} 
-        onEdit={(user) => {
-          setEditingId(user.idUsuario);
-          setFormData({
-            nombres: user.nombres,
-            apellidos: user.apellidos,
-            dni: user.dni,
-            correo: user.correo,
-            telefono: user.telefono || '',
-            rol: user.rol,
-          });
-        }}
-        onDelete={async (id) => {
-          if (!window.confirm('¿Está seguro de eliminar este usuario?')) return;
-          try {
-            const response = await fetch(`${API_BASE_URL}/api/eliminarusuarios/${id}`, {
-              method: 'DELETE',
-              headers: getAuthHeaders()
+          users={users} 
+          onEdit={(user) => {
+            setEditingId(user.idUsuario);
+            setFormData({
+              nombres: user.nombres,
+              apellidos: user.apellidos,
+              dni: user.dni,
+              correo: user.correo,
+              telefono: user.telefono || '',
+              rol: user.rol,
             });
-            if (response.ok) {
-              fetchUsers();
+          }}
+          onDelete={async (id) => {
+            // Mostrar SweetAlert2 para confirmar la eliminación
+            const result = await Swal.fire({
+              title: '¿Está seguro?',
+              text: "¡No podrás revertir esto!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar',
+            });
+
+            // Si el usuario confirma la eliminación
+            if (result.isConfirmed) {
+              try {
+                const response = await fetch(`${API_BASE_URL}/api/eliminarusuarios/${id}`, {
+                  method: 'DELETE',
+                  headers: getAuthHeaders(),
+                });
+
+                if (response.ok) {
+                  // Mostrar mensaje de éxito
+                  Swal.fire(
+                    '¡Eliminado!',
+                    'El usuario ha sido eliminado.',
+                    'success'
+                  );
+                  // Recargar la lista de usuarios
+                  fetchUsers();
+                } else {
+                  // Mostrar mensaje de error si la respuesta no es exitosa
+                  Swal.fire(
+                    'Error',
+                    'No se pudo eliminar el usuario.',
+                    'error'
+                  );
+                }
+              } catch (error) {
+                console.error('Error deleting user:', error);
+                // Mostrar mensaje de error en caso de excepción
+                Swal.fire(
+                  'Error',
+                  'Hubo un problema al eliminar el usuario.',
+                  'error'
+                );
+              }
             }
-          } catch (error) {
-            console.error('Error deleting user:', error);
-          }
-        }}
+          }}
         />
       </div>
+      {isLoading && <LoaderScreen />}
     </SidebarSuperAdmin>
   );
 };
