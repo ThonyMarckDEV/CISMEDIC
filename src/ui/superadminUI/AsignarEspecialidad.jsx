@@ -202,7 +202,7 @@ const AsignarEspecialidadDoctor = () => {
                         setSelectedDoctor(doctor);
                         setIsAssigning(true);
                       }}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                      className="p-2 text-green-600 hover:bg-blue-50 rounded-full"
                     >
                       <Plus size={20} />
                     </button>
