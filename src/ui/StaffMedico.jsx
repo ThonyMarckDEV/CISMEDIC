@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/home/NavBar';
 import Footer from '../components/home/Footer';
-import SweetAlert from '../components/SweetAlert';
-import LoaderScreen from '../components/home/LoadingScreen';
+import DoctorList from '../components/home/DoctorList';
 import laEmpresa from '../img/staff.jpeg';
 import API_BASE_URL from '../js/urlHelper';
-import imgperfil from '../img/defualtpefil.jpg';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -22,6 +20,7 @@ export default function MedicalStaffDirectory() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -32,6 +31,7 @@ export default function MedicalStaffDirectory() {
         }
         const data = await response.json();
         setDoctors(data);
+        setCurrentPage(1); // Reset to first page when filters change
       } catch (error) {
         console.error('Error fetching doctors:', error);
         setDoctors([]);
@@ -55,10 +55,13 @@ export default function MedicalStaffDirectory() {
     fetchSpecialties();
   }, [searchTerm, selectedSpecialty]);
 
-
   const handleDoctorDetails = (doctorId) => {
-    // Redirige a una página de detalles del doctor
     window.location.href = `/perfildoctor/${doctorId}`;
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+   // window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -70,6 +73,7 @@ export default function MedicalStaffDirectory() {
         variants={fadeInUp}
         className="relative h-[70vh] flex items-center justify-center overflow-hidden"
       >
+        {/* Header content remains the same */}
         <div className="absolute inset-0 bg-black/50 z-10" />
         <img src={laEmpresa} alt="Fondo de contacto" className="absolute inset-0 w-full h-full object-cover" />
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -82,7 +86,9 @@ export default function MedicalStaffDirectory() {
           </motion.p>
         </div>
       </motion.div>
+
       <div className="container mx-auto px-4 py-8">
+        {/* Search and filters remain the same */}
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">
           Encuentra al especialista que necesitas
         </h1>
@@ -112,37 +118,15 @@ export default function MedicalStaffDirectory() {
               </select>
             </div>
           </div>
-          <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctors.map((doctor) => (
-            <motion.div
-              key={doctor.idUsuario}
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-[450px]"
-            >
-              <div className="w-full h-60 flex items-center justify-center bg-gray-100">
-                <img
-                  src={doctor.perfil ? `${API_BASE_URL}/storage/${doctor.perfil}` : imgperfil}
-                  alt={doctor.nombres}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="p-4 flex-grow flex flex-col justify-between">
-                <div>
-                  <div className="text-sm text-green-700 font-bold mb-2">{doctor.especialidad}</div>
-                  <h3 className="text-xl font-bold mb-2">{`${doctor.nombres} ${doctor.apellidos}`}</h3>
-                </div>
-                <button
-                  onClick={() => handleDoctorDetails(doctor.idUsuario)}
-                  className="text-green-600 hover:text-green-700 transition-colors duration-300 self-start"
-                >
-                  Conoce más →
-                </button>
-              </div>
-            </motion.div>
-          ))}
+          
+          {/* New DoctorList component */}
+          <div className="w-full md:w-3/4">
+            <DoctorList
+              doctors={doctors}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              onDoctorDetails={handleDoctorDetails}
+            />
           </div>
         </div>
       </div>
