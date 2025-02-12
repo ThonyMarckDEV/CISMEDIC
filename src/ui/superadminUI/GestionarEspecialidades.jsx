@@ -8,6 +8,7 @@ import API_BASE_URL from "../../js/urlHelper";
 import EmojiPicker from 'emoji-picker-react';
 import LoaderScreen from '../../components/home/LoadingScreen';
 import Swal from 'sweetalert2';
+import SweetAlert from "../../components/SweetAlert";
 
 const GestionarEspecialidades = () => {
   const [formData, setFormData] = useState({
@@ -127,6 +128,7 @@ const GestionarEspecialidades = () => {
       setEditingId(null);
       setErrors({});
       fetchEspecialidades(); // Llamar a fetchEspecialidades después de guardar o actualizar
+      SweetAlert.showMessageAlert('Éxito', `Especialidad ${editingId ? 'actualizada' : 'registrada'} correctamente.`, 'success');
     } catch (error) {
       console.error('Error:', error);
     }finally{
