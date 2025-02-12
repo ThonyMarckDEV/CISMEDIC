@@ -113,34 +113,36 @@ export default function MedicalStaffDirectory() {
             </div>
           </div>
           <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {doctors.map((doctor) => (
-              <motion.div
-                key={doctor.idUsuario}
-                variants={fadeInUp}
-                initial="hidden"
-                animate="visible"
-                whileHover={{ scale: 1.05 }}
-                className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg h-[400px] flex flex-col" // Altura ajustada aquí
-              >
+          {doctors.map((doctor) => (
+            <motion.div
+              key={doctor.idUsuario}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-[450px]"
+            >
+              <div className="w-full h-60 flex items-center justify-center bg-gray-100">
                 <img
                   src={doctor.perfil ? `${API_BASE_URL}/storage/${doctor.perfil}` : imgperfil}
                   alt={doctor.nombres}
-                  className="w-full h-60 object-cover" // Mantener la altura de la imagen
+                  className="w-full h-full object-contain"
                 />
-                <div className="p-4 flex-grow flex flex-col justify-between"> {/* Flex para organizar el contenido */}
-                  <div>
-                    <div className="text-sm text-green-700 font-bold mb-2">{doctor.especialidad}</div>
-                    <h3 className="text-xl font-bold mb-2">{`${doctor.nombres} ${doctor.apellidos}`}</h3>
-                  </div>
-                  <button
-                    onClick={() => handleDoctorDetails(doctor.idUsuario)} // Función para manejar el clic
-                    className="text-green-600 hover:text-green-700 transition-colors duration-300 self-start"
-                  >
-                    Conoce más →
-                  </button>
+              </div>
+              <div className="p-4 flex-grow flex flex-col justify-between">
+                <div>
+                  <div className="text-sm text-green-700 font-bold mb-2">{doctor.especialidad}</div>
+                  <h3 className="text-xl font-bold mb-2">{`${doctor.nombres} ${doctor.apellidos}`}</h3>
                 </div>
-              </motion.div>
-            ))}
+                <button
+                  onClick={() => handleDoctorDetails(doctor.idUsuario)}
+                  className="text-green-600 hover:text-green-700 transition-colors duration-300 self-start"
+                >
+                  Conoce más →
+                </button>
+              </div>
+            </motion.div>
+          ))}
           </div>
         </div>
       </div>
