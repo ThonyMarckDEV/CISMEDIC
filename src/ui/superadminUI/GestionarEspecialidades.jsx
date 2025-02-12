@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import TablaEspecialidades from '../../components/superAdminComponents/TablaEspecialidades';
 import API_BASE_URL from "../../js/urlHelper";
 import EmojiPicker from 'emoji-picker-react';
+import LoaderScreen from '../../components/home/LoadingScreen';
+import Swal from 'sweetalert2';
 
 const GestionarEspecialidades = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,7 @@ const GestionarEspecialidades = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [charCount, setCharCount] = useState(0); // Estado para el contador de caracteres
   const maxCharLimit = 100; // Límite máximo de caracteres para la descripción
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAuthHeaders = () => {
     const token = jwtUtils.getTokenFromCookie();
@@ -97,6 +100,7 @@ const GestionarEspecialidades = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const url = editingId 
         ? `${API_BASE_URL}/api/actualizarespecialidad/${editingId}` 
         : `${API_BASE_URL}/api/registrarespecialidad`;
@@ -125,6 +129,8 @@ const GestionarEspecialidades = () => {
       fetchEspecialidades(); // Llamar a fetchEspecialidades después de guardar o actualizar
     } catch (error) {
       console.error('Error:', error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -247,7 +253,7 @@ const GestionarEspecialidades = () => {
           </form>
         </div>
 
-        {/* Table Component */}
+       {/* Table Component */}
         <TablaEspecialidades 
           especialidades={especialidades} 
           onEdit={(especialidad) => {
@@ -260,20 +266,56 @@ const GestionarEspecialidades = () => {
             setCharCount(especialidad.descripcion.length); // Actualizar el contador al editar
           }}
           onDelete={async (id) => {
-            if (!window.confirm('¿Está seguro de eliminar esta especialidad?')) return;
-            try {
-              const response = await fetch(`${API_BASE_URL}/api/eliminarespecialidad/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders()
-              });
-              if (response.ok) {
-                fetchEspecialidades(); // Llamar a fetchEspecialidades después de eliminar
+            // Mostrar SweetAlert2 para confirmar la eliminación
+            const result = await Swal.fire({
+              title: '¿Está seguro?',
+              text: "¡No podrás revertir esta acción!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar',
+            });
+
+            // Si el usuario confirma la eliminación
+            if (result.isConfirmed) {
+              try {
+                const response = await fetch(`${API_BASE_URL}/api/eliminarespecialidad/${id}`, {
+                  method: 'DELETE',
+                  headers: getAuthHeaders(),
+                });
+
+                if (response.ok) {
+                  // Mostrar mensaje de éxito
+                  Swal.fire(
+                    '¡Eliminado!',
+                    'La especialidad ha sido eliminada.',
+                    'success'
+                  );
+                  // Recargar la lista de especialidades
+                  fetchEspecialidades();
+                } else {
+                  // Mostrar mensaje de error si la respuesta no es exitosa
+                  Swal.fire(
+                    'Error',
+                    'No se pudo eliminar la especialidad.',
+                    'error'
+                  );
+                }
+              } catch (error) {
+                console.error('Error deleting especialidad:', error);
+                // Mostrar mensaje de error en caso de excepción
+                Swal.fire(
+                  'Error',
+                  'Hubo un problema al eliminar la especialidad.',
+                  'error'
+                );
               }
-            } catch (error) {
-              console.error('Error deleting especialidad:', error);
             }
           }}
         />
+        {isLoading && <LoaderScreen />}
       </div>
     </SidebarSuperAdmin>
   );
