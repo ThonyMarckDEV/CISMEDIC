@@ -212,12 +212,12 @@ const MisHorarios = () => {
       {isLoadingFullScreen && <LoadingScreen />}
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
         
-              {/* Header */}
-              <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
             <div className="relative z-10">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {nombreUsuario   || "Usuario"}
+                Bienvenido, {nombreUsuario || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
                 Aquí puedes gestionar tus horarios.
@@ -231,7 +231,15 @@ const MisHorarios = () => {
             </div>
           </div>
         </div>
-
+  
+        {/* Nota informativa */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+          <p className="text-yellow-700">
+            <span className="font-semibold">Nota importante:</span> Para garantizar la disponibilidad de tus horarios, debes agregarlos con al menos <span className="font-semibold">1 hora de anticipación</span>. Además, ten en cuenta que si un horario no ha sido tomado por un paciente, este desaparecerá automáticamente <span className="font-semibold">20 minutos antes</span> de su hora programada.
+          </p>
+        </div>
+  
+        {/* Formulario de horarios */}
         <div className="w-full">
           <h2 className="text-2xl font-bold mb-4">
             {editMode ? "Editar Horario" : "Agregar Horario"}
@@ -304,8 +312,9 @@ const MisHorarios = () => {
             </div>
           </form>
         </div>
-
-        <div className="rounded-lg shadow-md bg-white p-6 h-[750px]"> {/* Aumentar la altura aquí */}
+  
+        {/* Calendario de horarios */}
+        <div className="rounded-lg shadow-md bg-white p-6 h-[750px]">
           <h2 className="text-2xl font-bold mb-4">Calendario de Horarios</h2>
           <CalendarioHorarios
             horarios={horarios}
