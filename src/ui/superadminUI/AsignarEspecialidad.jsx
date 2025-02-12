@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, X, Trash2 } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
+import DoctorList from '../../components/superAdminComponents/DoctorList';
 
 const AsignarEspecialidadDoctor = () => {
   const [doctors, setDoctors] = useState([]);
@@ -14,9 +15,9 @@ const AsignarEspecialidadDoctor = () => {
   const [loading, setLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRemoval, setPendingRemoval] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const token = jwtUtils.getTokenFromCookie();
   const [nombreUsuario, setNombreUsuario] = useState('');
-
   const getAuthHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`
@@ -119,6 +120,15 @@ const AsignarEspecialidadDoctor = () => {
     }
   };
 
+  const handleAssignButtonClick = (doctor) => {
+    setSelectedDoctor(doctor);
+    setIsAssigning(true);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <SidebarSuperAdmin>
       <div className="p-6 md:-ml-64">
@@ -172,46 +182,18 @@ const AsignarEspecialidadDoctor = () => {
           </div>
         </div>
 
-        {/* Doctors List */}
-        <div className="bg-white rounded-lg shadow-md">
-          {loading ? (
-            <div className="p-6 text-center">Cargando...</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-              {doctors.map((doctor) => (
-                <div key={doctor.idUsuario} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">{`${doctor.nombres} ${doctor.apellidos}`}</h3>
-                      <div className="mt-2">
-                        {doctor.especialidades && doctor.especialidades.map((esp) => (
-                          <div key={esp.idEspecialidad} className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                            <span>{esp.nombre}</span>
-                            <button
-                              onClick={() => initiateRemoveSpecialty(doctor.idUsuario, esp.idEspecialidad)}
-                              className="p-1 text-red-600 hover:bg-red-50 rounded-full"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setSelectedDoctor(doctor);
-                        setIsAssigning(true);
-                      }}
-                      className="p-2 text-green-600 hover:bg-blue-50 rounded-full"
-                    >
-                      <Plus size={20} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Replace doctors list with new component */}
+           {loading ? (
+          <div className="p-6 text-center">Cargando...</div>
+        ) : (
+          <DoctorList
+            doctors={doctors}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            onAssignSpecialty={handleAssignButtonClick}
+            onRemoveSpecialty={initiateRemoveSpecialty}
+          />
+        )}
 
         {/* Assignment Modal */}
         {isAssigning && (
