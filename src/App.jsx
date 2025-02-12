@@ -49,6 +49,7 @@ import DisponibilidadDoctores from './ui/adminUI/DisponibilidadDoctores';
 import SuperAmin from './ui/superadminUI/SuperAdmin';
 import GestionarUsuarios from './ui/superadminUI/GestionarUsuarios';
 import GestionarEspecialidades from './ui/superadminUI/GestionarEspecialidades';
+import AsignarEspecialidadDoctor from './ui/superadminUI/AsignarEspecialidad';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -62,6 +63,7 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
+
 
 
 
@@ -319,6 +321,13 @@ function AppContent() {
         path="/superadmin/gestionarespecialidades"
         element={
           <ProtectedRouteRolSuperAdmin element={<GestionarEspecialidades />} />
+        }
+      />
+
+      <Route
+        path="/superadmin/asignarespecialidad"
+        element={
+          <ProtectedRouteRolSuperAdmin element={<AsignarEspecialidadDoctor />} />
         }
       />
 
