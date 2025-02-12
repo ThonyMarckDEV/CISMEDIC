@@ -65,15 +65,6 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="/emergencias"
-                className="block text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
-                onClick={toggleMenu}
-              >
-                Emergencias
-              </a>
-            </li>
-            <li>
-              <a
                 href="/staffmedico"
                 className="block text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
                 onClick={toggleMenu}
@@ -112,15 +103,6 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Inicio
-              </a>
-            </li>
-            <li>
-              <a
-                href="/emergencias"
-                className="block text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
-                onClick={toggleMenu}
-              >
-                Emergencias
               </a>
             </li>
             <li>
