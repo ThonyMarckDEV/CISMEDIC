@@ -4,6 +4,8 @@ import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSupe
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
 import DoctorList from '../../components/superAdminComponents/DoctorList';
+import LoaderScreen from '../../components/home/LoadingScreen';
+import SweetAlert from "../../components/SweetAlert";
 
 const AsignarEspecialidadDoctor = () => {
   const [doctors, setDoctors] = useState([]);
@@ -19,6 +21,7 @@ const AsignarEspecialidadDoctor = () => {
   const [hasExistingSpecialty, setHasExistingSpecialty] = useState(false); // Nuevo estado
   const token = jwtUtils.getTokenFromCookie();
   const [nombreUsuario, setNombreUsuario] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const getAuthHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`
@@ -65,6 +68,7 @@ const AsignarEspecialidadDoctor = () => {
 
   const handleAssignSpecialty = async (doctorId, specialtyId) => {
     try {
+      setIsLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/asignarespecialidad`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -79,13 +83,17 @@ const AsignarEspecialidadDoctor = () => {
         setIsAssigning(false);
         setSelectedDoctor(null);
         setHasExistingSpecialty(false); // Reiniciar el estado
+        SweetAlert.showMessageAlert("Exito","Especialidad asignada correctamente", "success");
       } else {
         const error = await response.json();
         alert(error.error || 'Error al asignar especialidad');
+        SweetAlert.showMessageAlert("Error","Error al asignar especialidad", "error");
       }
     } catch (error) {
       console.error('Error assigning specialty:', error);
-      alert('Error al asignar especialidad');
+      SweetAlert.showMessageAlert("Error","Error al asignar especialidad", "error");
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -263,6 +271,7 @@ const AsignarEspecialidadDoctor = () => {
             </div>
           </div>
         )}
+      {isLoading && <LoaderScreen />}
       </div>
     </SidebarSuperAdmin>
   );
