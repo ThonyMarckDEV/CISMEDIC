@@ -44,7 +44,22 @@ const PerfilDoctorSeleccionado = () => {
         throw new Error("Error al cargar el perfil");
       }
       const data = await response.json();
-      setProfileData(data);
+
+      // Asegurarse de que los campos vacíos o null se reemplacen con "No especificado"
+      const sanitizedData = {
+        nombre: data.nombre || "No especificado",
+        email: data.email || "No especificado",
+        foto_perfil: data.foto_perfil || null,
+        especialidad: data.especialidad || "No especificado",
+        experiencia: data.experiencia || "No especificado",
+        educacion: Array.isArray(data.educacion) ? data.educacion : [],
+        idiomas: Array.isArray(data.idiomas) ? data.idiomas : [],
+        nacimiento: data.nacimiento || "No especificado",
+        edad: data.edad || "No especificado",
+        cantidadIdiomas: data.cantidadIdiomas || 0,
+      };
+
+      setProfileData(sanitizedData);
     } catch (error) {
       setError("Error al cargar el perfil");
     } finally {
@@ -84,7 +99,7 @@ const PerfilDoctorSeleccionado = () => {
           />
         </div>
         {/* Foto de perfil */}
-        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 z-10"> {/* Añadimos z-10 para asegurar que esté delante */}
+        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 z-10">
           <div className="relative group">
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
               {isLoading ? (
@@ -94,7 +109,8 @@ const PerfilDoctorSeleccionado = () => {
                   src={
                     profileData.foto_perfil
                       ? `${API_BASE_URL}/storage/${profileData.foto_perfil}`
-                      : imgperfil}
+                      : imgperfil
+                  }
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
@@ -103,9 +119,8 @@ const PerfilDoctorSeleccionado = () => {
           </div>
         </div>
       </div>
-
-            {/* Nombre y Especialidad */}
-            <div className="mt-24 text-center">
+      {/* Nombre y Especialidad */}
+      <div className="mt-24 text-center">
         <h1 className="text-3xl font-bold text-gray-900">
           {profileData.nombre}
         </h1>
@@ -113,7 +128,6 @@ const PerfilDoctorSeleccionado = () => {
           {profileData.especialidad}
         </p>
       </div>
-
       {/* Main Content Grid */}
       <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Birth Date and Age Card */}
@@ -130,9 +144,9 @@ const PerfilDoctorSeleccionado = () => {
                     Fecha de Nacimiento
                   </h2>
                   <p className="text-xl font-bold text-green-600">
-                    {profileData.nacimiento
+                    {profileData.nacimiento !== "No especificado"
                       ? new Date(profileData.nacimiento).toLocaleDateString()
-                      : "No especificado"}
+                      : profileData.nacimiento}
                   </p>
                 </div>
                 {/* Vertical Green Line */}
@@ -144,14 +158,15 @@ const PerfilDoctorSeleccionado = () => {
                     Edad
                   </h2>
                   <p className="text-xl font-bold text-green-600">
-                    {profileData.edad ? `${profileData.edad} años` : "No especificado"}
+                    {profileData.edad !== "No especificado"
+                      ? `${profileData.edad} años`
+                      : profileData.edad}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         )}
-
         {/* Experience and Languages Card */}
         {isLoading ? (
           <SkeletonCard />
@@ -165,7 +180,11 @@ const PerfilDoctorSeleccionado = () => {
                     <Clock className="h-5 w-5 text-green-700" />
                     Experiencia
                   </h2>
-                  <p className="text-3xl font-bold text-green-600">{profileData.experiencia} años</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {profileData.experiencia !== "No especificado"
+                      ? `${profileData.experiencia} años`
+                      : profileData.experiencia}
+                  </p>
                 </div>
                 {/* Vertical Green Line */}
                 <div className="w-0.5 h-24 bg-green-200 mx-8"></div>
@@ -175,13 +194,16 @@ const PerfilDoctorSeleccionado = () => {
                     <Languages className="h-5 w-5 text-green-700" />
                     Idiomas
                   </h2>
-                  <p className="text-3xl font-bold text-green-600">{profileData.cantidadIdiomas}</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {profileData.cantidadIdiomas > 0
+                      ? profileData.cantidadIdiomas
+                      : "No especificado"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         )}
-
         {/* Educación */}
         {isLoading ? (
           <SkeletonCard />
@@ -195,18 +217,21 @@ const PerfilDoctorSeleccionado = () => {
                 </h2>
               </div>
               <div className="mt-4 space-y-4">
-                {profileData.educacion.map((edu, index) => (
-                  <div key={index} className="border-l-2 border-green-200 pl-4">
-                    <h3 className="text-sm font-medium text-gray-900">{edu.titulo}</h3>
-                    <p className="text-sm text-gray-500">{edu.institucion}</p>
-                    <p className="text-xs text-green-700">{edu.anio}</p>
-                  </div>
-                ))}
+                {profileData.educacion.length > 0 ? (
+                  profileData.educacion.map((edu, index) => (
+                    <div key={index} className="border-l-2 border-green-200 pl-4">
+                      <h3 className="text-sm font-medium text-gray-900">{edu.titulo || "No especificado"}</h3>
+                      <p className="text-sm text-gray-500">{edu.institucion || "No especificado"}</p>
+                      <p className="text-xs text-green-700">{edu.anio || "No especificado"}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No hay información de educación disponible.</p>
+                )}
               </div>
             </div>
           </div>
         )}
-
         {/* Idiomas */}
         {isLoading ? (
           <SkeletonCard />
@@ -220,14 +245,18 @@ const PerfilDoctorSeleccionado = () => {
                 </h2>
               </div>
               <div className="mt-4">
-                <ul className="space-y-2">
-                  {profileData.idiomas.map((idioma, index) => (
-                    <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
-                      <Languages className="h-4 w-4 text-green-700" />
-                      {idioma}
-                    </li>
-                  ))}
-                </ul>
+                {profileData.idiomas.length > 0 ? (
+                  <ul className="space-y-2">
+                    {profileData.idiomas.map((idioma, index) => (
+                      <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
+                        <Languages className="h-4 w-4 text-green-700" />
+                        {idioma || "No especificado"}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">No hay información de idiomas disponible.</p>
+                )}
               </div>
             </div>
           </div>
