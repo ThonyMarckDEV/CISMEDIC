@@ -16,6 +16,7 @@ const AsignarEspecialidadDoctor = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRemoval, setPendingRemoval] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasExistingSpecialty, setHasExistingSpecialty] = useState(false); // Nuevo estado
   const token = jwtUtils.getTokenFromCookie();
   const [nombreUsuario, setNombreUsuario] = useState('');
   const getAuthHeaders = () => ({
@@ -26,9 +27,9 @@ const AsignarEspecialidadDoctor = () => {
   useEffect(() => {
     fetchDoctors();
     fetchSpecialties();
-     const token = jwtUtils.getTokenFromCookie();
-        const nombres = jwtUtils.getNombres(token);
-        setNombreUsuario(nombres);
+    const token = jwtUtils.getTokenFromCookie();
+    const nombres = jwtUtils.getNombres(token);
+    setNombreUsuario(nombres);
   }, [searchTerm, selectedSpecialty]);
 
   const fetchDoctors = async () => {
@@ -77,6 +78,7 @@ const AsignarEspecialidadDoctor = () => {
         fetchDoctors();
         setIsAssigning(false);
         setSelectedDoctor(null);
+        setHasExistingSpecialty(false); // Reiniciar el estado
       } else {
         const error = await response.json();
         alert(error.error || 'Error al asignar especialidad');
@@ -123,6 +125,10 @@ const AsignarEspecialidadDoctor = () => {
   const handleAssignButtonClick = (doctor) => {
     setSelectedDoctor(doctor);
     setIsAssigning(true);
+
+    // Verificar si el doctor ya tiene una especialidad asignada
+    const hasSpecialty = doctor.especialidades && doctor.especialidades.length > 0;
+    setHasExistingSpecialty(hasSpecialty); // Actualizar el estado
   };
 
   const handlePageChange = (pageNumber) => {
@@ -133,15 +139,15 @@ const AsignarEspecialidadDoctor = () => {
     <SidebarSuperAdmin>
       <div className="p-6 md:-ml-64">
 
-          {/* Header */}
-          <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
           <div className="px-8 py-12 relative">
             <div className="relative z-10">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Bienvenido, {nombreUsuario || "Usuario"}
               </h1>
               <p className="text-violet-100 text-lg">
-              Asigne o elimine especialidades de los doctores del sistema.
+                Asigne o elimine especialidades de los doctores del sistema.
               </p>
             </div>
             <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
@@ -152,7 +158,6 @@ const AsignarEspecialidadDoctor = () => {
             </div>
           </div>
         </div>
-
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -183,7 +188,7 @@ const AsignarEspecialidadDoctor = () => {
         </div>
 
         {/* Replace doctors list with new component */}
-           {loading ? (
+        {loading ? (
           <div className="p-6 text-center">Cargando...</div>
         ) : (
           <DoctorList
@@ -211,6 +216,12 @@ const AsignarEspecialidadDoctor = () => {
               <p className="mb-4">
                 Seleccione una especialidad para {selectedDoctor?.nombres} {selectedDoctor?.apellidos}
               </p>
+              {/* Mensaje de advertencia si ya tiene una especialidad */}
+              {hasExistingSpecialty && (
+                <p className="text-yellow-600 mb-4">
+                  El doctor ya tiene una especialidad asignada. La nueva especialidad reemplazará a la actual.
+                </p>
+              )}
               <select
                 className="w-full px-4 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-blue-500"
                 onChange={(e) => handleAssignSpecialty(selectedDoctor?.idUsuario, e.target.value)}
