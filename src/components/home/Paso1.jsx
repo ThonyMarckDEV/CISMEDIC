@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
+import LoaderScreen from '../../components/home/LoadingScreen';
 
 const Paso1 = ({ onNext }) => {
   const [dni, setDni] = useState('');
   const [nacimiento, setNacimiento] = useState('');
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({}); // Limpiar errores anteriores
 
     try {
+      setIsLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/verificar-dni`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,6 +34,8 @@ const Paso1 = ({ onNext }) => {
       }
     } catch (err) {
       setErrors({ general: 'Error de conexión' });
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -57,7 +62,14 @@ const Paso1 = ({ onNext }) => {
               placeholder="Ej: 11122233"
               className={`w-full p-2 border rounded-md text-sm ${errors.dni ? 'border-red-500' : ''}`}
               value={dni}
-              onChange={(e) => setDni(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ''); // Eliminar caracteres no numéricos
+                if (value.length <= 8) { // Limitar a 8 caracteres
+                  setDni(value);
+                }
+              }}
+              maxLength={8} // Limitar a 8 caracteres
+              required
             />
             {errors.dni && <p className="text-red-500 text-sm mt-1">{errors.dni}</p>}
           </div>
@@ -83,6 +95,7 @@ const Paso1 = ({ onNext }) => {
           Continuar
         </button>
       </form>
+      {isLoading && <LoaderScreen />}
     </div>
   );
 };
