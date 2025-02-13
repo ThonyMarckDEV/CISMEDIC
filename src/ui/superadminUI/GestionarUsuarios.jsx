@@ -54,26 +54,37 @@ const GestionarSUsuarios = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
-    // Validación para campos numéricos
-    if (name === 'dni' || name === 'telefono') {
+
+    // Validación para campos de texto (nombres y apellidos)
+    if (name === "nombres" || name === "apellidos") {
+      // Expresión regular para permitir solo letras, espacios y tildes
+      const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*$/;
+      if (regex.test(value)) {
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: "" }); // Limpiar el error si el valor es válido
+      } else {
+        setErrors({ ...errors, [name]: "Solo se permiten letras y espacios." }); // Mostrar mensaje de error
+      }
+    }
+    // Validación para campos numéricos (dni y teléfono)
+    else if (name === "dni" || name === "telefono") {
       // Solo permite números
-      const numericValue = value.replace(/\D/g, '');
-  
+      const numericValue = value.replace(/\D/g, "");
+
       // Validar longitud máxima
       let isValid = true;
-      if (name === 'dni' && numericValue.length > 8) {
+      if (name === "dni" && numericValue.length > 8) {
         isValid = false;
-      } else if (name === 'telefono' && numericValue.length > 9) {
+      } else if (name === "telefono" && numericValue.length > 9) {
         isValid = false;
       }
-  
+
       // Actualizar el estado de errores
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: isValid ? '' : `El ${name} debe tener máximo ${name === 'dni' ? 8 : 9} dígitos.`,
+        [name]: isValid ? "" : `El ${name} debe tener máximo ${name === "dni" ? 8 : 9} dígitos.`,
       }));
-  
+
       // Actualizar el estado del formulario solo si es válido
       if (isValid) {
         setFormData({
@@ -81,8 +92,9 @@ const GestionarSUsuarios = () => {
           [name]: numericValue,
         });
       }
-    } else {
-      // Para otros campos, actualizar sin validación
+    }
+    // Para otros campos, actualizar sin validación
+    else {
       setFormData({
         ...formData,
         [name]: value,
@@ -203,6 +215,7 @@ const GestionarSUsuarios = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
                 )}
               </div>
+
 
               <div>
                 <input
