@@ -79,13 +79,23 @@ const GestionarEspecialidades = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    // Validación para el campo "nombre"
+    if (name === "nombre") {
+      // Expresión regular para permitir solo letras, espacios y tildes
+      const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*$/;
+      if (regex.test(value)) {
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: "" }); // Limpiar el error si el valor es válido
+      } else {
+        setErrors({ ...errors, [name]: "Solo se permiten letras y espacios." }); // Mostrar mensaje de error
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
 
     // Actualizar el contador de caracteres si el campo es "descripcion"
-    if (name === 'descripcion') {
+    if (name === "descripcion") {
       setCharCount(value.length);
     }
   };
