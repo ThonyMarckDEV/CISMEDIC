@@ -154,6 +154,16 @@ const Login = ({ closeLoginModal }) => {
               </button>
             </div>
 
+            {/* Enlace "¿Has olvidado tu contraseña?" */}
+            <div className="flex justify-end">
+              <a
+                href="/solicitar-restablecer-password"
+                className="text-sm text-green-700 hover:text-green-800 hover:underline"
+              >
+                ¿Has olvidado tu contraseña?
+              </a>
+            </div>
+
             <button
               type="submit"
               className="w-full bg-green-700 text-white py-3 rounded-lg 

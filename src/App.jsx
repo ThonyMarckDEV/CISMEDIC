@@ -18,6 +18,8 @@ import Home from './ui/Home';
 import Contacto from './ui/Contacto';
 import StaffMedico from './ui/StaffMedico';
 import PerfilDoctorSeleccionado from './ui/PerfilDoctorSeleccionado';
+import SolicitarRestablecerPassword from './components/home/SolicitarRestablecerContraseña';
+import RestablecerPassword from './components/home/RestablecerContraseña';
 
 // UIS
 import Login from './ui/Login';
@@ -130,6 +132,9 @@ function AppContent() {
       <Route path="/staffmedico" element={<StaffMedico />} />
       {/* Ruta dinámica para el perfil del doctor */}
       <Route path="/perfildoctor/:idDoctor" element={<PerfilDoctorSeleccionado />} />
+      {/* Ruta para restablecimeinto contrasena*/}
+      <Route path="/solicitar-restablecer-password" element={<SolicitarRestablecerPassword />} />
+      <Route path="/restablecer-password" element={<RestablecerPassword />} />
 
       {/* Rutas del cliente (envueltas en PagosProvider y CitasProvider) */}
       <Route
