@@ -1,15 +1,15 @@
-import React,  { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { NotebookTextIcon, FileText, ChevronRight } from "lucide-react"
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin"
 import jwtUtils from "../../utilities/jwtUtils"
-import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
-import TablaUsuarios from '../../components/superAdminComponents/TablaUsuarios';
+import { Link } from "react-router-dom"
+import TablaUsuarios from '../../components/superAdminComponents/TablaUsuarios'
 import API_BASE_URL from "../../js/urlHelper"
-import LoaderScreen from '../../components/home/LoadingScreen';
+import LoaderScreen from '../../components/home/LoadingScreen'
 import SweetAlert from "../../components/SweetAlert"
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'
 
-const GestionarSUsuarios = () => {
+const GestionarUsuarios = () => {
   const [formData, setFormData] = useState({
     nombres: '',
     apellidos: '',
@@ -17,6 +17,7 @@ const GestionarSUsuarios = () => {
     correo: '',
     telefono: '',
     password: '',
+    newPassword: '', // Nuevo campo para la contraseña en edición
     rol: 'cliente',
   });
   const [errors, setErrors] = useState({});
@@ -55,23 +56,17 @@ const GestionarSUsuarios = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Validación para campos de texto (nombres y apellidos)
     if (name === "nombres" || name === "apellidos") {
-      // Expresión regular para permitir solo letras, espacios y tildes
       const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*$/;
       if (regex.test(value)) {
         setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: "" }); // Limpiar el error si el valor es válido
+        setErrors({ ...errors, [name]: "" });
       } else {
-        setErrors({ ...errors, [name]: "Solo se permiten letras y espacios." }); // Mostrar mensaje de error
+        setErrors({ ...errors, [name]: "Solo se permiten letras y espacios." });
       }
     }
-    // Validación para campos numéricos (dni y teléfono)
     else if (name === "dni" || name === "telefono") {
-      // Solo permite números
       const numericValue = value.replace(/\D/g, "");
-
-      // Validar longitud máxima
       let isValid = true;
       if (name === "dni" && numericValue.length > 8) {
         isValid = false;
@@ -79,13 +74,11 @@ const GestionarSUsuarios = () => {
         isValid = false;
       }
 
-      // Actualizar el estado de errores
       setErrors((prevErrors) => ({
         ...prevErrors,
         [name]: isValid ? "" : `El ${name} debe tener máximo ${name === "dni" ? 8 : 9} dígitos.`,
       }));
 
-      // Actualizar el estado del formulario solo si es válido
       if (isValid) {
         setFormData({
           ...formData,
@@ -93,7 +86,6 @@ const GestionarSUsuarios = () => {
         });
       }
     }
-    // Para otros campos, actualizar sin validación
     else {
       setFormData({
         ...formData,
@@ -112,10 +104,22 @@ const GestionarSUsuarios = () => {
       
       const method = editingId ? 'PUT' : 'POST';
       
+      // Crear una copia del formData para enviar
+      const dataToSend = { ...formData };
+      
+      // Si estamos editando y hay una nueva contraseña, la incluimos
+      if (editingId) {
+        if (formData.newPassword) {
+          dataToSend.password = formData.newPassword;
+        }
+        // Si no hay nueva contraseña, eliminamos el campo para no enviarlo
+        delete dataToSend.newPassword;
+      }
+      
       const response = await fetch(url, {
         method,
         headers: getAuthHeaders(),
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
@@ -131,6 +135,7 @@ const GestionarSUsuarios = () => {
         correo: '',
         telefono: '',
         password: '',
+        newPassword: '',
         rol: 'cliente',
       });
       setEditingId(null);
@@ -139,13 +144,13 @@ const GestionarSUsuarios = () => {
       SweetAlert.showMessageAlert('Éxito', `Usuario ${editingId ? 'actualizado' : 'registrado'} correctamente`, 'success');
     } catch (error) {
       console.error('Error:', error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
-    setEditingId(null); // Salir del modo edición
+    setEditingId(null);
     setFormData({
       nombres: '',
       apellidos: '',
@@ -153,10 +158,12 @@ const GestionarSUsuarios = () => {
       correo: '',
       telefono: '',
       password: '',
+      newPassword: '',
       rol: 'cliente',
     });
-    setErrors({}); // Limpiar errores
+    setErrors({});
   };
+
 
   return (
     <SidebarSuperAdmin>
@@ -273,23 +280,37 @@ const GestionarSUsuarios = () => {
                   <option value="admin">Admin</option>
                 </select>
               </div>
+              {editingId ? (
+              <div>
+                <input
+                  type="password"
+                  name="newPassword"
+                  placeholder="Nueva contraseña (opcional)"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Contraseña"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+            )}
+          </div>
 
-              {!editingId && (
-                <div>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Contraseña"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                  {errors.password && (
-                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                  )}
-                </div>
-              )}
-            </div>
 
             <div className="flex flex-col md:flex-row gap-4">
             <button
@@ -381,4 +402,4 @@ const GestionarSUsuarios = () => {
   );
 };
 
-export default GestionarSUsuarios;
+export default GestionarUsuarios;
