@@ -21,7 +21,8 @@ const Familiares = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
-
+  const [errors, setErrors] = useState({});
+  
   useEffect(() => {
     const token = jwtUtils.getTokenFromCookie();
     if (token) {
@@ -63,9 +64,65 @@ const Familiares = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const validate = (name, value) => {
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case "nombre":
+      case "apellidos":
+        if (!/^[A-Za-z\s]*$/.test(value)) {
+          newErrors[name] = "Este campo solo puede contener letras y espacios.";
+        } else {
+          delete newErrors[name];
+        }
+        break;
+
+      case "dni":
+        if (!/^\d*$/.test(value)) {
+          newErrors.dni = "El DNI solo puede contener números.";
+        } else if (value.length > 8) {
+          newErrors.dni = "El DNI debe tener máximo 8 dígitos.";
+        } else {
+          delete newErrors.dni;
+        }
+        break;
+
+      case "edad":
+        if (!/^\d*$/.test(value)) {
+          newErrors.edad = "La edad solo puede contener números.";
+        } else if (value.length < 2) {
+          newErrors.dni = "La edad debe tener máximo 2 dígitos.";
+        }else {
+          delete newErrors.edad;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validar el valor antes de actualizar el estado
+    validate(name, value);
+
+    // Actualizar el estado solo si pasa la validación
+    if (
+      (name === "nombre" || name === "apellidos") &&
+      /^[A-Za-z\s]*$/.test(value)
+    ) {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "dni" && /^\d{0,8}$/.test(value)) {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "edad" && /^\d{0,2}$/.test(value)) {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -254,6 +311,7 @@ const Familiares = () => {
                 value={formData.dni}
                 onChange={handleChange}
                 className="p-2 border rounded"
+                maxLength={8}
                 required
               />
               <input
@@ -264,6 +322,7 @@ const Familiares = () => {
                 onChange={handleChange}
                 className="p-2 border rounded"
                 required
+                maxLength={2}
               />
               <select
                 name="sexo"
