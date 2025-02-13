@@ -14,8 +14,85 @@ const RestablecerContraseña = () => {
   const [tokenValido, setTokenValido] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Password validation function
+  const validatePassword = (pass) => {
+    const errors = {};
+    if (pass.length < 8) {
+      errors.length = 'La contraseña debe tener al menos 8 caracteres.';
+    }
+    if (!/[A-Z]/.test(pass)) {
+      errors.uppercase = 'La contraseña debe contener al menos una mayúscula.';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pass)) {
+      errors.symbol = 'La contraseña debe contener al menos un símbolo.';
+    }
+    return errors;
+  };
+
+  // Handle password change with validation
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setErrors(validatePassword(newPassword));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate password requirements
+    const validationErrors = validatePassword(password);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrors({ ...errors, match: 'Las contraseñas no coinciden.' });
+      return;
+    }
+
+    setLoading(true);
+    const token_veririficador = searchParams.get('token_veririficador');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/restablecer-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token_veririficador,
+          password,
+          password_confirmation: confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        SweetAlert.showMessageAlert(
+          'Éxito',
+          'Contraseña actualizada correctamente.',
+          'success'
+        );
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        if (response.status === 422 && data.errors) {
+          setErrors(data.errors);
+        } else {
+          SweetAlert.showMessageAlert('Error', data.message, 'error');
+        }
+      }
+    } catch (error) {
+      SweetAlert.showMessageAlert('Error', 'Error al restablecer la contraseña.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const verificarToken = async () => {
@@ -53,48 +130,7 @@ const RestablecerContraseña = () => {
     verificarToken();
   }, [searchParams]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      SweetAlert.showMessageAlert('Error', 'Las contraseñas no coinciden.', 'error');
-      return;
-    }
-
-    setLoading(true);
-    const token_veririficador = searchParams.get('token_veririficador');
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/restablecer-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token_veririficador,
-          password,
-          password_confirmation: confirmPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        SweetAlert.showMessageAlert(
-          'Éxito',
-          'Contraseña actualizada correctamente.',
-          'success'
-        );
-        setTimeout(() => navigate('/login'), 2000);
-      } else {
-        SweetAlert.showMessageAlert('Error', data.message, 'error');
-      }
-    } catch (error) {
-      SweetAlert.showMessageAlert('Error', 'Error al restablecer la contraseña.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+ 
 
   if (loading) {
     return <LoadingScreen />;
@@ -102,18 +138,8 @@ const RestablecerContraseña = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-green-50 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Olas decorativas */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 opacity-20">
-        <div className="absolute bottom-0 w-full">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="text-green-600">
-            <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-          </svg>
-        </div>
-      </div>
-
-      {/* Contenido principal */}
+      {/* Previous code remains the same */}
       <div className="z-10 flex flex-col items-center px-4 w-full max-w-md">
-        {/* Logo */}
         <img src={logoCismedic} alt="Cismedic Logo" className="w-48 mb-8" />
 
         {tokenValido ? (
@@ -136,9 +162,11 @@ const RestablecerContraseña = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full p-3 border ${
+                    Object.keys(errors).length > 0 ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   placeholder="Ingresa tu nueva contraseña"
                 />
                 <button
@@ -148,6 +176,18 @@ const RestablecerContraseña = () => {
                 >
                   {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
                 </button>
+              </div>
+
+              {/* Password requirements and error messages */}
+              <div className="text-sm space-y-1">
+                {Object.values(errors).map((error, index) => (
+                  <p key={index} className="text-red-500">{error}</p>
+                ))}
+                <ul className="text-gray-600 list-disc pl-5 mt-2">
+                  <li>Mínimo 8 caracteres</li>
+                  <li>Al menos una letra mayúscula</li>
+                  <li>Al menos un símbolo (!@#$%^&*(),.?":{}|&lt;&gt;)</li>
+                </ul>
               </div>
 
               <div className="relative">
@@ -160,7 +200,9 @@ const RestablecerContraseña = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full p-3 border ${
+                    errors.match ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   placeholder="Confirma tu nueva contraseña"
                 />
                 <button
@@ -181,6 +223,7 @@ const RestablecerContraseña = () => {
             </form>
           </div>
         ) : (
+          /* Previous invalid token message remains the same */
           <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
             <h2 className="text-xl text-red-600 mb-4">Token inválido o expirado</h2>
             <p className="text-gray-600 mb-4">
