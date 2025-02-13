@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
+import { FaCalendarTimes, FaSpinner } from "react-icons/fa"; // Importamos iconos de react-icons
 
 const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const [availableSlots, setAvailableSlots] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [monthsWithAvailability, setMonthsWithAvailability] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Estado para controlar el loader
 
   useEffect(() => {
     const fetchAvailableSlots = async () => {
@@ -24,8 +27,19 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
 
         const data = await response.json();
         setAvailableSlots(data.availableSlots);
+
+        // Extraer los meses con disponibilidad
+        const monthsWithSlots = new Set();
+        Object.values(data.availableSlots).forEach(slot => {
+          const date = new Date(slot.fecha);
+          monthsWithSlots.add(date.getMonth()); // Guardamos el mes (0-11)
+        });
+
+        setMonthsWithAvailability(Array.from(monthsWithSlots));
       } catch (error) {
         console.error("Error fetching available slots:", error);
+      } finally {
+        setIsLoading(false); // Desactivar el loader cuando la solicitud termine
       }
     };
 
@@ -56,26 +70,51 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
 
   const handleDateClick = (day) => {
     if (isDateAvailable(day)) {
-      // Creamos la fecha en la zona horaria local
-      const selectedDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), day))
-      // Formateamos la fecha manualmente para evitar problemas con zonas horarias
-      const formattedDate = `${selectedDate.getUTCFullYear()}-${String(selectedDate.getUTCMonth() + 1).padStart(2, "0")}-${String(selectedDate.getUTCDate()).padStart(2, "0")}`
-      onDateSelect(formattedDate)
+      const selectedDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), day));
+      const formattedDate = `${selectedDate.getUTCFullYear()}-${String(selectedDate.getUTCMonth() + 1).padStart(2, "0")}-${String(selectedDate.getUTCDate()).padStart(2, "0")}`;
+      onDateSelect(formattedDate);
 
-      // Comprobamos si es un dispositivo móvil
       if (window.innerWidth <= 768) {
-        // Asumimos que 768px es el punto de corte para móviles
-        // Usamos setTimeout para asegurarnos de que el desplazamiento ocurra después de que React actualice el DOM
         setTimeout(() => {
           window.scrollTo({
             top: document.documentElement.scrollHeight,
             behavior: "smooth",
-          })
-        }, 100)
+          });
+        }, 100);
       }
     }
+  };
+
+  // Mostrar loader mientras se carga la información
+  if (isLoading) {
+    return (
+      <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
+        <FaSpinner className="text-6xl text-gray-400 mx-auto mb-4 animate-spin" />
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Verificando disponibilidad...
+        </h1>
+      </div>
+    );
   }
 
+  // Si no hay meses con disponibilidad, mostramos un mensaje
+  if (monthsWithAvailability.length === 0) {
+    return (
+      <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
+        <FaCalendarTimes className="text-6xl text-gray-400 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          No hay disponibilidad
+        </h1>
+        <p className="text-gray-600">
+          El doctor no tiene disponibilidad por el momento. Consulta más tarde.
+        </p>
+      </div>
+    );
+  }
+
+  // Solo permitimos navegar a meses con disponibilidad
+  const canGoToPreviousMonth = monthsWithAvailability.includes((currentDate.getMonth() - 1 + 12) % 12);
+  const canGoToNextMonth = monthsWithAvailability.includes((currentDate.getMonth() + 1) % 12);
 
   return (
     <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto">
@@ -87,9 +126,9 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
         <button
           onClick={goToPreviousMonth}
           className={`p-3 rounded-full transition duration-300 ${
-            isCurrentMonth() ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
+            !canGoToPreviousMonth ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
           }`}
-          disabled={isCurrentMonth()}
+          disabled={!canGoToPreviousMonth}
         >
           &lt;
         </button>
@@ -100,7 +139,10 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
 
         <button
           onClick={goToNextMonth}
-          className="p-3 rounded-full bg-gray-900 text-white hover:bg-gray-700 transition duration-300"
+          className={`p-3 rounded-full transition duration-300 ${
+            !canGoToNextMonth ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
+          }`}
+          disabled={!canGoToNextMonth}
         >
           &gt;
         </button>
