@@ -1,4 +1,3 @@
-"use client"
 import React,  { useEffect, useState } from "react"
 import { NotebookTextIcon, FileText, ChevronRight } from "lucide-react"
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin"
@@ -298,7 +297,6 @@ const GestionarSUsuarios = () => {
               </div>
           </form>
         </div>
-        import Swal from 'sweetalert2';
 
         {/* Table Component */}
         <TablaUsuarios 
