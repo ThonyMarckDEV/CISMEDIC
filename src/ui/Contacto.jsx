@@ -205,8 +205,8 @@ const Contacto = () => {
               })}
             >
               <Popup>
-                <strong>Muebles RCI</strong><br />
-                Dirección: Av. Muebles RCI 123, Lima, Perú
+                <strong>Cismedic</strong><br />
+                Dirección:J osé Gálvez 415, Sechura 20691
               </Popup>
             </Marker>
           </MapContainer>
