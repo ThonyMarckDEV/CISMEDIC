@@ -80,7 +80,7 @@ const Login = ({ closeLoginModal }) => {
   };
 
   const handleRegister = () => {
-    navigate('/registro');
+    navigate('/register');
   };
 
   return (
