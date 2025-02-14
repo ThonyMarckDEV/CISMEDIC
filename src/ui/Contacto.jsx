@@ -179,7 +179,7 @@ const Contacto = () => {
         >
           <h2 className="text-3xl font-light text-gray-900 mb-4">Ubicación</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Encuéntranos en nuestras sedes principales en Talara y Lima.
+            Encuéntranos en nuestra sede principal en Sechura.
           </p>
         </motion.div>
 
