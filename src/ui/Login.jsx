@@ -12,6 +12,7 @@ const Login = ({ closeLoginModal }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isAccountDeleted, setIsAccountDeleted] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -23,6 +24,7 @@ const Login = ({ closeLoginModal }) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    setIsAccountDeleted(false);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/login`, {
@@ -41,34 +43,30 @@ const Login = ({ closeLoginModal }) => {
 
       if (response.ok) {
         const token = result.token;
-
-        // Crear una cookie de sesión
         document.cookie = `jwt=${token}; path=/`;
-        
-        // Función para actualizar la actividad
         updateLastActivity();
-    
-        // Decodificar el JWT para obtener el rol
         const userRole = jwtUtils.getUserRole(token);
-    
-        // Redirigir según el rol
+
         if (userRole === 'superadmin') {
-            window.location.href = '/superAdmin';
-        }else if (userRole === 'admin') {
+          window.location.href = '/superAdmin';
+        } else if (userRole === 'admin') {
           window.location.href = '/admin';
-        }else if (userRole === 'doctor') {
-            window.location.href = '/doctor';
-        }else if(userRole === 'cliente'){
-            window.location.href = '/cliente';
-        }else{
+        } else if (userRole === 'doctor') {
+          window.location.href = '/doctor';
+        } else if (userRole === 'cliente') {
+          window.location.href = '/cliente';
+        } else {
           console.error('Rol no reconocido:', userRole);
         }
       } else {
-        // Mostrar mensaje de error específico para usuario inactivo o correo no verificado
-        if (response.status === 403) {
+        // Manejar caso de cuenta eliminada
+        if (response.status === 403 && result.accountDeleted) {
+          setIsAccountDeleted(true);
+          setError(result.error);
+        }
+        // Otros casos de error
+        else if (response.status === 403) {
           setError(result.error || 'Su cuenta está inactiva. Por favor, contacte al administrador del sistema.');
-        } else if (response.status === 403 && result.error === 'Por favor, verifique su cuenta para poder ingresar.') {
-          setError('Por favor, verifique su cuenta para poder ingresar.');
         } else {
           setError(result.error || 'Hubo un error al iniciar sesión.');
         }
@@ -81,19 +79,19 @@ const Login = ({ closeLoginModal }) => {
     }
   };
 
+  const handleRegister = () => {
+    navigate('/registro');
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel - Hidden on Mobile */}
       <div className="hidden md:flex w-1/2 bg-green-700 p-8 flex-col">
         <div className="text-white text-2xl font-bold mb-20 text-center">Cismedic</div>
-
         <div className="flex-1 flex flex-col justify-center items-center">
-          {/* Icono del Teléfono */}
           <div className="relative w-40 h-40 mb-8">
             <Phone className="w-full h-full text-white" />
           </div>
-
-          {/* Texto */}
           <h1 className="text-white text-4xl font-medium text-center max-w-md">
             Agenda tus citas médicas virtuales y/o presenciales de la manera{' '}
             <span className="text-[#FFEB3B]">más simple y rápida</span>
@@ -101,12 +99,11 @@ const Login = ({ closeLoginModal }) => {
         </div>
       </div>
 
-      {/* Right Panel - Full Width on Mobile */}
+      {/* Right Panel */}
       <div className="flex-1 flex items-center justify-center p-8 md:w-1/2 bg-white">
         {loading && <LoadingScreen />}
 
         <div className="bg-white rounded-lg shadow-2xl p-8 sm:p-10 w-full max-w-md animate-fade-in-down">
-          {/* Botón "Volver" */}
           <a href="/" className="inline-flex items-center text-gray-600 hover:text-gray-800">
             <ChevronLeft className="w-4 h-4 mr-1" />
             Volver
@@ -154,7 +151,6 @@ const Login = ({ closeLoginModal }) => {
               </button>
             </div>
 
-            {/* Enlace "¿Has olvidado tu contraseña?" */}
             <div className="flex justify-end">
               <a
                 href="/solicitar-restablecer-password"
@@ -172,6 +168,18 @@ const Login = ({ closeLoginModal }) => {
             >
               Iniciar sesión
             </button>
+
+            {isAccountDeleted && (
+              <button
+                type="button"
+                onClick={handleRegister}
+                className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg 
+                         hover:bg-blue-700 focus:outline-none focus:ring-2 
+                         focus:ring-black transition-all animate-fade-in"
+              >
+                Registrarse nuevamente
+              </button>
+            )}
           </form>
 
           {error && (
