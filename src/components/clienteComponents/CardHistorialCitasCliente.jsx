@@ -66,6 +66,15 @@ const CardHistorialCitasCliente = ({ appointment }) => {
           </div>
         </div>
         <div className="flex items-center gap-3 text-gray-700">
+          <User className="h-5 w-5 text-green-600" />
+          <div>
+            <p className="text-sm text-gray-500">Doctor</p>
+            <p className="font-medium">
+              {appointment.doctorNombre} {appointment.doctorApellidos}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-gray-700">
           <Tag className="h-5 w-5 text-green-600" />
           <div>
             <p className="text-sm text-gray-500">Especialidad</p>
