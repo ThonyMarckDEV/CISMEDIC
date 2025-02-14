@@ -173,8 +173,8 @@ const Login = ({ closeLoginModal }) => {
               <button
                 type="button"
                 onClick={handleRegister}
-                className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg 
-                         hover:bg-blue-700 focus:outline-none focus:ring-2 
+                className="w-full mt-4 bg-green-600 text-white py-3 rounded-lg 
+                         hover:bg-green-700 focus:outline-none focus:ring-2 
                          focus:ring-black transition-all animate-fade-in"
               >
                 Registrarse nuevamente
