@@ -6,29 +6,40 @@ import jwtutils from '../../utilities/jwtUtils';
 
 const DashboardCards = () => {
   const [paymentData, setPaymentData] = useState([]);
+  const [statsData, setStatsData] = useState({
+    topSpecialty: { especialidad: '', total: 0 },
+    totalClients: 0
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPaymentData = async () => {
+    const fetchData = async () => {
       try {
         const token = jwtutils.getTokenFromCookie();
+
         if (!token) {
           throw new Error('No token found');
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/payment-history`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const [paymentsResponse, statsResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/payment-history`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_BASE_URL}/api/dashboard-stats`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        ]);
 
-        if (!response.ok) {
+        if (!paymentsResponse.ok || !statsResponse.ok) {
           throw new Error('Failed to fetch data');
         }
 
-        const data = await response.json();
-        setPaymentData(data);
+        const payments = await paymentsResponse.json();
+        const stats = await statsResponse.json();
+        
+        setPaymentData(payments);
+        setStatsData(stats);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -36,7 +47,7 @@ const DashboardCards = () => {
       }
     };
 
-    fetchPaymentData();
+    fetchData();
   }, []);
 
   const processDataForChart = (data) => {
@@ -118,6 +129,36 @@ const DashboardCards = () => {
               </div>
             </>
           )}
+        </div>
+      </div>
+
+      {/* Tarjeta de Especialidad más Demandada */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Especialidad más Demandada</h3>
+        </div>
+        <div className="space-y-2">
+          <div className="text-2xl font-bold text-gray-900">
+            {statsData.topSpecialty.especialidad}
+          </div>
+          <p className="text-sm text-gray-500">
+            {statsData.topSpecialty.total} citas realizadas
+          </p>
+        </div>
+      </div>
+
+      {/* Tarjeta de Total de Clientes */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Total de Clientes</h3>
+        </div>
+        <div className="space-y-2">
+          <div className="text-2xl font-bold text-gray-900">
+            {statsData.totalClients}
+          </div>
+          <p className="text-sm text-gray-500">
+            clientes registrados en el sistema
+          </p>
         </div>
       </div>
 
