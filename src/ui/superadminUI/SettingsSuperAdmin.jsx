@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
-import SidebarCliente from "../../components/clienteComponents/SidebarCliente";
+import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
 
@@ -22,7 +22,7 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-const Settings = () => {
+const SettingsSuperAdmin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -126,7 +126,7 @@ const Settings = () => {
   };
 
   return (
-    <SidebarCliente>
+    <SidebarSuperAdmin>
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
         {/* Header section */}
         <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
@@ -244,8 +244,8 @@ const Settings = () => {
           </div>
         </Modal>
       </div>
-    </SidebarCliente>
+    </SidebarSuperAdmin>
   );
 };
 
-export default Settings;
+export default SettingsSuperAdmin;
