@@ -121,11 +121,11 @@ const AsignarEspecialidadDoctor = () => {
         SweetAlert.showMessageAlert("Exito","Especialidad eliminada correctamente", "success");
       } else {
         const error = await response.json();
-        alert(error.error || 'Error al eliminar especialidad');
+        SweetAlert.showMessageAlert("Error","Error al eliminar especialidad", "error");
       }
     } catch (error) {
       console.error('Error removing specialty:', error);
-      alert('Error al eliminar especialidad');
+      SweetAlert.showMessageAlert("Error","Error al eliminar especialidad", "error");
     } finally {
       setShowConfirmDialog(false);
       setPendingRemoval(null);
