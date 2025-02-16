@@ -10,6 +10,7 @@ const navigation = [
   { name: "Gestionar Usuarios", href: "/superadmin/gestionarusuarios", icon: UserCog2 },
   { name: "Gestionar Especialidades", href: "/superadmin/gestionarespecialidades", icon: NotebookPenIcon },
   { name: "Asignar Especialidad Doctor", href: "/superadmin/asignarespecialidad", icon: WorkflowIcon },
+  { name: "Configuracion", href: "/superadmin/settings", icon: Settings },
 ];
 
 const SidebarSuperAdmin = ({ children }) => {
