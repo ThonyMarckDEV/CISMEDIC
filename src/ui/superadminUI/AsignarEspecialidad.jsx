@@ -118,6 +118,7 @@ const AsignarEspecialidadDoctor = () => {
 
       if (response.ok) {
         fetchDoctors();
+        SweetAlert.showMessageAlert("Exito","Especialidad eliminada correctamente", "success");
       } else {
         const error = await response.json();
         alert(error.error || 'Error al eliminar especialidad');
