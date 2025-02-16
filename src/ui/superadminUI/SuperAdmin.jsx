@@ -4,6 +4,7 @@ import { NotebookTextIcon, FileText, ChevronRight } from "lucide-react"
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin"
 import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
+import  DashboardCards  from "../../components/superAdminComponents/DashboardCards";
 
 const SuperAdmin = () => {
   const [nombreUsuario, setNombreUsuario] = useState("")
@@ -44,6 +45,7 @@ const SuperAdmin = () => {
         {/* Contenido principal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Una columna en móvil, dos en desktop */}
 
+          <DashboardCards />
    
         </div>
       </div>
