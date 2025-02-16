@@ -106,6 +106,7 @@ const AsignarEspecialidadDoctor = () => {
     if (!pendingRemoval) return;
     
     try {
+      setIsLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/removerespecialidad`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
@@ -127,6 +128,7 @@ const AsignarEspecialidadDoctor = () => {
     } finally {
       setShowConfirmDialog(false);
       setPendingRemoval(null);
+      setIsLoading(false);
     }
   };
 
