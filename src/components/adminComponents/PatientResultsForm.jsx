@@ -94,7 +94,7 @@ const LuxuryResultsForm = () => {
         title: 'Fecha requerida',
         text: 'Debes seleccionar una fecha de cita.',
       });
-      setIsLoading(false); // Desactivar el loader
+      setIsLoading(false); 
       return;
     }
     if (!title.trim()) {
@@ -103,7 +103,7 @@ const LuxuryResultsForm = () => {
         title: 'Título requerido',
         text: 'Debes ingresar un título para la cita.',
       });
-      setIsLoading(false); // Desactivar el loader
+      setIsLoading(false); 
       return;
     }
     if (isNewPatient) {
@@ -113,7 +113,7 @@ const LuxuryResultsForm = () => {
           title: 'Campos obligatorios',
           text: 'Todos los campos son obligatorios para pacientes nuevos.',
         });
-        setIsLoading(false); // Desactivar el loader
+        setIsLoading(false);
         return;
       }
     } else {
@@ -123,7 +123,7 @@ const LuxuryResultsForm = () => {
           title: 'Paciente requerido',
           text: 'Debes seleccionar un paciente existente.',
         });
-        setIsLoading(false); // Desactivar el loader
+        setIsLoading(false);
         return;
       }
     }
@@ -194,7 +194,7 @@ const LuxuryResultsForm = () => {
     <div className="min-h-screen">
       <h1 className="text-2xl font-bold mb-6">Subir Resultados Médicos</h1>
 
-      {/* Error and Success Messages */}
+
       {error && <div className="bg-red-100 text-red-700 p-4 rounded mb-4">{error}</div>}
       {success && <div className="bg-green-100 text-green-700 p-4 rounded mb-4">Resultados subidos exitosamente</div>}
 

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
-import { FaCalendarTimes, FaSpinner } from "react-icons/fa"; // Importamos iconos de react-icons
+import { FaCalendarTimes, FaSpinner } from "react-icons/fa"; 
 
 const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const [availableSlots, setAvailableSlots] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
   const [monthsWithAvailability, setMonthsWithAvailability] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar el loader
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const fetchAvailableSlots = async () => {
