@@ -48,6 +48,7 @@ import Admin from './ui/adminUI/Admin';
 import SubirResultados from './ui/adminUI/SubirResultados';
 import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioClientes';
 import DisponibilidadDoctores from './ui/adminUI/DisponibilidadDoctores';
+import AgendarCitaCliente from './ui/adminUI/AgendarCitaCliente';
 
 //UI SuperAdmin
 import SuperAmin from './ui/superadminUI/SuperAdmin';
@@ -320,6 +321,14 @@ function AppContent() {
           <ProtectedRouteRolAdmin element={<DisponibilidadDoctores />} />
         }
       />
+
+      <Route
+        path="/admin/agendarcitacliente"
+        element={
+          <ProtectedRouteRolAdmin element={<AgendarCitaCliente />} />
+        }
+      />
+
 
     {/* Rutas del superadmin */}
       <Route
