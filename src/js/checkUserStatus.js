@@ -8,7 +8,7 @@ export const checkUserStatus = async () => {
 
         if (!token) {
             console.warn('No hay token en las cookies');
-            await logoutAndRedirect();
+           // await logoutAndRedirect();
             return;
         }
 
@@ -16,7 +16,7 @@ export const checkUserStatus = async () => {
         
         if (!idUsuario) {
             console.warn('No se pudo obtener el ID de usuario del token');
-            await logoutAndRedirect();
+         //   await logoutAndRedirect();
             return;
         }
 
@@ -38,14 +38,14 @@ export const checkUserStatus = async () => {
 
         if (!response.ok || data.status === 'error' || data.force_logout) {
             console.warn('Sesión inválida:', data.message);
-            await logoutAndRedirect();
+           // await logoutAndRedirect();
             return;
         }
 
     } catch (error) {
         console.error('Error en checkUserStatus:', error);
         if (!(error instanceof TypeError)) {
-            await logoutAndRedirect();
+           // await logoutAndRedirect();
         }
     }
 };
