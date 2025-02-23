@@ -45,7 +45,10 @@ export const checkUserStatus = async () => {
     } catch (error) {
         console.log('Error en checkUserStatus:', error);
         if (!(error instanceof TypeError)) {
-           // await logoutAndRedirect();
+              // Eliminar el token de localStorage
+               jwtUtils.removeTokenFromCookie();
+              // Redirigir a la página de inicio de sesión en el dominio raíz
+              window.location.href = `/`;
         }
     }
 };
