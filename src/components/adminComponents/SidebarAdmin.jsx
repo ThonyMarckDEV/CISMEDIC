@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon, UserPenIcon } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon, UserPenIcon, UserSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
@@ -10,7 +10,8 @@ const navigation = [
   { name: "Subir Resultados", href: "/admin/subirresultados", icon: NotebookTextIcon },
   { name: "Resultados de Clientes", href: "/admin/resultadosclientes", icon: UsersRoundIcon },
   { name: "Disponibilidad Doctores", href: "/admin/disponibilidaddoctores", icon: Calendar },
-  { name: "Agendar Cita Cliente", href: "/admin/agendarcitacliente", icon: UserPenIcon }
+  { name: "Agendar Cita Cliente", href: "/admin/agendarcitacliente", icon: UserPenIcon },
+  { name: "Pagos Clientes", href: "/admin/pagosclientes", icon: UserSquare }
 ];
 
 const SidebarAdmin = ({ children }) => {
