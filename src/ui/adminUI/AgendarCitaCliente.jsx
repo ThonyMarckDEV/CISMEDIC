@@ -209,13 +209,6 @@ const AgendarCitaCliente = () => {
     });
   };
 
-  const handleFechaChange = (e) => {
-    const selectedFecha = e.target.value;
-    setFecha(selectedFecha);
-    if (idDoctor && selectedFecha) {
-      fetchHorariosDisponibles(idDoctor, selectedFecha);
-    }
-  };
 
   const getFechaActualPeru = () => {
     const options = { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -227,110 +220,126 @@ const AgendarCitaCliente = () => {
     setFechaMinima(getFechaActualPeru());
   }, []);
 
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!idDoctor || !fecha || !selectedHorario) {
-        setError("Por favor, complete todos los campos.");
-        return;
-    }
+      e.preventDefault();
+      if (!idDoctor || !fecha || !selectedHorario) {
+          setError("Por favor, complete todos los campos.");
+          return;
+      }
 
-    const token = getToken();
-    if (!token) {
-        setError("No se pudo obtener el token de autenticación.");
-        return;
-    }
-    try {
-        setIsLoadingFullScreen(true);
-        const idCliente = jwtUtils.getIdUsuario(token);
+      // Validate client data
+      if (esClienteGenerico) {
+          if (!clienteGenericoData.nombre || !clienteGenericoData.apellidos || 
+              !clienteGenericoData.dni || !clienteGenericoData.correo) {
+              setError("Por favor, complete todos los datos del cliente genérico.");
+              return;
+          }
+      } else if (!clienteSeleccionado) {
+          setError("Por favor, seleccione un cliente.");
+          return;
+      }
 
-        const horarioSeleccionado = horariosDisponibles.find(
-            (horario) => horario.idHorario.toString() === selectedHorario
-        );
-        const costo = horarioSeleccionado ? horarioSeleccionado.costo : 0;
+      const token = getToken();
+      if (!token) {
+          setError("No se pudo obtener el token de autenticación.");
+          return;
+      }
 
-        const citaData = {
-          idCliente: esClienteGenerico ? null : (clienteSeleccionado?.idUsuario || jwtUtils.getIdUsuario(getToken())),
-          es_cliente_generico: esClienteGenerico,
-          nombre_cliente: esClienteGenerico ? clienteGenericoData.nombre : null,
-          apellidos_cliente: esClienteGenerico ? clienteGenericoData.apellidos : null,
-          dni_cliente: esClienteGenerico ? clienteGenericoData.dni : null,
-          correo_cliente: esClienteGenerico ? clienteGenericoData.correo : null,
-          idDoctor,
-          idHorario: selectedHorario,
-          fecha,
-          especialidad: selectedEspecialidad,
-        };
+      // Add loading state to prevent multiple submissions
+      if (isLoadingFullScreen) {
+          return;
+      }
 
-        const citaResponse = await fetch(`${API_BASE_URL}/api/admin/agendar-cita-admin`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(citaData),
-        });
+      try {
+          setIsLoadingFullScreen(true);
+          setError("");
 
-        if (!citaResponse.ok) {
-            const errorData = await citaResponse.json();
-            if (citaResponse.status === 409) {
-                SweetAlert.showMessageAlert(
-                    'Error',
-                    errorData.error || 'El horario seleccionado ya no se encuentra disponible.',
-                    'error'
-                );
-                throw new Error(errorData.error || 'El horario seleccionado ya no se encuentra disponible.');
-            } else {
-                SweetAlert.showMessageAlert(
-                    'Error',
-                    'Error al agendar la cita.',
-                    'error'
-                );
-                throw new Error('Error al agendar la cita.');
-            }
-        }
+          const horarioSeleccionado = horariosDisponibles.find(
+              (horario) => horario.idHorario.toString() === selectedHorario
+          );
+          
+          if (!horarioSeleccionado) {
+              throw new Error("Horario no encontrado");
+          }
 
-        const citaResult = await citaResponse.json();
-        const idCita = citaResult.idCita;
+          const citaData = {
+              idCliente: esClienteGenerico ? null : (clienteSeleccionado?.idUsuario || jwtUtils.getIdUsuario(getToken())),
+              es_cliente_generico: esClienteGenerico,
+              nombre_cliente: esClienteGenerico ? clienteGenericoData.nombre : null,
+              apellidos_cliente: esClienteGenerico ? clienteGenericoData.apellidos : null,
+              dni_cliente: esClienteGenerico ? clienteGenericoData.dni : null,
+              correo_cliente: esClienteGenerico ? clienteGenericoData.correo : null,
+              idDoctor,
+              idHorario: selectedHorario,
+              fecha,
+              especialidad: selectedEspecialidad,
+              monto: horarioSeleccionado.costo,
+          };
 
-        const pagoData = {
-            idCita: idCita,
-            monto: costo,
-        };
+          // Use AbortController to handle potential race conditions
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        const pagoResponse = await fetch(`${API_BASE_URL}/api/admin/registrar-pago-admin`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(pagoData),
-        });
+          const citaResponse = await fetch(`${API_BASE_URL}/api/admin/agendar-cita-admin`, {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(citaData),
+              signal: controller.signal
+          });
 
-        if (!pagoResponse.ok) {
-            SweetAlert.showMessageAlert(
-                'Error',
-                'Error al registrar el pago.',
-                'error'
-            );
-            throw new Error('Error al registrar el pago.');
-        }
+          clearTimeout(timeoutId);
 
-        SweetAlert.showMessageAlert(
-            'Éxito',
-            'Cita agendada y pago registrado exitosamente.',
-            'success'
-        );
+          if (!citaResponse.ok) {
+              const errorData = await citaResponse.json();
+              if (citaResponse.status === 409) {
+                  SweetAlert.showMessageAlert(
+                      'Error',
+                      errorData.error || 'El horario seleccionado ya no se encuentra disponible.',
+                      'error'
+                  );
+                  // Refresh available schedules
+                  await fetchHorariosDisponibles(idDoctor, fecha);
+                  throw new Error(errorData.error || 'El horario seleccionado ya no se encuentra disponible.');
+              } else {
+                  SweetAlert.showMessageAlert(
+                      'Error',
+                      'Error al agendar la cita.',
+                      'error'
+                  );
+                  throw new Error('Error al agendar la cita.');
+              }
+          }
 
-        resetForm();
-    } catch (error) {
-        console.error('Error:', error);
-        setError(error.message || 'Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
-        resetForm();
-    } finally {
-        setIsLoadingFullScreen(false);
-    }
-};
-  
+          const citaResult = await citaResponse.json();
+
+          // Show success message and reset form
+          SweetAlert.showMessageAlert(
+              'Éxito',
+              'Cita agendada y pago registrado exitosamente.',
+              'success'
+          );
+
+          resetForm();
+          
+          // Refresh available schedules after successful booking
+          await fetchHorariosDisponibles(idDoctor, fecha);
+
+      } catch (error) {
+          if (error.name === 'AbortError') {
+              setError('La solicitud ha tardado demasiado. Por favor, inténtelo de nuevo.');
+          } else {
+              console.error('Error:', error);
+              setError(error.message || 'Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
+          }
+      } finally {
+          setIsLoadingFullScreen(false);
+      }
+  };
+
   const resetForm = () => {
     setSelectedEspecialidad("");
     setIdDoctor("");
