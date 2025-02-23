@@ -43,8 +43,9 @@ const Login = ({ closeLoginModal }) => {
 
       if (response.ok) {
         const token = result.token;
-        document.cookie = `jwt=${token}; path=/`;
-        updateLastActivity();
+        // Guardar el token en una cookie
+        document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
+
         const userRole = jwtUtils.getUserRole(token);
 
         if (userRole === 'superadmin') {
