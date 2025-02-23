@@ -32,8 +32,183 @@ const AgendarCitaCliente = () => {
   const [clientesBuscados, setClientesBuscados] = useState([]);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [busquedaDni, setBusquedaDni] = useState('');
-
   const [fechaMinima, setFechaMinima] = useState('');
+  const [tipoComprobante, setTipoComprobante] = useState('boleta');
+  const [ruc, setRuc] = useState('');
+  const [rucError, setRucError] = useState('');
+  const [rucValid, setRucValid] = useState(false);
+
+  const validateRuc = async (rucNumber) => {
+    if (!/^\d{11}$/.test(rucNumber)) {
+      setRucError("El RUC debe tener exactamente 11 dígitos numéricos");
+      setRucValid(false);
+      return;
+    }
+
+    setLoading(true);
+    
+    const API_TOKEN = process.env.REACT_APP_API_TOKEN;
+    if (!API_TOKEN) {
+      console.error("API Token no configurado");
+      setRucError("Error de configuración del sistema. Contacte al administrador.");
+      setRucValid(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://dniruc.apisperu.com/api/v1/ruc/${rucNumber}?token=${API_TOKEN}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.ruc) {
+        setRucValid(true);
+        setRucError("");
+      } else {
+        setRucError("RUC no encontrado o inválido");
+        setRucValid(false);
+      }
+    } catch (error) {
+      console.error("Error validando RUC:", error);
+      setRucError(
+        error.message.includes("HTTP error") 
+          ? "Servicio de validación no disponible. Intente más tarde."
+          : "Error al validar el RUC. Verifique su conexión."
+      );
+      setRucValid(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!idDoctor || !fecha || !selectedHorario) {
+      setError("Por favor, complete todos los campos.");
+      return;
+    }
+
+    if (esClienteGenerico) {
+      if (!clienteGenericoData.nombre || !clienteGenericoData.apellidos || 
+          !clienteGenericoData.dni || !clienteGenericoData.correo) {
+        setError("Por favor, complete todos los datos del cliente genérico.");
+        return;
+      }
+      if (!/^\d{8}$/.test(clienteGenericoData.dni)) {
+        setError("El DNI debe tener exactamente 8 dígitos numéricos.");
+        return;
+      }
+    } else if (!clienteSeleccionado) {
+      setError("Por favor, seleccione un cliente.");
+      return;
+    }
+
+    if (tipoComprobante === 'factura' && !rucValid) {
+      setError("Por favor, valide el RUC antes de continuar.");
+      return;
+    }
+
+    const token = getToken();
+    if (!token) {
+      setError("No se pudo obtener el token de autenticación.");
+      return;
+    }
+
+    if (isLoadingFullScreen) {
+      return;
+    }
+
+    try {
+      setIsLoadingFullScreen(true);
+      setError("");
+
+      const horarioSeleccionado = horariosDisponibles.find(
+        (horario) => horario.idHorario.toString() === selectedHorario
+      );
+
+      if (!horarioSeleccionado) {
+        throw new Error("Horario no encontrado");
+      }
+
+      const citaData = {
+        idCliente: esClienteGenerico ? null : (clienteSeleccionado?.idUsuario || jwtUtils.getIdUsuario(getToken())),
+        es_cliente_generico: esClienteGenerico,
+        nombre_cliente: esClienteGenerico ? clienteGenericoData.nombre : null,
+        apellidos_cliente: esClienteGenerico ? clienteGenericoData.apellidos : null,
+        dni_cliente: esClienteGenerico ? clienteGenericoData.dni : null,
+        correo_cliente: esClienteGenerico ? clienteGenericoData.correo : null,
+        idDoctor,
+        idHorario: selectedHorario,
+        fecha,
+        especialidad: selectedEspecialidad,
+        monto: horarioSeleccionado.costo,
+        tipo_comprobante: tipoComprobante,
+        ruc: tipoComprobante === 'factura' ? ruc : null,
+      };
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      const citaResponse = await fetch(`${API_BASE_URL}/api/admin/agendar-cita-admin`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(citaData),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!citaResponse.ok) {
+        const errorData = await citaResponse.json();
+        if (citaResponse.status === 409) {
+          SweetAlert.showMessageAlert(
+            'Error',
+            errorData.error || 'El horario seleccionado ya no se encuentra disponible.',
+            'error'
+          );
+          await fetchHorariosDisponibles(idDoctor, fecha);
+          throw new Error(errorData.error || 'El horario seleccionado ya no se encuentra disponible.');
+        } else {
+          SweetAlert.showMessageAlert(
+            'Error',
+            'Error al agendar la cita.',
+            'error'
+          );
+          throw new Error('Error al agendar la cita.');
+        }
+      }
+
+      const citaResult = await citaResponse.json();
+
+      SweetAlert.showMessageAlert(
+        'Éxito',
+        'Cita agendada y pago registrado exitosamente.',
+        'success'
+      );
+
+      resetForm();
+      await fetchHorariosDisponibles(idDoctor, fecha);
+
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        setError('La solicitud ha tardado demasiado. Por favor, inténtelo de nuevo.');
+      } else {
+        console.error('Error:', error);
+        setError(error.message || 'Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
+      }
+    } finally {
+      setIsLoadingFullScreen(false);
+    }
+  };
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
@@ -220,126 +395,6 @@ const AgendarCitaCliente = () => {
     setFechaMinima(getFechaActualPeru());
   }, []);
 
-
-  const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!idDoctor || !fecha || !selectedHorario) {
-          setError("Por favor, complete todos los campos.");
-          return;
-      }
-
-      // Validate client data
-      if (esClienteGenerico) {
-          if (!clienteGenericoData.nombre || !clienteGenericoData.apellidos || 
-              !clienteGenericoData.dni || !clienteGenericoData.correo) {
-              setError("Por favor, complete todos los datos del cliente genérico.");
-              return;
-          }
-      } else if (!clienteSeleccionado) {
-          setError("Por favor, seleccione un cliente.");
-          return;
-      }
-
-      const token = getToken();
-      if (!token) {
-          setError("No se pudo obtener el token de autenticación.");
-          return;
-      }
-
-      // Add loading state to prevent multiple submissions
-      if (isLoadingFullScreen) {
-          return;
-      }
-
-      try {
-          setIsLoadingFullScreen(true);
-          setError("");
-
-          const horarioSeleccionado = horariosDisponibles.find(
-              (horario) => horario.idHorario.toString() === selectedHorario
-          );
-          
-          if (!horarioSeleccionado) {
-              throw new Error("Horario no encontrado");
-          }
-
-          const citaData = {
-              idCliente: esClienteGenerico ? null : (clienteSeleccionado?.idUsuario || jwtUtils.getIdUsuario(getToken())),
-              es_cliente_generico: esClienteGenerico,
-              nombre_cliente: esClienteGenerico ? clienteGenericoData.nombre : null,
-              apellidos_cliente: esClienteGenerico ? clienteGenericoData.apellidos : null,
-              dni_cliente: esClienteGenerico ? clienteGenericoData.dni : null,
-              correo_cliente: esClienteGenerico ? clienteGenericoData.correo : null,
-              idDoctor,
-              idHorario: selectedHorario,
-              fecha,
-              especialidad: selectedEspecialidad,
-              monto: horarioSeleccionado.costo,
-          };
-
-          // Use AbortController to handle potential race conditions
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-          const citaResponse = await fetch(`${API_BASE_URL}/api/admin/agendar-cita-admin`, {
-              method: 'POST',
-              headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(citaData),
-              signal: controller.signal
-          });
-
-          clearTimeout(timeoutId);
-
-          if (!citaResponse.ok) {
-              const errorData = await citaResponse.json();
-              if (citaResponse.status === 409) {
-                  SweetAlert.showMessageAlert(
-                      'Error',
-                      errorData.error || 'El horario seleccionado ya no se encuentra disponible.',
-                      'error'
-                  );
-                  // Refresh available schedules
-                  await fetchHorariosDisponibles(idDoctor, fecha);
-                  throw new Error(errorData.error || 'El horario seleccionado ya no se encuentra disponible.');
-              } else {
-                  SweetAlert.showMessageAlert(
-                      'Error',
-                      'Error al agendar la cita.',
-                      'error'
-                  );
-                  throw new Error('Error al agendar la cita.');
-              }
-          }
-
-          const citaResult = await citaResponse.json();
-
-          // Show success message and reset form
-          SweetAlert.showMessageAlert(
-              'Éxito',
-              'Cita agendada y pago registrado exitosamente.',
-              'success'
-          );
-
-          resetForm();
-          
-          // Refresh available schedules after successful booking
-          await fetchHorariosDisponibles(idDoctor, fecha);
-
-      } catch (error) {
-          if (error.name === 'AbortError') {
-              setError('La solicitud ha tardado demasiado. Por favor, inténtelo de nuevo.');
-          } else {
-              console.error('Error:', error);
-              setError(error.message || 'Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
-          }
-      } finally {
-          setIsLoadingFullScreen(false);
-      }
-  };
-
   const resetForm = () => {
     // Reset form fields
     setSelectedEspecialidad("");
@@ -508,6 +563,37 @@ const AgendarCitaCliente = () => {
                 </div>
               </div>
             )}
+
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tipo de Comprobante
+          </label>
+          <select
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
+            value={tipoComprobante}
+            onChange={(e) => setTipoComprobante(e.target.value)}
+            required
+          >
+            <option value="boleta">Boleta</option>
+            <option value="factura">Factura</option>
+          </select>
+        </div>
+        {tipoComprobante === 'factura' && (
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              RUC
+            </label>
+            <input
+              type="text"
+              placeholder="Ingrese el RUC"
+              value={ruc}
+              onChange={(e) => setRuc(e.target.value)}
+              onBlur={() => validateRuc(ruc)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
+            />
+            {rucError && <p className="text-red-500 text-sm mt-2">{rucError}</p>}
+          </div>
+        )}
   
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="bg-gray-50 p-4 rounded-lg">
