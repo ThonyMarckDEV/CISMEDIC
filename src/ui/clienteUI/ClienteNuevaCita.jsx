@@ -252,28 +252,23 @@ const ClienteNuevaCita = () => {
         setError("No se pudo obtener el token de autenticación.");
         return;
     }
-    try {
-        setIsLoadingFullScreen(true); // Activar el LoadingScreen
-        const idCliente = jwtUtils.getIdUsuario(token);
 
-        // Obtener el costo del horario seleccionado
-        const horarioSeleccionado = horariosDisponibles.find(
-            (horario) => horario.idHorario.toString() === selectedHorario
-        );
-        const costo = horarioSeleccionado ? horarioSeleccionado.costo : 0;
+    try {
+        setIsLoadingFullScreen(true);
+        const idCliente = jwtUtils.getIdUsuario(token);
 
         // Datos para registrar la cita
         const citaData = {
             idCliente: idCliente,
-            idFamiliarUsuario: citaParaFamiliar ? idFamiliarUsuario : null, // Enviar el ID del familiar si es una cita para él
+            idFamiliarUsuario: citaParaFamiliar ? idFamiliarUsuario : null,
             idDoctor: idDoctor,
             idHorario: selectedHorario,
             fecha: fecha,
             especialidad: selectedEspecialidad,
         };
 
-        // Registrar la cita
-        const citaResponse = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
+        // Registrar la cita (ahora incluye el registro del pago)
+        const response = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -282,9 +277,9 @@ const ClienteNuevaCita = () => {
             body: JSON.stringify(citaData),
         });
 
-        if (!citaResponse.ok) {
-            const errorData = await citaResponse.json();
-            if (citaResponse.status === 409) {
+        if (!response.ok) {
+            const errorData = await response.json();
+            if (response.status === 409) {
                 SweetAlert.showMessageAlert(
                     'Error',
                     errorData.error || 'El horario seleccionado ya no se encuentra disponible.',
@@ -299,34 +294,6 @@ const ClienteNuevaCita = () => {
                 );
                 throw new Error('Error al agendar la cita.');
             }
-        }
-
-        const citaResult = await citaResponse.json();
-        const idCita = citaResult.idCita;
-
-        // Datos para registrar el pago
-        const pagoData = {
-            idCita: idCita,
-            monto: costo,
-        };
-
-        // Registrar el pago
-        const pagoResponse = await fetch(`${API_BASE_URL}/api/registrar-pago`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(pagoData),
-        });
-
-        if (!pagoResponse.ok) {
-            SweetAlert.showMessageAlert(
-                'Error',
-                'Error al registrar el pago.',
-                'error'
-            );
-            throw new Error('Error al registrar el pago.');
         }
 
         // Actualizar la cantidad de citas y pagos
@@ -353,13 +320,16 @@ const ClienteNuevaCita = () => {
             citasResponse.json(),
             pagosResponse.json(),
         ]);
+        
         setCantidadCitas(citasData.cantidad);
         setCantidadPagos(pagosData.cantidad);
 
+        const result = await response.json();
+        
         // Mostrar mensaje de éxito
         SweetAlert.showMessageAlert(
             'Éxito',
-            'Cita agendada y pago registrado exitosamente.',
+            'Cita agendada exitosamente. ' + result.nota,
             'success'
         );
 
@@ -371,9 +341,10 @@ const ClienteNuevaCita = () => {
         // Limpiar el formulario en caso de error también
         resetForm();
     } finally {
-        setIsLoadingFullScreen(false); // Desactivar el LoadingScreen
+        setIsLoadingFullScreen(false);
     }
 };
+
   
   // Función para resetear el formulario
   const resetForm = () => {
