@@ -57,6 +57,7 @@ import GestionarUsuarios from './ui/superadminUI/GestionarUsuarios';
 import GestionarEspecialidades from './ui/superadminUI/GestionarEspecialidades';
 import AsignarEspecialidadDoctor from './ui/superadminUI/AsignarEspecialidad';
 import SettingsSuperAdmin from './ui/superadminUI/SettingsSuperAdmin';
+import HistorialPagosClientesSuperAdmin from './ui/superadminUI/HistorialPagosClientes';
 
 // UI AUTH
 import Register from './ui/Register';
@@ -364,6 +365,13 @@ function AppContent() {
         path="/superadmin/asignarespecialidad"
         element={
           <ProtectedRouteRolSuperAdmin element={<AsignarEspecialidadDoctor />} />
+        }
+      />
+
+      <Route
+        path="/superadmin/pagosclientes"
+        element={
+          <ProtectedRouteRolSuperAdmin element={<HistorialPagosClientesSuperAdmin />} />
         }
       />
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ChevronDown, User, Home, Settings, Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon, UserCog2, NotebookPenIcon, WorkflowIcon } from 'lucide-react';
+import { Menu, ChevronDown, User, Home, Settings, UserSquare,Calendar, FileText, Layout, CreditCard, HelpCircle, TimerIcon, HistoryIcon, NotebookTextIcon, UsersRoundIcon, UserCog2, NotebookPenIcon, WorkflowIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../img/logo.png';
 import { logout } from '../../js/logout';
@@ -10,6 +10,7 @@ const navigation = [
   { name: "Gestionar Usuarios", href: "/superadmin/gestionarusuarios", icon: UserCog2 },
   { name: "Gestionar Especialidades", href: "/superadmin/gestionarespecialidades", icon: NotebookPenIcon },
   { name: "Asignar Especialidad Doctor", href: "/superadmin/asignarespecialidad", icon: WorkflowIcon },
+  { name: "Pagos Clientes", href: "/superadmin/pagosclientes", icon: UserSquare },
   { name: "Configuracion", href: "/superadmin/settings", icon: Settings },
 ];
 
