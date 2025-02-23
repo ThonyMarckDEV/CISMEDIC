@@ -341,14 +341,45 @@ const AgendarCitaCliente = () => {
   };
 
   const resetForm = () => {
+    // Reset form fields
     setSelectedEspecialidad("");
     setIdDoctor("");
     setFecha("");
     setHorariosDisponibles([]);
     setSelectedHorario("");
     setError("");
+    
+    // Reset client selection
     setClienteSeleccionado(null);
+    setBusquedaDni("");
+    
+    // Reset generic client data and uncheck the checkbox
     setEsClienteGenerico(false);
+    setClienteGenericoData({
+      nombre: '',
+      apellidos: '',
+      dni: '',
+      correo: ''
+    });
+  };
+
+  // Add a handler for client type toggle
+  const handleClienteGenericoToggle = (checked) => {
+    setEsClienteGenerico(checked);
+    if (checked) {
+      // If switching to generic client, clear DNI search and selected client
+      setClienteSeleccionado(null);
+      setBusquedaDni("");
+      setClientesBuscados([]);
+    } else {
+      // If switching to DNI search, clear generic client data
+      setClienteGenericoData({
+        nombre: '',
+        apellidos: '',
+        dni: '',
+        correo: ''
+      });
+    }
   };
 
   return (
@@ -383,85 +414,85 @@ const AgendarCitaCliente = () => {
               <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
             </div>
 
-             <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="mb-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={esClienteGenerico}
-                  onChange={(e) => setEsClienteGenerico(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-green-600"
-                />
-                <span className="text-gray-700">Cliente Genérico</span>
-              </label>
+            <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="mb-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={esClienteGenerico}
+              onChange={(e) => handleClienteGenericoToggle(e.target.checked)}
+              className="form-checkbox h-5 w-5 text-green-600"
+            />
+            <span className="text-gray-700">Cliente Genérico</span>
+          </label>
+        </div>
+
+        {esClienteGenerico ? (
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={clienteGenericoData.nombre}
+              onChange={(e) => setClienteGenericoData({...clienteGenericoData, nombre: e.target.value})}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="Apellidos"
+              value={clienteGenericoData.apellidos}
+              onChange={(e) => setClienteGenericoData({...clienteGenericoData, apellidos: e.target.value})}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="DNI"
+              value={clienteGenericoData.dni}
+              onChange={(e) => setClienteGenericoData({...clienteGenericoData, dni: e.target.value})}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="email"
+              placeholder="Correo"
+              value={clienteGenericoData.correo}
+              onChange={(e) => setClienteGenericoData({...clienteGenericoData, correo: e.target.value})}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Buscar por DNI"
+                value={busquedaDni}
+                onChange={(e) => {
+                  setBusquedaDni(e.target.value);
+                  if (e.target.value.length >= 3) {
+                    buscarClientes(e.target.value, 'dni');
+                  }
+                }}
+                className="w-full p-2 border rounded"
+              />
             </div>
 
-            {esClienteGenerico ? (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  value={clienteGenericoData.nombre}
-                  onChange={(e) => setClienteGenericoData({...clienteGenericoData, nombre: e.target.value})}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  placeholder="Apellidos"
-                  value={clienteGenericoData.apellidos}
-                  onChange={(e) => setClienteGenericoData({...clienteGenericoData, apellidos: e.target.value})}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  placeholder="DNI"
-                  value={clienteGenericoData.dni}
-                  onChange={(e) => setClienteGenericoData({...clienteGenericoData, dni: e.target.value})}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="email"
-                  placeholder="Correo"
-                  value={clienteGenericoData.correo}
-                  onChange={(e) => setClienteGenericoData({...clienteGenericoData, correo: e.target.value})}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Buscar por DNI"
-                    value={busquedaDni}
-                    onChange={(e) => {
-                      setBusquedaDni(e.target.value);
-                      if (e.target.value.length >= 3) {
-                        buscarClientes(e.target.value, 'dni');
-                      }
-                    }}
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-
-                {clientesBuscados.length > 0 && (
-                  <div className="mt-2 border rounded-lg overflow-hidden">
-                    {clientesBuscados.map((cliente) => (
-                      <div
-                        key={cliente.idUsuario}
-                        onClick={() => setClienteSeleccionado(cliente)}
-                        className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                          clienteSeleccionado?.idUsuario === cliente.idUsuario ? 'bg-green-50' : ''
-                        }`}
-                      >
-                        {cliente.nombres} {cliente.apellidos} - DNI: {cliente.dni}
-                      </div>
-                    ))}
+            {clientesBuscados.length > 0 && (
+              <div className="mt-2 border rounded-lg overflow-hidden">
+                {clientesBuscados.map((cliente) => (
+                  <div
+                    key={cliente.idUsuario}
+                    onClick={() => setClienteSeleccionado(cliente)}
+                    className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                      clienteSeleccionado?.idUsuario === cliente.idUsuario ? 'bg-green-50' : ''
+                    }`}
+                  >
+                    {cliente.nombres} {cliente.apellidos} - DNI: {cliente.dni}
                   </div>
-                )}
+                ))}
               </div>
             )}
           </div>
+        )}
+      </div>
 
             {error && (
               <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
