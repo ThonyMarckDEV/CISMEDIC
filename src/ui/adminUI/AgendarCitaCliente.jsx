@@ -338,7 +338,8 @@ const AgendarCitaCliente = () => {
     setHorariosDisponibles([]);
     setSelectedHorario("");
     setError("");
-    setClienteSeleccionado("")
+    setClienteSeleccionado(null);
+    setEsClienteGenerico(false);
   };
 
   return (
