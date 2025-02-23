@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Calendar, CreditCard, DownloadCloud, Clock, User, Stethoscope, IdCard } from "lucide-react";
+import { Calendar, CreditCard, Eye, Clock, User, Stethoscope, IdCard } from "lucide-react";
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 
 const HistorialPagoCard = ({ payment }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [downloadError, setDownloadError] = useState(null);
+  const [error, setError] = useState(null);
 
   if (!payment) {
     return (
@@ -15,72 +15,57 @@ const HistorialPagoCard = ({ payment }) => {
     );
   }
 
-  const handleDownloadPDF = async () => {
+  const handleViewPDF = async () => {
     setIsLoading(true);
-    setDownloadError(null);
+    setError(null);
     try {
       const token = jwtUtils.getTokenFromCookie();
       if (!token) {
         throw new Error('No se encontró el token de autenticación');
       }
       const response = await fetch(
-        `${API_BASE_URL}/api/descargar-boleta/${payment.idCita}`,
+        `${API_BASE_URL}/api/admin/ver-boleta/${payment.idCita}`,
         {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/pdf',
-            'Cache-Control': 'no-cache'
+            'Content-Type': 'application/json',
           }
         }
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error('Error Response:', response.status, errorData);
-        const errorMessage = errorData?.error || 'Error al descargar el comprobante';
-        setDownloadError(errorMessage);
+        const errorMessage = errorData?.error || 'Error al obtener el comprobante';
+        setError(errorMessage);
         throw new Error(errorMessage);
       }
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/pdf')) {
-        throw new Error('El formato del comprobante no es válido');
-      }
-      const blob = await response.blob();
-      if (blob.size === 0) {
-        throw new Error('El archivo PDF está vacío');
-      }
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `boleta_pago_${payment.idPago}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      const data = await response.json();
+      const pdfUrl = data.url;
+
+      // Abrir el PDF en una nueva ventana
+      window.open(pdfUrl, '_blank');
     } catch (error) {
-      console.error('Error en la descarga:', error);
-      setDownloadError(error.message);
+      console.error('Error al obtener el PDF:', error);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const estado = payment?.estado || 'pendiente';
-  const showPDFDownload = estado === 'pagado';
+  const showPDFView = estado === 'pagado';
 
-  // Función para formatear fechas considerando la zona horaria local
+  // Función para formatear fechas
   const formatDate = (dateString) => {
     if (!dateString) return 'Fecha no disponible';
     try {
       const date = new Date(dateString);
-      // Ajustar la fecha según la zona horaria local
       const options = {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        timeZone: 'UTC' // Asegurarse de que no haya desfase por zona horaria
+        timeZone: 'UTC'
       };
       return new Intl.DateTimeFormat('es-ES', options).format(date);
     } catch (error) {
@@ -107,11 +92,22 @@ const HistorialPagoCard = ({ payment }) => {
               Cita #{payment.idCita || 'N/A'}
             </span>
           </div>
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-            estado === 'pagado' ? 'bg-green-50 text-green-700' :
-            'bg-gray-100 text-gray-700'
-          }`}>
-            {estado}
+          <div className="flex items-center gap-2">
+            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+              estado === 'pagado' ? 'bg-green-50 text-green-700' :
+              'bg-gray-100 text-gray-700'
+            }`}>
+              {estado}
+            </div>
+            {showPDFView && (
+              <button
+                onClick={handleViewPDF}
+                disabled={isLoading}
+                className="text-green-600 hover:text-green-700 transition-all disabled:text-gray-400 disabled:cursor-not-allowed"
+              >
+                <Eye className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -196,19 +192,9 @@ const HistorialPagoCard = ({ payment }) => {
             </p>
           </div>
         )}
-        {showPDFDownload && (
-          <div className="flex items-center gap-3 text-gray-700">
-            <DownloadCloud className="h-5 w-5 text-green-600" />
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isLoading}
-              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Descargando...' : 'Descargar Comprobante'}
-            </button>
-            {downloadError && (
-              <p className="text-red-500 text-sm">{downloadError}</p>
-            )}
+        {error && (
+          <div className="text-red-500 text-sm">
+            {error}
           </div>
         )}
       </div>
