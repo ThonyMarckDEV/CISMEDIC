@@ -3,11 +3,11 @@ import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils.jsx';
 
 export const checkUserStatus = async () => {
-
+    try {
         const token = jwtUtils.getTokenFromCookie();
 
         if (!token) {
-            console.log('No hay token en las cookies');
+            console.warn('No hay token en las cookies');
             await logoutAndRedirect();
             return;
         }
@@ -15,7 +15,7 @@ export const checkUserStatus = async () => {
         const idUsuario = jwtUtils.getIdUsuario(token);
         
         if (!idUsuario) {
-            console.log('No se pudo obtener el ID de usuario del token');
+            console.warn('No se pudo obtener el ID de usuario del token');
             await logoutAndRedirect();
             return;
         }
@@ -29,13 +29,23 @@ export const checkUserStatus = async () => {
             body: JSON.stringify({ idUsuario })
         });
 
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Respuesta no válida del servidor");
+        }
+
         const data = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || data.status === 'error' || data.force_logout) {
             console.log('Sesión inválida:', data.message);
-            jwtUtils.removeTokenFromCookie();
-            // Redirigir a la página de inicio de sesión en el dominio raíz
-            window.location.href = `/`;
+            await logoutAndRedirect();
             return;
         }
+
+    } catch (error) {
+        console.log('Error en checkUserStatus:', error);
+        if (!(error instanceof TypeError)) {
+            await logoutAndRedirect();
+        }
+    }
 };
