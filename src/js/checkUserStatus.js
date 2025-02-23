@@ -38,17 +38,11 @@ export const checkUserStatus = async () => {
 
         if (!response.ok || data.status === 'error' || data.force_logout) {
             console.log('Sesión inválida:', data.message);
-           // await logoutAndRedirect();
+            await logoutAndRedirect();
             return;
         }
 
     } catch (error) {
         console.log('Error en checkUserStatus:', error);
-        if (!(error instanceof TypeError)) {
-              // Eliminar el token de localStorage
-               jwtUtils.removeTokenFromCookie();
-              // Redirigir a la página de inicio de sesión en el dominio raíz
-              window.location.href = `/`;
-        }
     }
 };
