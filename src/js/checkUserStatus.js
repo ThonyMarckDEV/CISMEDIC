@@ -37,13 +37,13 @@ export const checkUserStatus = async () => {
         const data = await response.json();
 
         if (!response.ok || data.status === 'error' || data.force_logout) {
-            console.log('Sesión inválida:', data.message);
+            console.warn('Sesión inválida:', data.message);
             await logoutAndRedirect();
             return;
         }
 
     } catch (error) {
-        console.log('Error en checkUserStatus:', error);
+        console.error('Error en checkUserStatus:', error);
         if (!(error instanceof TypeError)) {
             await logoutAndRedirect();
         }
