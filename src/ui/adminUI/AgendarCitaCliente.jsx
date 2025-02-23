@@ -433,6 +433,31 @@ const AgendarCitaCliente = () => {
     }
   };
 
+  // Función para validar si el botón de confirmar cita debe estar deshabilitado
+  const isConfirmButtonDisabled = () => {
+    if (!idDoctor || !fecha || !selectedHorario) {
+      return true; // Faltan campos obligatorios
+    }
+
+    if (esClienteGenerico) {
+      if (!clienteGenericoData.nombre || !clienteGenericoData.apellidos || 
+          !clienteGenericoData.dni || !clienteGenericoData.correo) {
+        return true; // Faltan datos del cliente genérico
+      }
+      if (!/^\d{8}$/.test(clienteGenericoData.dni)) {
+        return true; // DNI no válido
+      }
+    } else if (!clienteSeleccionado) {
+      return true; // No se ha seleccionado un cliente
+    }
+
+    if (tipoComprobante === 'factura' && !rucValid) {
+      return true; // RUC no válido o no verificado
+    }
+
+    return false; // Todos los campos están completos y válidos
+  };
+
   return (
     <Sidebar>
       {isLoadingFullScreen && <LoadingScreen />}
@@ -712,7 +737,7 @@ const AgendarCitaCliente = () => {
                 <button
                   type="submit"
                   className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-green-600 hover:bg-green-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
-                  disabled={loading || !selectedHorario}
+                  disabled={isConfirmButtonDisabled() || loading}
                 >
                   <Calendar className="h-5 w-5" />
                   {loading ? "Procesando..." : "Confirmar Cita"}
