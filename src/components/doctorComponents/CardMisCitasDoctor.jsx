@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { User, Tag, Calendar } from "lucide-react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import SweetAlert from "../../components/SweetAlert"; // Importamos SweetAlert
+import SweetAlert from "../../components/SweetAlert";
 import LoadingScreen from '../../components/home/LoadingScreen';
 
 const CardMisCitasDoctor = ({ appointment }) => {
@@ -10,13 +10,12 @@ const CardMisCitasDoctor = ({ appointment }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
-  const [motivoCancelacion, setMotivoCancelacion] = useState(""); // Motivo de cancelación
-  const [motivoPersonalizado, setMotivoPersonalizado] = useState(""); // Motivo personalizado
-  const [selectedMotivo, setSelectedMotivo] = useState(""); // Motivo seleccionado del checkbox
+  const [motivoCancelacion, setMotivoCancelacion] = useState("");
+  const [motivoPersonalizado, setMotivoPersonalizado] = useState("");
+  const [selectedMotivo, setSelectedMotivo] = useState("");
   const token = jwtUtils.getTokenFromCookie();
   const idDoctor = jwtUtils.getIdUsuario(token);
 
-  // Función para formatear la fecha
   const formatDate = (dateString) => {
     const date = new Date(`${dateString}T12:00:00`);
     return date.toLocaleDateString();
@@ -114,7 +113,6 @@ const CardMisCitasDoctor = ({ appointment }) => {
       key={appointment.idCita}
       className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
     >
-      {/* Card Header */}
       <div className="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold text-gray-800">
@@ -131,9 +129,7 @@ const CardMisCitasDoctor = ({ appointment }) => {
           </div>
         </div>
       </div>
-      {/* Card Content */}
       <div className="p-6 space-y-4">
-        {/* Detalles de la cita */}
         <div className="flex items-center gap-3 text-gray-700">
           <User className="h-5 w-5 text-green-600" />
           <div>
@@ -147,18 +143,9 @@ const CardMisCitasDoctor = ({ appointment }) => {
           <User className="h-5 w-5 text-green-600" />
           <div>
             <p className="text-sm text-gray-500">DNI</p>
-            <p className="font-medium">{appointment.dni}</p>
+            <p className="font-medium">{appointment.pacienteDni}</p>
           </div>
         </div>
-        {/* <div className="flex items-center gap-3 text-gray-700">
-          <User className="h-5 w-5 text-green-600" />
-          <div>
-            <p className="text-sm text-gray-500">Doctor</p>
-            <p className="font-medium">
-              {appointment.doctorNombre} {appointment.doctorApellidos}
-            </p>
-          </div>
-        </div> */}
         <div className="flex items-center gap-3 text-gray-700">
           <Tag className="h-5 w-5 text-green-600" />
           <div>
