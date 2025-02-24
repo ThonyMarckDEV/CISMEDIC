@@ -83,7 +83,7 @@ function AppContent() {
 
     if (token) {
       updateLastActivity();
-      const limpiar = configurarRenovacionToken();
+    //  const limpiar = configurarRenovacionToken();
     
       const activityIntervalId = setInterval(() => {
         updateLastActivity();
@@ -91,7 +91,7 @@ function AppContent() {
 
       return () => {
         clearInterval(activityIntervalId);
-        limpiar();
+      //  limpiar();
       };
     }
   }, [location.pathname]);

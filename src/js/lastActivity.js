@@ -1,9 +1,11 @@
 import API_BASE_URL from './urlHelper.js';
 import jwtUtils from '../utilities/jwtUtils.jsx';
+import { verificarYRenovarToken } from './authToken.js';
 
 
 export async function updateLastActivity() {
     console.log('Actualizando última actividad...');
+    await verificarYRenovarToken();
     try {
         const token = jwtUtils.getTokenFromCookie();
         const userId = jwtUtils.getIdUsuario(token);
