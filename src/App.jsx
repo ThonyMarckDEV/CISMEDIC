@@ -84,7 +84,7 @@ function AppContent() {
     if (token) {
       updateLastActivity();
 
-      const intervalId = setInterval(() => {
+      const activityIntervalId = setInterval(() => {
         updateLastActivity();
       }, 10000);
 
@@ -94,7 +94,7 @@ function AppContent() {
 
 
        // Limpiar intervalos al desmontar el componente
-       return () => {
+      return () => {
         clearInterval(activityIntervalId);
         clearInterval(tokenIntervalId);
       };
