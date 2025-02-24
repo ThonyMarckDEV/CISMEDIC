@@ -31,21 +31,23 @@ export async function updateLastActivity() {
 
         if (activeSession) {
             // Si hay una sesión activa en otro dispositivo, cerrar la sesión actual
-            await fetch(`${API_BASE_URL}/api/logout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ idUsuario: userId })
-            });
 
-            // Eliminar el token de localStorage
-            jwtUtils.removeTokenFromCookie();
+            console.log('Sesión activa en otro dispositivo');
+            // await fetch(`${API_BASE_URL}/api/logout`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Bearer ${token}`
+            //     },
+            //     body: JSON.stringify({ idUsuario: userId })
+            // });
 
-            // Redirigir a la página de inicio de sesión en el dominio raíz
-            window.location.href = `/`;
-            return;
+            // // Eliminar el token de localStorage
+            // jwtUtils.removeTokenFromCookie();
+
+            // // Redirigir a la página de inicio de sesión en el dominio raíz
+            // window.location.href = `/`;
+            // return;
         }
 
         // Actualizar la última actividad
