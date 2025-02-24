@@ -6,7 +6,7 @@ export async function tokenExpirado() {
     const token = jwtUtils.getTokenFromCookie();
     if (!token) return true;
     
-    const payload = parseJwt(token);
+    const payload = jwtUtils.parseJwt(token);
     if (!payload || !payload.exp) return true;
     
     const exp = payload.exp * 1000;
@@ -25,7 +25,7 @@ export async function tokenExpirado() {
 }
 
 // Función para renovar el token
-export async function renovarToken() {
+export async function RenovarToken() {
     const token = jwtUtils.getTokenFromCookie();
     if (!token) {
         // console.log("Token no encontrado en la cookie.");
@@ -55,14 +55,14 @@ export async function renovarToken() {
         }
     } catch (error) {
         console.error("Error al intentar renovar el token:", error);
-        //logoutAndRedirect();
     }
 }
+
 
 // Función que verifica y renueva el token si es necesario
 export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
-        const nuevoToken = await renovarToken();
+        const nuevoToken = await RenovarToken();
         if (nuevoToken) {
            // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
@@ -74,21 +74,3 @@ export async function verificarYRenovarToken() {
     }
 }
 
-// Función para decodificar el token
-function parseJwt(token) {
-    if (!token) return null;
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('') 
-                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
-        );
-        return JSON.parse(jsonPayload);
-    } catch (error) {
-        console.error("Error al decodificar el token JWT:", error);
-        return null;
-    }
-}

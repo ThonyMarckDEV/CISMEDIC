@@ -1,7 +1,6 @@
 import API_BASE_URL from './urlHelper.js';
-import { verificarYRenovarToken , tokenExpirado } from './authToken.js';
-import { jwtDecode } from 'jwt-decode';
-import { checkUserStatus } from './checkUserStatus';
+import { RenovarToken,  tokenExpirado  } from './authToken.js';
+import { checkUserStatus} from './checkUserStatus';
 import { logout } from './logout'; // Cambiar a importación nombrada
 import jwtUtils from '../utilities/jwtUtils.jsx';
 
@@ -17,11 +16,10 @@ export async function updateLastActivity() {
 
         // Solo verificar y renovar si el token está próximo a expirar
         if (tokenExpirado()) {
-            await verificarYRenovarToken();
+            await RenovarToken();
         }
 
-        const decoded = jwtDecode(token);
-        const userId = decoded.idUsuario;
+        const userId = jwtUtils.getIdUsuario(token);
 
         // Enviar solicitud para actualizar actividad
         const response = await fetch(`${API_BASE_URL}/api/update-activity`, {
