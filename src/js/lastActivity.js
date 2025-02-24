@@ -11,7 +11,7 @@ export async function updateLastActivity() {
 
         const token = jwtUtils.getTokenFromCookie();
         const userId = jwtUtils.getIdUsuario(token);
-        const sessionId = jwtUtils.getSessionIdFromCookie(); // Obtener el sessionId almacenado
+        const sessionId = jwtUtils.getSessionIdFromCookie();
 
         // Verificar si la sesión actual es válida
         const responseCheck = await fetch(`${API_BASE_URL}/api/check-active-session`, {
