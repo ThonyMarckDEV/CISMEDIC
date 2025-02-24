@@ -47,7 +47,7 @@ const Login = ({ closeLoginModal }) => {
         const sessionId = result.sessionId;
         // Guardar el token en una cookie
         document.cookie = `jwt=${token}; path=/`;
-        setSessionCookie(sessionId);
+        jwtUtils.setSessionCookie(sessionId);
 
         const userRole = jwtUtils.getUserRole(token);
 
