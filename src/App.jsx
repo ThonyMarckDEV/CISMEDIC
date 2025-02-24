@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './index.css';
 import API_BASE_URL from './js/urlHelper';
-import WhatsAppIcon from './components/home/WhatsAppIcon'; // Asegúrate de importar el icono de WhatsApp
+import WhatsAppIcon from './components/home/WhatsAppIcon'; 
 import jwtUtils from './utilities/jwtUtils';
-import ErrorPage from './components/home/ErrorPage'; // Asegúrate de que la ruta sea correcta
+import ErrorPage from './components/home/ErrorPage'; 
 //Contextos
 //CONTEXT CLIENTE
 import { CitasProvider } from './context/CitasContext';
