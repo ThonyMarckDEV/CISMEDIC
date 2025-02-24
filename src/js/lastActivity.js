@@ -15,6 +15,7 @@ export async function updateLastActivity() {
 
         const response = await fetch(`${API_BASE_URL}/api/update-activity`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
