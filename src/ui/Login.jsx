@@ -45,7 +45,7 @@ const Login = ({ closeLoginModal }) => {
       if (response.ok) {
         const token = result.token;
         // Guardar el token en una cookie
-        document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
+        document.cookie = `jwt=${token}; path=/`;
 
         const userRole = jwtUtils.getUserRole(token);
 
