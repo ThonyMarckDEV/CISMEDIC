@@ -60,23 +60,33 @@ import { verificarYRenovarToken } from './authToken';
 
 export const checkUserStatus = async () => {
     try {
+        // Get and validate token
         const token = jwtUtils.getTokenFromCookie();
-
+        
         if (!token) {
+            console.log('No token found, logging out');
             await logoutAndRedirect();
             return;
         }
 
         const idUsuario = jwtUtils.getIdUsuario(token);
-
+        
         if (!idUsuario) {
+            console.log('No user ID found in token, logging out');
             await logoutAndRedirect();
             return;
         }
 
-        // Verificar y renovar token si es necesario
-        await verificarYRenovarToken();
+        // Verify and renew token if needed
+        try {
+            await verificarYRenovarToken();
+        } catch (tokenError) {
+            console.error('Token verification failed:', tokenError);
+            await logoutAndRedirect();
+            return;
+        }
 
+        // Make the status check request
         const response = await fetch(`${API_BASE_URL}/api/check-status`, {
             method: "POST",
             headers: {
@@ -84,20 +94,45 @@ export const checkUserStatus = async () => {
                 "Authorization": `Bearer ${token}`,
                 "User-Agent": navigator.userAgent
             },
-            body: JSON.stringify({ idUsuario })
+            body: JSON.stringify({ 
+                idUsuario,
+                dispositivo: navigator.userAgent 
+            })
         });
 
+        // Handle different response scenarios
+        if (response.status === 401 || response.status === 403) {
+            console.log('Authentication failed, logging out');
+            await logoutAndRedirect();
+            return;
+        }
+
         if (!response.ok) {
-            const data = await response.json();
-            if (data.force_logout) {
-                await logoutAndRedirect();
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                if (data.force_logout) {
+                    await logoutAndRedirect();
+                }
+            } else {
+                console.error('Invalid response format');
+                // Only logout for authentication-related errors
+                if (response.status >= 400 && response.status < 500) {
+                    await logoutAndRedirect();
+                }
             }
             return;
         }
+
+        const data = await response.json();
+        return data;
+
     } catch (error) {
-        console.error('Error en checkUserStatus:', error);
-        if (!(error instanceof TypeError)) {
-          //  await logoutAndRedirect();
+        console.error('Error in checkUserStatus:', error);
+        
+        // Only force logout for authentication errors, not network/server errors
+        if (!(error instanceof TypeError) && !(error.name === 'SyntaxError')) {
+            await logoutAndRedirect();
         }
     }
 };
