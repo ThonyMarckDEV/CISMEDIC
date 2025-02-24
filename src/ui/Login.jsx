@@ -5,8 +5,8 @@ import API_BASE_URL from '../js/urlHelper';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import LoadingScreen from '../components/home/LoadingScreen';
 import jwtUtils from '../utilities/jwtUtils';
-import { updateLastActivity } from '../js/lastActivity';
 import { Phone, ChevronLeft } from 'lucide-react';
+import { useSnackbar } from 'notistack'; // Importa useSnackbar
 
 const Login = ({ closeLoginModal }) => {
   const [email, setEmail] = useState('');
@@ -16,6 +16,7 @@ const Login = ({ closeLoginModal }) => {
   const [isAccountDeleted, setIsAccountDeleted] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { enqueueSnackbar } = useSnackbar(); // Usa useSnackbar para mostrar notificaciones
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -26,7 +27,7 @@ const Login = ({ closeLoginModal }) => {
     setError(null);
     setLoading(true);
     setIsAccountDeleted(false);
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
@@ -39,29 +40,43 @@ const Login = ({ closeLoginModal }) => {
           password,
         }),
       });
-
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         const token = result.token;
         const sessionId = result.sessionId;
         // Guardar el token en una cookie
         document.cookie = `jwt=${token}; path=/`;
         jwtUtils.setSessionCookie(sessionId);
-
+  
         const userRole = jwtUtils.getUserRole(token);
-
-        if (userRole === 'superadmin') {
-          window.location.href = '/superAdmin';
-        } else if (userRole === 'admin') {
-          window.location.href = '/admin';
-        } else if (userRole === 'doctor') {
-          window.location.href = '/doctor';
-        } else if (userRole === 'cliente') {
-          window.location.href = '/cliente';
-        } else {
-          console.error('Rol no reconocido:', userRole);
-        }
+        const userName = jwtUtils.getNombres(token);
+  
+        // Mostrar notificación de bienvenida
+        enqueueSnackbar(`¡Bienvenido, ${userName}!`, {
+          variant: 'success',
+          autoHideDuration: 3000, // Duración de la notificación
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+  
+        // Retrasar la redirección para que la notificación se muestre
+        setTimeout(() => {
+          if (userRole === 'superadmin') {
+            window.location.href = '/superAdmin';
+          } else if (userRole === 'admin') {
+            window.location.href = '/admin';
+          } else if (userRole === 'doctor') {
+            window.location.href = '/doctor';
+          } else if (userRole === 'cliente') {
+            window.location.href = '/cliente';
+          } else {
+            console.error('Rol no reconocido:', userRole);
+          }
+        }, 3000); // Retraso de 3 segundos para que la notificación se muestre
       } else {
         // Manejar caso de cuenta eliminada
         if (response.status === 403 && result.accountDeleted) {

@@ -1,22 +1,23 @@
-"use client"
-import { useEffect, useState } from "react"
-import { Calendar, FileText, ChevronRight } from "lucide-react"
-import Sidebar from "../../components/clienteComponents/SidebarCliente"
-import jwtUtils from "../../utilities/jwtUtils"
+"use client";
+import { useEffect, useState } from "react";
+import { Calendar, FileText, ChevronRight } from "lucide-react";
+import Sidebar from "../../components/clienteComponents/SidebarCliente";
+import jwtUtils from "../../utilities/jwtUtils";
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import NextAppointmentCard from './NextAppointmentCard';
 
 const Cliente = () => {
-  const [nombreUsuario, setNombreUsuario] = useState("")
+  const [nombreUsuario, setNombreUsuario] = useState("");
+
   useEffect(() => {
-    const token = jwtUtils.getTokenFromCookie()
+    const token = jwtUtils.getTokenFromCookie();
     if (token) {
-      const nombre = jwtUtils.getNombres(token)
+      const nombre = jwtUtils.getNombres(token);
       if (nombre) {
-        setNombreUsuario(nombre)
+        setNombreUsuario(nombre);
       }
     }
-  }, [])
+  }, []); // Agregamos hasShownWelcomeMessage como dependencia
 
   return (
     <Sidebar>
@@ -41,10 +42,8 @@ const Cliente = () => {
               </div>
             </div>
           </div>
-
         {/* Contenido principal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Una columna en móvil, dos en desktop */}
-
           {/* Sección de citas */}
           <div className="rounded-lg shadow-md bg-white p-6">
             <div className="flex flex-col items-center text-center gap-4">
@@ -57,7 +56,6 @@ const Cliente = () => {
               </button>
             </div>
           </div>
-
          
           {/* Sección de resultados */}
           <div className="rounded-lg shadow-md bg-white p-6">
@@ -78,11 +76,9 @@ const Cliente = () => {
         
             <NextAppointmentCard />
    
-
         </div>
       </div>
     </Sidebar>
   )
 }
-
-export default Cliente
+export default Cliente;

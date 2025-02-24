@@ -72,8 +72,9 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
 
-import {configurarRenovacionToken} from './js/authToken';
 
+//Librerias
+import { SnackbarProvider } from 'notistack';
 
 function AppContent() {
   const location = useLocation();
@@ -360,9 +361,13 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+
+      <Router>
+        <SnackbarProvider maxSnack={3}>
+         <AppContent />
+        </SnackbarProvider>
+      </Router>
+
   );
 }
 
