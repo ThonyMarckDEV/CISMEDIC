@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import defaultImage from '../../img/defualtpefil.jpg'; // Importa la imagen predeterminada
 
 const DoctorSelect = ({ 
   doctors, 
@@ -23,7 +24,6 @@ const DoctorSelect = ({
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -48,7 +48,7 @@ const DoctorSelect = ({
         {selectedDoctor ? (
           <div className="flex items-center space-x-3">
             <img
-              src={`${apiBaseUrl}/storage/${selectedDoctor.perfil}`}
+              src={selectedDoctor.perfil ? `${apiBaseUrl}/storage/${selectedDoctor.perfil}` : defaultImage}
               alt={`Dr. ${selectedDoctor.nombres}`}
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -65,7 +65,6 @@ const DoctorSelect = ({
           }`}
         />
       </button>
-
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
           {doctors.map((doctor) => (
@@ -76,7 +75,7 @@ const DoctorSelect = ({
               className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 transition-colors"
             >
               <img
-                src={`${apiBaseUrl}/storage/${doctor.perfil}`}
+                src={doctor.perfil ? `${apiBaseUrl}/storage/${doctor.perfil}` : defaultImage}
                 alt={`Dr. ${doctor.nombres}`}
                 className="w-10 h-10 rounded-full object-cover"
               />

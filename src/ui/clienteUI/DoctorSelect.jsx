@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import imgperfil from '../../img/defualtpefil.jpg';
 
 const DoctorSelect = ({ 
   doctors, 
@@ -48,7 +49,7 @@ const DoctorSelect = ({
         {selectedDoctor ? (
           <div className="flex items-center space-x-3">
             <img
-              src={`${apiBaseUrl}/storage/${selectedDoctor.perfil}`}
+             src={selectedDoctor.perfil ? `${apiBaseUrl}/storage/${selectedDoctor.perfil}` : imgperfil}
               alt={`Dr. ${selectedDoctor.nombres}`}
               className="w-10 h-10 rounded-full object-cover"
             />
