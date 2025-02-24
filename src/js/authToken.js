@@ -20,7 +20,7 @@ function tokenExpirado() {
     const timeLeft = exp - Date.now(); // Tiempo restante en milisegundos
     const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60); // Tiempo restante en minutos
 
-   // console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
+    console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
 
     const isExpiring = timeLeft <= 120000; // Renovar 2 minutos antes de expirar
     return isExpiring;

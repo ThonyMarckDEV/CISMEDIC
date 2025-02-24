@@ -93,39 +93,6 @@ function AppContent() {
     }
   }, [location.pathname]);
 
-  // Capturar errores globales
-  useEffect(() => {
-    const handleGlobalError = (event) => {
-      const newError = {
-        message: event.error?.message || 'Error desconocido',
-        severity: 'critical',
-        location: event.filename || 'Unknown location',
-        timestamp: new Date().toISOString(),
-        stack: event.error?.stack,
-        user: 'Usuario actual',
-      };
-      setGlobalError(newError);
-    };
-    const handleUnhandledRejection = (event) => {
-      const newError = {
-        message: event.reason?.message || 'Promise rejection no manejada',
-        severity: 'warning',
-        location: 'Promise rejection',
-        timestamp: new Date().toISOString(),
-        stack: event.reason?.stack,
-        user: 'Usuario actual',
-      };
-      setGlobalError(newError);
-    };
-
-    window.addEventListener('error', handleGlobalError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleGlobalError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
 
   return (
     <Routes>
