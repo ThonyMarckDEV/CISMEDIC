@@ -49,7 +49,8 @@ export async function renovarToken() {
 
             // Verifica si el token renovado es diferente al actual
             if (nuevoToken !== token) {
-                document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cookie
+               // document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cooki    
+                document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
                 return nuevoToken;
             } else {
                 throw new Error("El token renovado es el mismo que el anterior.");
