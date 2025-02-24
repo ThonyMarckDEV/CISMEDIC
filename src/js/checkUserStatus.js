@@ -130,9 +130,9 @@ export const checkUserStatus = async () => {
     } catch (error) {
         console.error('Error in checkUserStatus:', error);
         
-        // Only force logout for authentication errors, not network/server errors
-        if (!(error instanceof TypeError) && !(error.name === 'SyntaxError')) {
-            await logoutAndRedirect();
-        }
+        // // Only force logout for authentication errors, not network/server errors
+        // if (!(error instanceof TypeError) && !(error.name === 'SyntaxError')) {
+        //     await logoutAndRedirect();
+        // }
     }
 };
