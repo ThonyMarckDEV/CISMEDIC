@@ -77,7 +77,6 @@ import { updateLastActivity } from './js/lastActivity';
 
 function AppContent() {
   const location = useLocation();
-  const [globalError, setGlobalError] = useState(null);
 
   useEffect(() => {
     const token = jwtUtils.getTokenFromCookie();
