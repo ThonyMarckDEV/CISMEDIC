@@ -39,8 +39,6 @@ export const getPerfil = (token) => {
 // Función para obtener el ID del usuario
 export const getIdUsuario = (token) => decodeToken(token)?.idUsuario ?? null;
 
-// Función para obtener el ID Sesion
-export const getSessionIdFromCookie = (token) => decodeToken(token)?.sessionId ?? null;
 
 // Función para obtener el usernamede usuario
 export const getUsername = (token) => decodeToken(token)?.username ?? null;
@@ -134,6 +132,38 @@ export const  parseJwt = (token) => {
   }
 };
 
+//para las sesiones
+
+// Cookie utility functions for session management
+export const getSessionIdFromCookie = () => {
+  try {
+    const cookies = document.cookie.split(';');
+    const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('sessionId='));
+    if (!sessionCookie) return null;
+    return sessionCookie.split('=')[1];
+  } catch (error) {
+    console.error('Error getting session ID from cookie:', error);
+    return null;
+  }
+};
+
+// Additional utility functions for complete cookie management
+export const setSessionCookie = (sessionId) => {
+  try {
+    document.cookie = `sessionId=${sessionId}; path=/`;
+  } catch (error) {
+    console.error('Error setting session cookie:', error);
+  }
+};
+
+export const clearSessionCookie = () => {
+  try {
+    document.cookie = 'sessionId=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+  } catch (error) {
+    console.error('Error clearing session cookie:', error);
+  }
+};
+
 
 export default {
   getEmailVerified,
@@ -149,5 +179,7 @@ export default {
   removeTokenFromCookie,
   getRefreshTokenFromCookie,
   parseJwt,
-  getSessionIdFromCookie
+  getSessionIdFromCookie,
+  setSessionCookie,
+  clearSessionCookie
 };
