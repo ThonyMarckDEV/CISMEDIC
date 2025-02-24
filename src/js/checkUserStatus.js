@@ -97,7 +97,7 @@ export const checkUserStatus = async () => {
     } catch (error) {
         console.error('Error en checkUserStatus:', error);
         if (!(error instanceof TypeError)) {
-            await logoutAndRedirect();
+          //  await logoutAndRedirect();
         }
     }
 };
