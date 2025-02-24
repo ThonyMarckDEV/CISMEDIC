@@ -10,29 +10,21 @@ const slides = [
     image: img1,
     title: "Atención Médica de Calidad",
     description: "Brindamos servicios médicos con un equipo altamente capacitado, comprometido con el bienestar de cada paciente.",
-//    buttonText: "Conocer más",
- //   buttonLink: "/servicios?categoria=AtencionMedica"
   },
   {
     image: img2,
     title: "Especialidades Médicas",
     description: "Contamos con diversas especialidades médicas para ofrecerte el mejor diagnóstico y tratamiento.",
-  //  buttonText: "Ver especialidades",
-  //  buttonLink: "/servicios?categoria=Especialidades"
   },
   {
     image: img3,
     title: "Cuidado Empático",
     description: "Nuestro equipo de salud trabaja con empatía y dedicación para brindarte la mejor experiencia de atención.",
- //   buttonText: "Saber más",
- //   buttonLink: "/servicios?categoria=CuidadoEmpatico"
   },
   {
     image: img4,
     title: "Equipos de Alta Tecnología",
     description: "Disponemos de tecnología avanzada para garantizar diagnósticos precisos y tratamientos efectivos.",
-  //  buttonText: "Explorar",
- //   buttonLink: "/servicios?categoria=TecnologiaMedica"
   }
 ];
 
