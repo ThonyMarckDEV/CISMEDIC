@@ -101,7 +101,7 @@ export const checkUserStatus = async () => {
         });
 
         // Handle different response scenarios
-        if (response.status === 401 || response.status === 403) {
+        if (response.status === 403) {
             console.log('Authentication failed, logging out');
             await logoutAndRedirect();
             return;
@@ -114,13 +114,13 @@ export const checkUserStatus = async () => {
                 if (data.force_logout) {
                     await logoutAndRedirect();
                 }
-            } else {
-                console.error('Invalid response format');
-                // Only logout for authentication-related errors
-                if (response.status >= 400 && response.status < 500) {
-                    await logoutAndRedirect();
-                }
-            }
+            }// else {
+            //     console.error('Invalid response format');
+            //     // Only logout for authentication-related errors
+            //     if (response.status >= 400 && response.status < 500) {
+            //         await logoutAndRedirect();
+            //     }
+            // }
             return;
         }
 
