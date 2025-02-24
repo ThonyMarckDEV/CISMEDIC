@@ -44,7 +44,7 @@ export async function updateLastActivity() {
 
             // Eliminar el token y el sessionId de las cookies
             jwtUtils.removeTokenFromCookie();
-            jwtUtils.removeSessionIdFromCookie();
+            jwtUtils.clearSessionCookie();
 
             // Redirigir a la página de inicio de sesión
             window.location.href = `/`;
