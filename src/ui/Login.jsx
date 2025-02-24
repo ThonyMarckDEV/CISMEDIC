@@ -80,7 +80,7 @@ const Login = ({ closeLoginModal }) => {
           } else {
             console.error('Rol no reconocido:', userRole);
           }
-        }, 3000); // Retraso de 3 segundos para que la notificación se muestre
+        }, 2500);
       } else {
         // Manejar caso de cuenta eliminada
         if (response.status === 403 && result.accountDeleted) {
