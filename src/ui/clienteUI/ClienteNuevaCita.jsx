@@ -428,7 +428,7 @@ const ClienteNuevaCita = () => {
             )}
 
             {/* Error Message */}
-            {error && (
+            {/* {error && (
               <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -442,7 +442,7 @@ const ClienteNuevaCita = () => {
                 </div>
               </div>
             )}
-  
+   */}
             <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Especialidad Selection */}
               <div className="bg-gray-50 p-4 rounded-lg">
