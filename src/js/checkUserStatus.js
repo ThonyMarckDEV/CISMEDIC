@@ -6,9 +6,9 @@ export const checkUserStatus = async () => {
     try {
        // Agrega este console.log en checkUserStatus.js
         const token = jwtUtils.getTokenFromCookie();
-        console.log('Token actual:', token);
+      //  console.log('Token actual:', token);
         // También decodifica el token para ver su contenido
-        console.log('Token decodificado:', jwtUtils.parseJwt(token));
+       // console.log('Token decodificado:', jwtUtils.parseJwt(token));
 
         if (!token) {
             console.warn('No hay token en las cookies');

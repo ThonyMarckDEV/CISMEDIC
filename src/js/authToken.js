@@ -14,7 +14,7 @@ function tokenNeedsRefresh() {
     if (!payload || !payload.exp) return true;
 
     const timeLeft = (payload.exp * 1000) - Date.now();
-    console.log(`Token expira en ${Math.floor(timeLeft / 60000)} minutos`);
+   // console.log(`Token expira en ${Math.floor(timeLeft / 60000)} minutos`);
     
     return timeLeft <= REFRESH_THRESHOLD;
 }
