@@ -111,14 +111,8 @@ export const getRefreshTokenFromCookie = () => {
   return refreshTokenCookie ? refreshTokenCookie.split('=')[1].trim() : null;
 };
 
-export const setTokens = (token, refreshToken) => {
-  document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
-  document.cookie = `refresh_token=${refreshToken}; path=/; Secure; SameSite=Strict`;
-};
-
 export const removeTokenFromCookie = () => {
   document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-  document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 };
 
 export const  parseJwt = (token) => {
@@ -139,11 +133,6 @@ export const  parseJwt = (token) => {
   }
 };
 
-
-// export const removeTokenFromCookie = () => {
-//   // Elimina el token de la cookie
-//   document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-// };
 
 export default {
   getEmailVerified,
