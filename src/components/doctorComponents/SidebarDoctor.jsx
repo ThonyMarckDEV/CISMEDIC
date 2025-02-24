@@ -45,12 +45,12 @@ const SidebarDoctor = ({ children }) => {
           >
             <Menu className="text-black w-6 h-6" />
           </button>
-          {/* Logo */}
-          <img
-            src={logo}
-            alt="Cismedic Logo"
-            className="w-12 h-12 md:w-24 md:h-16"
-          />
+       {/* Logo */}
+       <img
+        src={logo}
+        alt="Cismedic Logo"
+        className="w-20 h-auto sm:w-24 md:w-28 lg:w-32 xl:w-40" // Diferentes anchos para diferentes tamaños de pantalla
+      />
         </div>
         {/* Right Section: Profile */}
         <div className="relative flex justify-center items-center">
