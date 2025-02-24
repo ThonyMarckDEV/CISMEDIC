@@ -14,16 +14,16 @@ function tokenNeedsRefresh() {
     if (!payload || !payload.exp) return true;
 
     const timeLeft = (payload.exp * 1000) - Date.now();
-   // console.log(`Token expira en ${Math.floor(timeLeft / 60000)} minutos`);
+    console.log(`Token expira en ${Math.floor(timeLeft / 60000)} minutos`);
     
     return timeLeft <= REFRESH_THRESHOLD;
 }
 
 async function refreshToken() {
     // Si ya hay una renovación en curso, esperar a que termine
-    if (refreshPromise) {
-        return refreshPromise;
-    }
+    // if (refreshPromise) {
+    //     return refreshPromise;
+    // }
 
     const token = jwtUtils.getTokenFromCookie();
     if (!token) {
@@ -46,6 +46,7 @@ async function refreshToken() {
         if (data.accessToken && data.accessToken !== token) {
             document.cookie = `jwt=${data.accessToken}; path=/`;
             return data.accessToken;
+            console.log("Token renovado");
         }
         throw new Error("Token renovado inválido");
     })
@@ -56,9 +57,9 @@ async function refreshToken() {
     return refreshPromise;
 }
 
-export async function verificarYRenovarToken() {
+export async function RenovarToken() {
     try {
-        if (tokenNeedsRefresh()) {
+       // if (tokenNeedsRefresh()) {
             const nuevoToken = await refreshToken();
             if (!nuevoToken) {
                 console.error("Fallo en la renovación del token");
@@ -66,8 +67,7 @@ export async function verificarYRenovarToken() {
                 return false;
             }
             return true;
-        }
-        return true;
+        //}
     } catch (error) {
         console.error("Error en verificarYRenovarToken:", error);
        // logout();
