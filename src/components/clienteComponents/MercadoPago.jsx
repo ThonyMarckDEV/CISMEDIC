@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API_BASE_URL from "../../js/urlHelper.js";
+import API_TOKEN from "../../js/helper.js";
 import LoadingScreen from "../home/LoadingScreen.jsx";
 import SweetAlert from "../../components/SweetAlert";
 import jwtUtils from "../../utilities/jwtUtils.jsx";
@@ -60,7 +61,7 @@ const MercadoPago = ({ cita, appointment }) => {
 
     setLoading(true);
     
-    const API_TOKEN = process.env.REACT_APP_API_TOKEN;
+
     if (!API_TOKEN) {
       console.error("API Token no configurado");
       setRucError("Error de configuración del sistema. Contacte al administrador.");
