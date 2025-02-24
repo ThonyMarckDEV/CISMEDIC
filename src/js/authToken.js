@@ -58,6 +58,7 @@ async function refreshToken() {
 }
 
 export async function RenovarToken() {
+    console.log("Renovando token...");
     try {
        // if (tokenNeedsRefresh()) {
             const nuevoToken = await refreshToken();

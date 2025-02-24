@@ -3,6 +3,7 @@ import jwtUtils from '../utilities/jwtUtils.jsx';
 
 
 export async function updateLastActivity() {
+    console.log('Actualizando última actividad...');
     try {
         const token = jwtUtils.getTokenFromCookie();
         const userId = jwtUtils.getIdUsuario(token);
