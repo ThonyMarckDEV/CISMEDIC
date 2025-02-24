@@ -1,4 +1,3 @@
-//checkuserstatus.js
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils.jsx';
@@ -45,9 +44,8 @@ export const checkUserStatus = async () => {
 
     } catch (error) {
         console.error('Error en checkUserStatus:', error);
-        // if (!(error instanceof TypeError)) {
-        //     await logoutAndRedirect();
-        // }
+        if (!(error instanceof TypeError)) {
+            await logoutAndRedirect();
+        }
     }
 };
-

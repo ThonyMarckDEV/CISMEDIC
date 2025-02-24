@@ -1,4 +1,3 @@
-//authtoken.js
 import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils';
@@ -11,7 +10,7 @@ function tokenExpirado() {
         return true;
     }
 
-    const payload = jwtUtils.parseJwt(token);
+    const payload = parseJwt(token);
     if (!payload || !payload.exp) {
         // console.error("El token es inválido o no contiene un campo de expiración.");
         return true;
@@ -50,8 +49,7 @@ export async function renovarToken() {
 
             // Verifica si el token renovado es diferente al actual
             if (nuevoToken !== token) {
-               // document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cooki    
-                document.cookie = `jwt=${token}; path=/`; // Actualiza la cookie
+                document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cookie
                 return nuevoToken;
             } else {
                 throw new Error("El token renovado es el mismo que el anterior.");
@@ -75,5 +73,24 @@ export async function verificarYRenovarToken() {
         }
     } else {
         //console.log("El token es válido y no necesita renovación.");
+    }
+}
+
+// Función para decodificar el token
+function parseJwt(token) {
+    if (!token) return null;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('') 
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error("Error al decodificar el token JWT:", error);
+        return null;
     }
 }
