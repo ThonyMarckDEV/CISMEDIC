@@ -89,7 +89,7 @@ function AppContent() {
       }, 10000);
 
       const tokenIntervalId = setInterval(() => {
-        verificarYRenovarToken();
+        RenovarToken();
       }, 180000); // Cada 3 minutos (180,000 milisegundos)
 
 
