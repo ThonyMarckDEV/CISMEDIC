@@ -21,9 +21,9 @@ function tokenNeedsRefresh() {
 
 async function refreshToken() {
     // Si ya hay una renovación en curso, esperar a que termine
-    // if (refreshPromise) {
-    //     return refreshPromise;
-    // }
+    if (refreshPromise) {
+        return refreshPromise;
+    }
 
     const token = jwtUtils.getTokenFromCookie();
     if (!token) {
@@ -68,6 +68,25 @@ export async function RenovarToken() {
             }
             return true;
         //}
+    } catch (error) {
+        console.error("Error en verificarYRenovarToken:", error);
+       // logout();
+        return false;
+    }
+}
+
+
+export async function verificarYRenovarToken() {
+    try {
+        if (tokenNeedsRefresh()) {
+            const nuevoToken = await refreshToken();
+            if (!nuevoToken) {
+                console.error("Fallo en la renovación del token");
+              //  logout();
+                return false;
+            }
+            return true;
+        }
     } catch (error) {
         console.error("Error en verificarYRenovarToken:", error);
        // logout();
