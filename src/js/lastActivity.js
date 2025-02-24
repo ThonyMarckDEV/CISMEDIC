@@ -31,15 +31,6 @@ export async function updateLastActivity() {
             // Si la sesión no es válida, cerrar la sesión actual
             console.log('Sesión no válida, cerrando sesión...');
 
-            await fetch(`${API_BASE_URL}/api/logout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ idUsuario: userId })
-            });
-
             // Eliminar el token y el sessionId de las cookies
             jwtUtils.removeTokenFromCookie();
             jwtUtils.clearSessionCookie();
