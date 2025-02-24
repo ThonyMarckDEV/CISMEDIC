@@ -19,16 +19,17 @@ export async function logout() {
                 },
                 body: JSON.stringify({ idUsuario: decodedToken.idUsuario }) // Enviar idUsuario en el cuerpo
             });
+            
+            // Eliminar el token de localStorage
+            jwtUtils.removeTokenFromCookie();
+
+            // Redirigir a la página de inicio de sesión en el dominio raíz
+            window.location.href = `/`;
         } catch (error) {
             console.error("Error al desloguear al usuario:", error);
         }
     }
     
-       // Eliminar el token de localStorage
-       jwtUtils.removeTokenFromCookie();
-
-        // Redirigir a la página de inicio de sesión en el dominio raíz
-        window.location.href = `/`;
 }
 
 // Decodificar el token
