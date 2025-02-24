@@ -98,7 +98,7 @@ export const checkUserStatus = async (retryCount = 0) => {
 
         if (!response.ok || data.status === 'error' || data.force_logout) {
             console.log('Sesión inválida:', data.message);
-         //   await logoutAndRedirect();
+            await logoutAndRedirect();
             return;
         }
 
