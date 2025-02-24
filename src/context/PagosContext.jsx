@@ -18,7 +18,7 @@ export const PagosProvider = ({ children }) => {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/pagos/cantidad/${idCliente}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cliente/pagos/cantidad/${idCliente}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

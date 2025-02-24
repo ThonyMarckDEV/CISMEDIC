@@ -298,13 +298,13 @@ const ClienteNuevaCita = () => {
 
         // Actualizar la cantidad de citas y pagos
         const [citasResponse, pagosResponse] = await Promise.all([
-            fetch(`${API_BASE_URL}/api/citas/cantidad/${idCliente}`, {
+            fetch(`${API_BASE_URL}/api/cliente/citas/cantidad/${idCliente}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: 'application/json',
                 },
             }),
-            fetch(`${API_BASE_URL}/api/pagos/cantidad/${idCliente}`, {
+            fetch(`${API_BASE_URL}/api/cliente/pagos/cantidad/${idCliente}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: 'application/json',

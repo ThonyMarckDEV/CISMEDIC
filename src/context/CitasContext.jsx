@@ -19,7 +19,7 @@ export const CitasProvider = ({ children }) => {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/citas/cantidad/${idCliente}`, {
+      const response = await fetch(`${API_BASE_URL}/api/cliente/citas/cantidad/${idCliente}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
