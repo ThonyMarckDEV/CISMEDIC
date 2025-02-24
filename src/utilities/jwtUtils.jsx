@@ -148,6 +148,5 @@ export default {
   getTokenFromCookie,
   removeTokenFromCookie,
   getRefreshTokenFromCookie,
-  setTokens,
   parseJwt
 };
