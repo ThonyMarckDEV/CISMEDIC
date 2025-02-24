@@ -1,9 +1,8 @@
 import API_BASE_URL from './urlHelper.js';
 import { verificarYRenovarToken } from './authToken.js';
-import { jwtDecode } from 'jwt-decode';
 import { checkUserStatus } from './checkUserStatus';
-import { logout } from './logout'; // Cambiar a importación nombrada
 import jwtUtils from '../utilities/jwtUtils.jsx';
+
 
 // updateLastActivity.js
 export async function updateLastActivity() {
@@ -28,5 +27,7 @@ export async function updateLastActivity() {
         }
     } catch (error) {
         console.error('Error en updateLastActivity:', error);
+    }finally{
+        checkUserStatus();
     }
 }
