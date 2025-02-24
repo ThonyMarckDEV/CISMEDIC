@@ -60,7 +60,7 @@ const Navbar = () => {
                 href="/"
                 className="text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
               >
-                Home
+                Inicio
               </a>
             </li>
             <li>
