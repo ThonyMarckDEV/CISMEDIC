@@ -91,12 +91,12 @@ const NextAppointmentCard = () => {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Próxima Cita</h2>
         </div>
-
-        {/* Grid de 2x2 */}
-        <div className="grid grid-cols-2 gap-6">
+        
+        {/* Grid responsive: 2x2 en desktop, 1x4 en móvil */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Fecha */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-            <Calendar className="h-6 w-6 text-green-600" />
+            <Calendar className="h-8 w-8 md:h-6 md:w-6 text-green-600" />
             <div className="flex flex-col">
               <span className="text-sm text-gray-500">Fecha</span>
               <span className="capitalize font-medium text-gray-800">
@@ -104,19 +104,19 @@ const NextAppointmentCard = () => {
               </span>
             </div>
           </div>
-
+          
           {/* Hora */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-            <Clock className="h-6 w-6 text-green-600" />
+            <Clock className="h-8 w-8 md:h-6 md:w-6 text-green-600" />
             <div className="flex flex-col">
               <span className="text-sm text-gray-500">Hora</span>
               <span className="font-medium text-gray-800">{nextAppointment.horaInicio}</span>
             </div>
           </div>
-
+          
           {/* Doctor */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-            <Stethoscope className="h-6 w-6 text-green-600" />
+            <Stethoscope className="h-8 w-8 md:h-6 md:w-6 text-green-600" />
             <div className="flex flex-col">
               <span className="text-sm text-gray-500">Doctor</span>
               <span className="font-medium text-gray-800">
@@ -127,10 +127,10 @@ const NextAppointmentCard = () => {
               </span>
             </div>
           </div>
-
+          
           {/* Paciente */}
           <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-            <User className="h-6 w-6 text-green-600" />
+            <User className="h-8 w-8 md:h-6 md:w-6 text-green-600" />
             <div className="flex flex-col">
               <span className="text-sm text-gray-500">Paciente</span>
               <span className="font-medium text-gray-800">
@@ -142,6 +142,6 @@ const NextAppointmentCard = () => {
       </div>
     </div>
   );
-};
-
+  };
+  
 export default NextAppointmentCard;
