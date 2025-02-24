@@ -153,7 +153,7 @@ function tokenExpirado() {
     const timeLeft = exp - Date.now(); // Tiempo restante en milisegundos
     const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60); // Tiempo restante en minutos
 
-    console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
+  //  console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
 
     const isExpiring = timeLeft <= 120000; // Renovar 2 minutos antes de expirar
     return isExpiring;
@@ -199,7 +199,7 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-            console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+          //  console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token");
         }

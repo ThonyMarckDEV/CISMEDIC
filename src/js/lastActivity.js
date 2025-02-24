@@ -4,7 +4,7 @@ import { verificarYRenovarToken } from './authToken.js';
 
 
 export async function updateLastActivity() {
-    console.log('Actualizando última actividad...');
+   // console.log('Actualizando última actividad...');
     await verificarYRenovarToken();
     try {
         const token = jwtUtils.getTokenFromCookie();
