@@ -10,16 +10,6 @@ export async function logout() {
 
     if (token && decodedToken) {
         try {
-            // Llamada a la API para actualizar el estado a loggedOff sin encabezado de token
-            // await fetch(`${API_BASE_URL}/api/logout`, {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //          "Authorization": `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify({ idUsuario: decodedToken.idUsuario }) // Enviar idUsuario en el cuerpo
-            // });
-            
             // Eliminar el token de localStorage
             jwtUtils.removeTokenFromCookie();
             jwtUtils.clearSessionCookie();
