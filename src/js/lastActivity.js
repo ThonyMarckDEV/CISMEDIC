@@ -4,7 +4,6 @@ import { checkUserStatus } from './checkUserStatus';
 import jwtUtils from '../utilities/jwtUtils.jsx';
 
 
-// updateLastActivity.js
 export async function updateLastActivity() {
     try {
         const tokenValid = await verificarYRenovarToken();
@@ -12,42 +11,44 @@ export async function updateLastActivity() {
 
         const token = jwtUtils.getTokenFromCookie();
         const userId = jwtUtils.getIdUsuario(token);
+        const sessionId = jwtUtils.getSessionIdFromCookie(); // Obtener el sessionId almacenado
 
-        // Verificar si hay una sesión activa en otro dispositivo
+        // Verificar si la sesión actual es válida
         const responseCheck = await fetch(`${API_BASE_URL}/api/check-active-session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ idUsuario: userId })
+            body: JSON.stringify({ idUsuario: userId, sessionId: sessionId }) // Enviar el sessionId
         });
 
         if (!responseCheck.ok) {
             throw new Error(`Error en check-active-session: ${responseCheck.status}`);
         }
 
-        const { activeSession } = await responseCheck.json();
+        const { validSession } = await responseCheck.json();
 
-        if (activeSession) {
-            // Si hay una sesión activa en otro dispositivo, cerrar la sesión actual
+        if (!validSession) {
+            // Si la sesión no es válida, cerrar la sesión actual
+            console.log('Sesión no válida, cerrando sesión...');
 
-            console.log('Sesión activa en otro dispositivo');
-            // await fetch(`${API_BASE_URL}/api/logout`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify({ idUsuario: userId })
-            // });
+            await fetch(`${API_BASE_URL}/api/logout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ idUsuario: userId })
+            });
 
-            // // Eliminar el token de localStorage
-            // jwtUtils.removeTokenFromCookie();
+            // Eliminar el token y el sessionId de las cookies
+            jwtUtils.removeTokenFromCookie();
+            jwtUtils.removeSessionIdFromCookie();
 
-            // // Redirigir a la página de inicio de sesión en el dominio raíz
-            // window.location.href = `/`;
-            // return;
+            // Redirigir a la página de inicio de sesión
+            window.location.href = `/`;
+            return;
         }
 
         // Actualizar la última actividad

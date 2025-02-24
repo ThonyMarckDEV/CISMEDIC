@@ -39,6 +39,9 @@ export const getPerfil = (token) => {
 // Función para obtener el ID del usuario
 export const getIdUsuario = (token) => decodeToken(token)?.idUsuario ?? null;
 
+// Función para obtener el ID Sesion
+export const getSessionIdFromCookie = (token) => decodeToken(token)?.sessionId ?? null;
+
 // Función para obtener el usernamede usuario
 export const getUsername = (token) => decodeToken(token)?.username ?? null;
 
@@ -52,8 +55,6 @@ export const getNombres = (token) => {
 export const getUserRole = (token) => decodeToken(token)?.rol ?? null;
 
 export const getIdRole = (token) => decodeToken(token)?.rol ?? null;
-
-export const getIdCarrito = (token) => decodeToken(token)?.idCarrito ?? null;
 
 // Función para verificar si el token está expirado
 export const isTokenExpired = (token) => {
@@ -144,9 +145,9 @@ export default {
   isTokenExpired,
   getTokenExpirationDate,
   verifyToken,
-  getIdCarrito,
   getTokenFromCookie,
   removeTokenFromCookie,
   getRefreshTokenFromCookie,
-  parseJwt
+  parseJwt,
+  getSessionIdFromCookie
 };
