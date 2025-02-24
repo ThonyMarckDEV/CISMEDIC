@@ -62,7 +62,7 @@ export async function verificarYRenovarToken() {
             const nuevoToken = await refreshToken();
             if (!nuevoToken) {
                 console.error("Fallo en la renovación del token");
-                logout();
+              //  logout();
                 return false;
             }
             return true;
@@ -70,7 +70,7 @@ export async function verificarYRenovarToken() {
         return true;
     } catch (error) {
         console.error("Error en verificarYRenovarToken:", error);
-        logout();
+       // logout();
         return false;
     }
 }

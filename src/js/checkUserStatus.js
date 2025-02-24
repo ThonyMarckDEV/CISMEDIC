@@ -42,14 +42,14 @@ export const checkUserStatus = async () => {
 
         if (!response.ok || data.status === 'error' || data.force_logout) {
             console.warn('Sesión inválida:', data.message);
-            await logoutAndRedirect();
+           // await logoutAndRedirect();
             return;
         }
 
     } catch (error) {
         console.error('Error en checkUserStatus:', error);
         if (!(error instanceof TypeError)) {
-            await logoutAndRedirect();
+          //  await logoutAndRedirect();
         }
     }
 };
