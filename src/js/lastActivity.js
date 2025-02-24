@@ -10,7 +10,7 @@ export async function updateLastActivity() {
     try {
         // Verificar y renovar el token
         await verificarYRenovarToken();
-        
+
         const token = jwtUtils.getTokenFromCookie();
         if (!token) {
             console.error('No token found. Logging out...');
@@ -18,8 +18,7 @@ export async function updateLastActivity() {
             return;
         }
 
-        const decoded = jwtDecode(token);
-        const userId = decoded.idUsuario;
+        const userId = jwtUtils.getIdCarrito(token);
 
         // Enviar solicitud para actualizar actividad
         const response = await fetch(`${API_BASE_URL}/api/update-activity`, {
