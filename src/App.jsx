@@ -72,7 +72,7 @@ import ProtectedRouteRolAdmin from './utilities/ProtectedRouteRolAdmin';
 // Scripts
 import { updateLastActivity } from './js/lastActivity';
 
-import {RenovarToken} from './js/authToken';
+import {RenovarToken, verificarYRenovarToken} from './js/authToken';
 
 
 function AppContent() {
@@ -83,15 +83,15 @@ function AppContent() {
 
     if (token) {
       updateLastActivity();
+      verificarYRenovarToken()
 
       const activityIntervalId = setInterval(() => {
         updateLastActivity();
       }, 10000);
 
       const tokenIntervalId = setInterval(() => {
-        RenovarToken();
-      }, 180000); // Cada 3 minutos (180,000 milisegundos)
-
+        verificarYRenovarToken();
+      }, 10000); // Cada 10 segundos
 
        // Limpiar intervalos al desmontar el componente
       return () => {
