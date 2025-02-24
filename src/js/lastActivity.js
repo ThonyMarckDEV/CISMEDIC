@@ -11,7 +11,7 @@ export async function updateLastActivity() {
         if (!tokenValid) return;
 
         const token = jwtUtils.getTokenFromCookie();
-        const userId = jwtUtils.getIdCarrito(token);
+        const userId = jwtUtils.getIdUsuario(token);
 
         const response = await fetch(`${API_BASE_URL}/api/update-activity`, {
             method: 'POST',
