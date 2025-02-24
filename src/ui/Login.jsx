@@ -1,3 +1,4 @@
+//login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../js/urlHelper';
@@ -20,6 +21,67 @@ const Login = ({ closeLoginModal }) => {
     setShowPassword(!showPassword);
   };
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setError(null);
+  //   setLoading(true);
+  //   setIsAccountDeleted(false);
+
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/login`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'User-Agent': navigator.userAgent,
+  //       },
+  //       body: JSON.stringify({
+  //         correo: email,
+  //         password,
+  //       }),
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (response.ok) {
+  //       const token = result.token;
+  //       // Guardar el token en una cookie
+  //       document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
+
+  //       const userRole = jwtUtils.getUserRole(token);
+
+  //       if (userRole === 'superadmin') {
+  //         window.location.href = '/superAdmin';
+  //       } else if (userRole === 'admin') {
+  //         window.location.href = '/admin';
+  //       } else if (userRole === 'doctor') {
+  //         window.location.href = '/doctor';
+  //       } else if (userRole === 'cliente') {
+  //         window.location.href = '/cliente';
+  //       } else {
+  //         console.error('Rol no reconocido:', userRole);
+  //       }
+  //     } else {
+  //       // Manejar caso de cuenta eliminada
+  //       if (response.status === 403 && result.accountDeleted) {
+  //         setIsAccountDeleted(true);
+  //         setError(result.error);
+  //       }
+  //       // Otros casos de error
+  //       else if (response.status === 403) {
+  //         setError(result.error || 'Su cuenta está inactiva. Por favor, contacte al administrador del sistema.');
+  //       } else {
+  //         setError(result.error || 'Hubo un error al iniciar sesión.');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setError('Error en la conexión con el servidor.');
+  //     console.error('Error al intentar iniciar sesión:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Login.jsx (actualización del handleLogin)
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
@@ -27,56 +89,60 @@ const Login = ({ closeLoginModal }) => {
     setIsAccountDeleted(false);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': navigator.userAgent,
-        },
-        body: JSON.stringify({
-          correo: email,
-          password,
-        }),
-      });
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'User-Agent': navigator.userAgent,
+            },
+            body: JSON.stringify({
+                correo: email,
+                password,
+            }),
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (response.ok) {
-        const token = result.token;
-        // Guardar el token en una cookie
-        document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
+        if (response.ok) {
+            const { token, refresh_token } = result;
+            
+            // Guardar ambos tokens
+            jwtUtils.setTokens(token, refresh_token);
 
-        const userRole = jwtUtils.getUserRole(token);
-
-        if (userRole === 'superadmin') {
-          window.location.href = '/superAdmin';
-        } else if (userRole === 'admin') {
-          window.location.href = '/admin';
-        } else if (userRole === 'doctor') {
-          window.location.href = '/doctor';
-        } else if (userRole === 'cliente') {
-          window.location.href = '/cliente';
+            const userRole = jwtUtils.getUserRole(token);
+            
+            // Redirigir según el rol
+            switch(userRole) {
+                case 'superadmin':
+                    window.location.href = '/superAdmin';
+                    break;
+                case 'admin':
+                    window.location.href = '/admin';
+                    break;
+                case 'doctor':
+                    window.location.href = '/doctor';
+                    break;
+                case 'cliente':
+                    window.location.href = '/cliente';
+                    break;
+                default:
+                    console.error('Rol no reconocido:', userRole);
+            }
         } else {
-          console.error('Rol no reconocido:', userRole);
+            if (response.status === 403 && result.accountDeleted) {
+                setIsAccountDeleted(true);
+                setError(result.error);
+            } else if (response.status === 403) {
+                setError(result.error || 'Su cuenta está inactiva. Por favor, contacte al administrador del sistema.');
+            } else {
+                setError(result.error || 'Hubo un error al iniciar sesión.');
+            }
         }
-      } else {
-        // Manejar caso de cuenta eliminada
-        if (response.status === 403 && result.accountDeleted) {
-          setIsAccountDeleted(true);
-          setError(result.error);
-        }
-        // Otros casos de error
-        else if (response.status === 403) {
-          setError(result.error || 'Su cuenta está inactiva. Por favor, contacte al administrador del sistema.');
-        } else {
-          setError(result.error || 'Hubo un error al iniciar sesión.');
-        }
-      }
     } catch (error) {
-      setError('Error en la conexión con el servidor.');
-      console.error('Error al intentar iniciar sesión:', error);
+        setError('Error en la conexión con el servidor.');
+        console.error('Error al intentar iniciar sesión:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 

@@ -1,3 +1,4 @@
+//logout.js
 import API_BASE_URL from './urlHelper.js';
 import jwtUtils from '../utilities/jwtUtils.jsx';
 

@@ -1,7 +1,6 @@
 // jwtUtils.jsx
 
 import API_BASE_URL from '../js/urlHelper';
-// jwtUtils.jsx
 
 // Función para decodificar el payload de un JWT manualmente
 const decodeToken = (token) => {
@@ -106,10 +105,44 @@ export const getTokenFromCookie = () => {
   return getCookie(tokenName);
 };
 
-export const removeTokenFromCookie = () => {
-  // Elimina el token de la cookie
-  document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+export const getRefreshTokenFromCookie = () => {
+  const cookies = document.cookie.split(';');
+  const refreshTokenCookie = cookies.find(cookie => cookie.trim().startsWith('refresh_token='));
+  return refreshTokenCookie ? refreshTokenCookie.split('=')[1].trim() : null;
 };
+
+export const setTokens = (token, refreshToken) => {
+  document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;
+  document.cookie = `refresh_token=${refreshToken}; path=/; Secure; SameSite=Strict`;
+};
+
+export const removeTokenFromCookie = () => {
+  document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+};
+
+export const  parseJwt = (token) => {
+  if (!token) return null;
+  try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+          atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+      );
+      return JSON.parse(jsonPayload);
+  } catch (error) {
+      console.error("Error al decodificar el token JWT:", error);
+      return null;
+  }
+};
+
+// export const removeTokenFromCookie = () => {
+//   // Elimina el token de la cookie
+//   document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+// };
 
 export default {
   getEmailVerified,
@@ -123,5 +156,8 @@ export default {
   verifyToken,
   getIdCarrito,
   getTokenFromCookie,
-  removeTokenFromCookie
+  removeTokenFromCookie,
+  getRefreshTokenFromCookie,
+  setTokens,
+  parseJwt
 };
