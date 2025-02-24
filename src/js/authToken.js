@@ -2,27 +2,25 @@ import API_BASE_URL from './urlHelper.js';
 import { logout as logoutAndRedirect } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils';
 
-// Función para verificar si el token está próximo a expirar
-function tokenExpirado() {
+export async function tokenExpirado() {
     const token = jwtUtils.getTokenFromCookie();
-    if (!token) {
-        // console.log("Token no encontrado en la cookie.");
-        return true;
-    }
-
+    if (!token) return true;
+    
     const payload = parseJwt(token);
-    if (!payload || !payload.exp) {
-        // console.error("El token es inválido o no contiene un campo de expiración.");
-        return true;
+    if (!payload || !payload.exp) return true;
+    
+    const exp = payload.exp * 1000;
+    const timeLeft = exp - Date.now();
+    const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60);
+    
+    // Renovar cuando falten 2 minutos para los 5 minutos de expiración
+    const RENEWAL_THRESHOLD = 2 * 60 * 1000; // 2 minutos en milisegundos
+    const isExpiring = timeLeft <= RENEWAL_THRESHOLD;
+    
+    if (isExpiring) {
+        console.log(`Token próximo a expirar. Tiempo restante: ${timeLeftInMinutes} minutos`);
     }
-
-    const exp = payload.exp * 1000; // Convertir a milisegundos
-    const timeLeft = exp - Date.now(); // Tiempo restante en milisegundos
-    const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60); // Tiempo restante en minutos
-
-    console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
-
-    const isExpiring = timeLeft <= 120000; // Renovar 2 minutos antes de expirar
+    
     return isExpiring;
 }
 
