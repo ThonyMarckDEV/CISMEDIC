@@ -32,7 +32,6 @@ async function refreshToken() {
 
     refreshPromise = fetch(`${API_BASE_URL}/api/refresh-token`, {
         method: "POST",
-        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
             
