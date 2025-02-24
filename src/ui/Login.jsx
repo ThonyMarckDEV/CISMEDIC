@@ -63,6 +63,10 @@ const Login = ({ closeLoginModal }) => {
           },
         });
   
+        // Limpiar los campos del formulario
+        setEmail('');
+        setPassword('');
+  
         // Retrasar la redirección para que la notificación se muestre
         setTimeout(() => {
           if (userRole === 'superadmin') {
