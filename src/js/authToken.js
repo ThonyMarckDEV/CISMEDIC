@@ -199,7 +199,7 @@ export async function verificarYRenovarToken() {
     if (tokenExpirado()) {
         const nuevoToken = await renovarToken();
         if (nuevoToken) {
-           // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
+            console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
         } else {
             console.log("No se pudo renovar el token");
         }
