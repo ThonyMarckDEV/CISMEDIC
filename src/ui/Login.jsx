@@ -56,7 +56,7 @@ const Login = ({ closeLoginModal }) => {
         // Mostrar notificación de bienvenida
         enqueueSnackbar(`¡Bienvenido, ${userName}!`, {
           variant: 'success',
-          autoHideDuration: 3000, // Duración de la notificación
+          autoHideDuration: 2000, // Duración de la notificación
           anchorOrigin: {
             vertical: 'top',
             horizontal: 'right',
