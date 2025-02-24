@@ -5,22 +5,15 @@ import { checkUserStatus } from './checkUserStatus';
 import { logout } from './logout'; // Cambiar a importación nombrada
 import jwtUtils from '../utilities/jwtUtils.jsx';
 
-
+// updateLastActivity.js
 export async function updateLastActivity() {
     try {
-        // Verificar y renovar el token
-        await verificarYRenovarToken();
+        const tokenValid = await verificarYRenovarToken();
+        if (!tokenValid) return;
 
         const token = jwtUtils.getTokenFromCookie();
-        if (!token) {
-            console.error('No token found. Logging out...');
-            logout();
-            return;
-        }
-
         const userId = jwtUtils.getIdCarrito(token);
 
-        // Enviar solicitud para actualizar actividad
         const response = await fetch(`${API_BASE_URL}/api/update-activity`, {
             method: 'POST',
             headers: {
@@ -30,15 +23,10 @@ export async function updateLastActivity() {
             body: JSON.stringify({ idUsuario: userId })
         });
 
-        if (response.ok) {
-            console.log('Last activity successfully updated.');
-        } else {
-            console.warn('Failed to update last activity.');
+        if (!response.ok) {
+            throw new Error(`Error en updateLastActivity: ${response.status}`);
         }
     } catch (error) {
-        console.error('Error updating last activity:', error);
-    } finally {
-        // Verificar el estado del usuario
-         await checkUserStatus();
+        console.error('Error en updateLastActivity:', error);
     }
 }

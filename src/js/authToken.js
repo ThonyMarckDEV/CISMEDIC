@@ -1,78 +1,75 @@
+// authToken.js
 import API_BASE_URL from './urlHelper.js';
-import { logout as logoutAndRedirect } from './logout.js';
+import { logout } from './logout.js';
 import jwtUtils from '../utilities/jwtUtils';
 
-// Función para verificar si el token está próximo a expirar
-function tokenExpirado() {
+const REFRESH_THRESHOLD = 120000; // 2 minutos en milisegundos
+let refreshPromise = null; // Para prevenir múltiples llamadas simultáneas
+
+function tokenNeedsRefresh() {
     const token = jwtUtils.getTokenFromCookie();
-    if (!token) {
-        // console.log("Token no encontrado en la cookie.");
-        return true;
-    }
+    if (!token) return true;
 
     const payload = jwtUtils.parseJwt(token);
-    if (!payload || !payload.exp) {
-        // console.error("El token es inválido o no contiene un campo de expiración.");
-        return true;
-    }
+    if (!payload || !payload.exp) return true;
 
-    const exp = payload.exp * 1000; // Convertir a milisegundos
-    const timeLeft = exp - Date.now(); // Tiempo restante en milisegundos
-    const timeLeftInMinutes = Math.floor(timeLeft / 1000 / 60); // Tiempo restante en minutos
-
-   console.log(`El token expira en ${timeLeftInMinutes} minutos.`);
-
-    const isExpiring = timeLeft <= 120000; // Renovar 2 minutos antes de expirar
-    return isExpiring;
+    const timeLeft = (payload.exp * 1000) - Date.now();
+    console.log(`Token expira en ${Math.floor(timeLeft / 60000)} minutos`);
+    
+    return timeLeft <= REFRESH_THRESHOLD;
 }
 
-// Función para renovar el token
-export async function renovarToken() {
+async function refreshToken() {
+    // Si ya hay una renovación en curso, esperar a que termine
+    if (refreshPromise) {
+        return refreshPromise;
+    }
+
     const token = jwtUtils.getTokenFromCookie();
     if (!token) {
-        // console.log("Token no encontrado en la cookie.");
-        return null;
+        throw new Error("No hay token disponible");
     }
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/refresh-token`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            const nuevoToken = data.accessToken;
-
-            // Verifica si el token renovado es diferente al actual
-            if (nuevoToken !== token) {
-                document.cookie = `jwt=${nuevoToken}; path=/`; // Actualiza la cookie
-                return nuevoToken;
-            } else {
-                throw new Error("El token renovado es el mismo que el anterior.");
-            }
+    refreshPromise = fetch(`${API_BASE_URL}/api/refresh-token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
         }
-    } catch (error) {
-        console.error("Error al intentar renovar el token:", error);
-        //logoutAndRedirect();
-    }
+    })
+    .then(async (response) => {
+        if (!response.ok) {
+            throw new Error(`Error en refresh: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.accessToken && data.accessToken !== token) {
+            document.cookie = `jwt=${data.accessToken}; path=/`;
+            return data.accessToken;
+        }
+        throw new Error("Token renovado inválido");
+    })
+    .finally(() => {
+        refreshPromise = null;
+    });
+
+    return refreshPromise;
 }
 
-// Función que verifica y renueva el token si es necesario
 export async function verificarYRenovarToken() {
-    if (tokenExpirado()) {
-        const nuevoToken = await renovarToken();
-        if (nuevoToken) {
-           // console.log("Renovación completada, el nuevo token se utilizará en la siguiente solicitud.");
-        } else {
-            console.log("No se pudo renovar el token");
-            //logoutAndRedirect();
+    try {
+        if (tokenNeedsRefresh()) {
+            const nuevoToken = await refreshToken();
+            if (!nuevoToken) {
+                console.error("Fallo en la renovación del token");
+                logout();
+                return false;
+            }
+            return true;
         }
-    } else {
-        //console.log("El token es válido y no necesita renovación.");
+        return true;
+    } catch (error) {
+        console.error("Error en verificarYRenovarToken:", error);
+        logout();
+        return false;
     }
 }
-
