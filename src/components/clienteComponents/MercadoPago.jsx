@@ -22,7 +22,7 @@ const MercadoPago = ({ cita, appointment }) => {
       const existingScript = document.getElementById(scriptId);
       
       if (existingScript && window.MercadoPago) {
-        setMercadoPago(new window.MercadoPago("APP_USR-356bfc5e-0988-474a-adb4-ce1e5af9b332", { locale: "es-PE" }));
+        setMercadoPago(new window.MercadoPago("APP_USR-1b315cdd-7be8-4e0b-88be-7242570f22aa", { locale: "es-PE" }));
         return;
       }
 
@@ -32,7 +32,7 @@ const MercadoPago = ({ cita, appointment }) => {
       
       script.onload = () => {
         if (window.MercadoPago) {
-          setMercadoPago(new window.MercadoPago("APP_USR-356bfc5e-0988-474a-adb4-ce1e5af9b332", { locale: "es-PE" }));
+          setMercadoPago(new window.MercadoPago("APP_USR-1b315cdd-7be8-4e0b-88be-7242570f22aa", { locale: "es-PE" }));
         } else {
           setError("Error al cargar el SDK de MercadoPago.");
         }
@@ -124,7 +124,7 @@ const MercadoPago = ({ cita, appointment }) => {
         requestBody.ruc = ruc;
       }
 
-      //console.log("Sending actualizarComprobante request:", requestBody);
+      console.log("Sending actualizarComprobante request:", requestBody);
 
       const response = await fetch(`${API_BASE_URL}/api/actualizar-comprobante`, {
         method: "POST",
@@ -136,7 +136,7 @@ const MercadoPago = ({ cita, appointment }) => {
       });
 
       const data = await response.json();
-      //console.log("actualizarComprobante response:", data);
+      console.log("actualizarComprobante response:", data);
 
       if (!response.ok) {
         throw new Error(data.message || "Error al actualizar el comprobante");
@@ -170,7 +170,7 @@ const MercadoPago = ({ cita, appointment }) => {
     setError(null);
 
     try {
-     // console.log("Starting payment process for payment ID:", appointment.idPago);
+      console.log("Starting payment process for payment ID:", appointment.idPago);
       
       // Primero actualizar el comprobante
       await actualizarComprobante();
@@ -193,7 +193,7 @@ const MercadoPago = ({ cita, appointment }) => {
         ruc: tipoComprobante === "factura" ? ruc : null,
       };
 
-      //console.log("Sending payment preference request:", paymentRequestBody);
+      console.log("Sending payment preference request:", paymentRequestBody);
 
       const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
         method: "POST",
@@ -205,7 +205,7 @@ const MercadoPago = ({ cita, appointment }) => {
       });
 
       const data = await response.json();
-     // console.log("Payment preference response:", data);
+      console.log("Payment preference response:", data);
 
       if (!response.ok) {
         throw new Error(data?.message || "Error al crear la preferencia de pago.");
