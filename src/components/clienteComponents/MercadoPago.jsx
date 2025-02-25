@@ -154,37 +154,37 @@ const MercadoPago = ({ cita, appointment }) => {
       setError("MercadoPago no está disponible. Por favor, intenta más tarde.");
       return;
     }
-
+  
     if (!appointment?.idPago) {
       console.error("No payment ID found:", appointment);
       setError("No se encontró un ID de pago válido.");
       return;
     }
-
+  
     if (tipoComprobante === "factura" && !rucValid) {
       setError("Por favor, ingresa un RUC válido.");
       return;
     }
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
       console.log("Starting payment process for payment ID:", appointment.idPago);
-      
+  
       // Primero actualizar el comprobante
       await actualizarComprobante();
-
+  
       const token = jwtUtils.getTokenFromCookie();
       const decodedToken = decodeJWT(token);
       const correoUsuario = decodedToken?.correo;
-
+  
       if (!correoUsuario) {
         throw new Error("No se pudo obtener el correo del usuario.");
       }
-
+  
       await verificarYRenovarToken();
-
+  
       const paymentRequestBody = {
         idCita: cita.idCita,
         monto: cita.monto,
@@ -192,9 +192,9 @@ const MercadoPago = ({ cita, appointment }) => {
         tipo_comprobante: tipoComprobante,
         ruc: tipoComprobante === "factura" ? ruc : null,
       };
-
+  
       console.log("Sending payment preference request:", paymentRequestBody);
-
+  
       const response = await fetch(`${API_BASE_URL}/api/payment/preference`, {
         method: "POST",
         headers: {
@@ -203,14 +203,24 @@ const MercadoPago = ({ cita, appointment }) => {
         },
         body: JSON.stringify(paymentRequestBody),
       });
-
-      const data = await response.json();
-      console.log("Payment preference response:", data);
-
+  
+      // Clone the response to read it multiple times
+      const responseClone = response.clone();
+  
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        console.error("Failed to parse JSON response:", error);
+        const textResponse = await responseClone.text(); // Use the cloned response
+        console.error("Server response:", textResponse);
+        throw new Error("Server returned an invalid response");
+      }
+  
       if (!response.ok) {
         throw new Error(data?.message || "Error al crear la preferencia de pago.");
       }
-
+  
       if (data.success) {
         mercadoPago.checkout({
           preference: { id: data.preference_id },
