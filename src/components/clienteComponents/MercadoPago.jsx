@@ -22,7 +22,7 @@ const MercadoPago = ({ cita, appointment }) => {
       const existingScript = document.getElementById(scriptId);
       
       if (existingScript && window.MercadoPago) {
-        setMercadoPago(new window.MercadoPago("APP_USR-1b315cdd-7be8-4e0b-88be-7242570f22aa", { locale: "es-PE" }));
+        setMercadoPago(new window.MercadoPago("APP_USR-3565480b-bcf8-469b-afaa-e690729444af", { locale: "es-PE" }));
        //setMercadoPago(new window.MercadoPago("APP_USR-befe1f6a-9fa4-40c5-85db-22f44139f7d8", { locale: "es-PE" }));
         return;
       }
@@ -33,7 +33,7 @@ const MercadoPago = ({ cita, appointment }) => {
       
       script.onload = () => {
         if (window.MercadoPago) {
-          setMercadoPago(new window.MercadoPago("APP_USR-1b315cdd-7be8-4e0b-88be-7242570f22aa", { locale: "es-PE" }));
+          setMercadoPago(new window.MercadoPago("APP_USR-3565480b-bcf8-469b-afaa-e690729444af", { locale: "es-PE" }));
         // setMercadoPago(new window.MercadoPago("APP_USR-befe1f6a-9fa4-40c5-85db-22f44139f7d8", { locale: "es-PE" }));
         } else {
           setError("Error al cargar el SDK de MercadoPago.");
