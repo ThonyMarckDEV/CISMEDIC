@@ -50,6 +50,7 @@ import ResultadosLaboratoriosClientes from './ui/adminUI/ResultadosLaboratorioCl
 import DisponibilidadDoctores from './ui/adminUI/DisponibilidadDoctores';
 import AgendarCitaCliente from './ui/adminUI/AgendarCitaCliente';
 import HistorialPagosClientes from './ui/adminUI/HistorialPagosClientes';
+import CitasClientes from './ui/adminUI/CitasPacientes';
 
 //UI SuperAdmin
 import SuperAmin from './ui/superadminUI/SuperAdmin';
@@ -306,6 +307,14 @@ function AppContent() {
         path="/admin/pagosclientes"
         element={
           <ProtectedRouteRolAdmin element={<HistorialPagosClientes />} />
+        }
+      />
+
+      
+      <Route
+        path="/admin/citasclientes"
+        element={
+          <ProtectedRouteRolAdmin element={<CitasClientes />} />
         }
       />
 
