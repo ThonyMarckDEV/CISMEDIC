@@ -12,10 +12,13 @@ const CitasPacientes = () => {
   const [filters, setFilters] = useState({
     dni: '',
     nombre_paciente: '',
+    apellidos_paciente: '',
     nombre_doctor: '',
+    apellidos_doctor: '',
     especialidad: '',
     fecha: '',
-    hora: ''
+    hora: '',
+    idCita: ''
   });
   const [validationErrors, setValidationErrors] = useState({});
 
@@ -28,18 +31,25 @@ const CitasPacientes = () => {
     switch (name) {
       case 'dni':
         if (!/^\d{0,8}$/.test(value)) {
-          error = 'DNI debe contener solo números y máximo 8 caracteres.';
+          error = 'DNI debe contener solo números (máximo 8 dígitos).';
+        }
+        break;
+      case 'idCita':
+        if (!/^\d*$/.test(value)) {
+          error = 'ID de cita debe contener solo números.';
         }
         break;
       case 'nombre_paciente':
+      case 'apellidos_paciente':
       case 'nombre_doctor':
-        if (!/^[A-Za-z\s]*$/.test(value)) {
-          error = 'Este campo solo puede contener letras.';
+      case 'apellidos_doctor':
+        if (!/^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*$/.test(value)) {
+          error = 'Este campo solo permite letras y espacios.';
         }
         break;
       case 'especialidad':
-        if (!/^[A-Za-z\s]*$/.test(value)) {
-          error = 'Este campo solo puede contener letras.';
+        if (!/^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]*$/.test(value)) {
+          error = 'Este campo solo permite letras y espacios.';
         }
         break;
       default:
@@ -50,14 +60,35 @@ const CitasPacientes = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    const error = validateField(name, value);
+    let sanitizedValue = value;
+  
+    // Sanitizar valores según el campo
+    switch (name) {
+      case 'dni':
+        sanitizedValue = value.replace(/[^\d]/g, '').substring(0, 8); // Solo números, máximo 8
+        break;
+      case 'idCita':
+        sanitizedValue = value.replace(/[^\d]/g, ''); // Solo números
+        break;
+      case 'nombre_paciente':
+      case 'apellidos_paciente':
+      case 'nombre_doctor':
+      case 'apellidos_doctor':
+      case 'especialidad':
+        sanitizedValue = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑ\s]/g, ''); // Solo letras y espacios
+        break;
+      default:
+        break;
+    }
+  
+    const error = validateField(name, sanitizedValue);
     setValidationErrors(prevErrors => ({
       ...prevErrors,
       [name]: error
     }));
     setFilters(prevFilters => ({
       ...prevFilters,
-      [name]: value
+      [name]: sanitizedValue
     }));
   };
 
@@ -114,6 +145,7 @@ const CitasPacientes = () => {
 
         {/* Filtros */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+         {/* DNI */}
           <div>
             <input
               type="text"
@@ -122,9 +154,26 @@ const CitasPacientes = () => {
               value={filters.dni}
               onChange={handleFilterChange}
               className="p-2 border rounded-lg"
+              inputMode="numeric"  // Teclado numérico en móviles
             />
             {validationErrors.dni && <p className="text-red-500 text-sm">{validationErrors.dni}</p>}
           </div>
+
+          {/* ID Cita */}
+          <div>
+            <input
+              type="text"
+              name="idCita"
+              placeholder="Filtrar por ID de cita"
+              value={filters.idCita}
+              onChange={handleFilterChange}
+              className="p-2 border rounded-lg"
+              inputMode="numeric"  // Teclado numérico en móviles
+            />
+            {validationErrors.idCita && <p className="text-red-500 text-sm">{validationErrors.idCita}</p>}
+          </div>
+
+          {/* Resto de campos (ejemplo para nombre_paciente) */}
           <div>
             <input
               type="text"
@@ -135,6 +184,28 @@ const CitasPacientes = () => {
               className="p-2 border rounded-lg"
             />
             {validationErrors.nombre_paciente && <p className="text-red-500 text-sm">{validationErrors.nombre_paciente}</p>}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="apellidos_paciente"
+              placeholder="Filtrar por apellidos del paciente"
+              value={filters.apellidos_paciente}
+              onChange={handleFilterChange}
+              className="p-2 border rounded-lg"
+            />
+            {validationErrors.apellidos_paciente && <p className="text-red-500 text-sm">{validationErrors.apellidos_paciente}</p>}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="apellidos_doctor"
+              placeholder="Filtrar por apellidos del doctor"
+              value={filters.apellidos_doctor}
+              onChange={handleFilterChange}
+              className="p-2 border rounded-lg"
+            />
+            {validationErrors.apellidos_doctor && <p className="text-red-500 text-sm">{validationErrors.apellidos_doctor}</p>}
           </div>
           <div>
             <input
