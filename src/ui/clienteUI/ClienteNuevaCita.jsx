@@ -8,7 +8,6 @@ import LoadingScreen from '../../components/home/LoadingScreen';
 import { useCitas } from '../../context/CitasContext';
 import { usePagos } from '../../context/PagosContext';
 import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
-import { getDate } from "date-fns/getDate";
 import DoctorSelect from './DoctorSelect';
 
 const ClienteNuevaCita = () => {
@@ -24,18 +23,17 @@ const ClienteNuevaCita = () => {
   const [selectedHorario, setSelectedHorario] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
-  const [familiares, setFamiliares] = useState([]); // Lista de familiares
-  const [citaParaFamiliar, setCitaParaFamiliar] = useState(false); // Estado para cita para familiar
-  const [idFamiliarUsuario, setIdFamiliarUsuario] = useState(""); // ID del familiar seleccionado
+  const [familiares, setFamiliares] = useState([]);
+  const [citaParaFamiliar, setCitaParaFamiliar] = useState(false);
+  const [idFamiliarUsuario, setIdFamiliarUsuario] = useState("");
 
   const { setCantidadCitas } = useCitas();
   const { setCantidadPagos } = usePagos();
-
   const [fechaMinima, setFechaMinima] = useState('');
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
-  // Obtener la lista de familiares del usuario
+  // Fetch familiares
   const fetchFamiliares = async (idUsuario) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/familiares/listar/${idUsuario}`, {
@@ -58,11 +56,10 @@ const ClienteNuevaCita = () => {
       const idUsuario = jwtUtils.getIdUsuario(token);
       if (nombre) setNombreUsuario(nombre);
       if (idUsuario) {
-        fetchFamiliares(idUsuario); // Cargar familiares del usuario
+        fetchFamiliares(idUsuario);
       }
     }
   }, []);
-
 
   const formatTime = (timeString) => {
     try {
@@ -179,6 +176,7 @@ const ClienteNuevaCita = () => {
     };
 
     fetchEspecialidades();
+    setFechaMinima(getFechaActualPeru());
   }, []);
 
   const handleEspecialidadChange = (e) => {
@@ -188,8 +186,7 @@ const ClienteNuevaCita = () => {
       fetchDoctoresPorEspecialidad(especialidadId);
     } else {
       setDoctores([]);
-      const doctorId = e.target.value;
-      setIdDoctor(doctorId);
+      setIdDoctor("");
       setFecha("");
       setHorariosDisponibles([]);
     }
@@ -202,42 +199,26 @@ const ClienteNuevaCita = () => {
     setHorariosDisponibles([]);
     setSelectedDoctor(doctor);
   
-    // Hacer scroll al principio de la página
     window.scrollTo({
       top: 30,
       behavior: 'smooth'
     });
   };
 
-  const handleFechaChange = (e) => {
-    const selectedFecha = e.target.value;
-    setFecha(selectedFecha);
-    if (idDoctor && selectedFecha) {
-      fetchHorariosDisponibles(idDoctor, selectedFecha);
-    }
-  };
-
-  // Función para obtener la fecha actual en el huso horario de Perú (PET)
+  // Obtener la fecha actual en el huso horario de Perú (PET)
   const getFechaActualPeru = () => {
     const options = { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' };
-    const fechaPeru = new Date().toLocaleDateString('en-CA', options); // Formato YYYY-MM-DD
+    const fechaPeru = new Date().toLocaleDateString('en-CA', options);
     return fechaPeru;
   };
 
-  // Establecer la fecha mínima al cargar el componente
-  useEffect(() => {
-    setFechaMinima(getFechaActualPeru());
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validar que todos los campos estén completos
     if (!idDoctor || !fecha || !selectedHorario) {
         setError("Por favor, complete todos los campos.");
         return;
     }
 
-    // Validar que se haya seleccionado un familiar si la cita es para familiar
     if (citaParaFamiliar && !idFamiliarUsuario) {
         SweetAlert.showMessageAlert(
             'Error',
@@ -257,7 +238,6 @@ const ClienteNuevaCita = () => {
         setIsLoadingFullScreen(true);
         const idCliente = jwtUtils.getIdUsuario(token);
 
-        // Datos para registrar la cita
         const citaData = {
             idCliente: idCliente,
             idFamiliarUsuario: citaParaFamiliar ? idFamiliarUsuario : null,
@@ -267,7 +247,6 @@ const ClienteNuevaCita = () => {
             especialidad: selectedEspecialidad,
         };
 
-        // Registrar la cita (ahora incluye el registro del pago)
         const response = await fetch(`${API_BASE_URL}/api/agendar-cita`, {
             method: 'POST',
             headers: {
@@ -296,7 +275,6 @@ const ClienteNuevaCita = () => {
             }
         }
 
-        // Actualizar la cantidad de citas y pagos
         const [citasResponse, pagosResponse] = await Promise.all([
             fetch(`${API_BASE_URL}/api/cliente/citas/cantidad/${idCliente}`, {
                 headers: {
@@ -326,25 +304,21 @@ const ClienteNuevaCita = () => {
 
         const result = await response.json();
         
-        // Mostrar mensaje de éxito
         SweetAlert.showMessageAlert(
             'Éxito',
             'Cita agendada exitosamente. ' + result.nota,
             'success'
         );
 
-        // Limpiar el formulario después de un registro exitoso
         resetForm();
     } catch (error) {
         console.error('Error:', error);
         setError(error.message || 'Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo.');
-        // Limpiar el formulario en caso de error también
         resetForm();
     } finally {
         setIsLoadingFullScreen(false);
     }
-};
-
+  };
   
   // Función para resetear el formulario
   const resetForm = () => {
@@ -353,228 +327,256 @@ const ClienteNuevaCita = () => {
     setFecha("");
     setHorariosDisponibles([]);
     setSelectedHorario("");
-    setError(""); // Limpiar cualquier mensaje de error
+    setError("");
   };
 
   return (
     <Sidebar>
-    {isLoadingFullScreen && <LoadingScreen />}
+      {isLoadingFullScreen && <LoadingScreen />}
 
-    <div className="flex flex-col p-6 gap-6 md:-ml-64">
-      {/* Header */}
-      <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
-        <div className="px-8 py-12 relative">
-          <div className="relative z-10">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Bienvenido, {nombreUsuario || "Usuario"}
-            </h1>
-            <p className="text-violet-100 text-lg">
-              Programa tu próxima cita médica con nosotros.
-            </p>
-          </div>
-          <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-            <svg viewBox="0 0 100 100" className="h-full">
-              <circle cx="80" cy="20" r="15" fill="white"/>
-              <circle cx="20" cy="80" r="25" fill="white"/>
-            </svg>
+      <div className="flex flex-col p-6 gap-6 md:-ml-64 bg-gray-50">
+        {/* Header - Modern & Elegant */}
+        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-800 rounded-2xl shadow-lg overflow-hidden">
+          <div className="px-8 py-10 relative">
+            <div className="relative z-10">
+              <h1 className="text-3xl md:text-3xl font-light text-white mb-2">
+                Bienvenido, <span className="font-medium">{nombreUsuario || "Usuario"}</span>
+              </h1>
+              <p className="text-green-100 text-lg font-light">
+                Agende su próxima cita médica con nosotros
+              </p>
+            </div>
+            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+              <svg viewBox="0 0 100 100" className="h-full">
+                <circle cx="80" cy="20" r="15" fill="white"/>
+                <circle cx="20" cy="80" r="25" fill="white"/>
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content Container */}
-      <div className="flex flex-col gap-6">
-        {/* Desktop Layout Container */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Form Container */}
-          <div className="flex-1 rounded-xl shadow-lg bg-white p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <Calendar className="h-6 w-6 text-green-600" />
-              <h2 className="text-2xl font-semibold">Nueva Cita Médica</h2>
-            </div>
-
-            {/* Checkbox for family member appointment */}
-            <div className="mb-6">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={citaParaFamiliar}
-                  onChange={(e) => setCitaParaFamiliar(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-green-600"
-                />
-                <span className="text-gray-700">¿Es la cita para un familiar?</span>
-              </label>
-            </div>
-
-            {/* Family member selection */}
-            {citaParaFamiliar && (
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Seleccione un Familiar
-                </label>
-                <select
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
-                  value={idFamiliarUsuario}
-                  onChange={(e) => setIdFamiliarUsuario(e.target.value)}
-                  required
-                >
-                  <option value="">Seleccione un familiar</option>
-                  {familiares.map((familiar) => (
-                    <option key={familiar.idFamiliarUsuario} value={familiar.idFamiliarUsuario}>
-                      {familiar.nombre} {familiar.apellidos} (DNI: {familiar.dni})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {/* {error && (
-              <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-   */}
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* Especialidad Selection */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Especialidad Médica
-                </label>
-                <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all"
-                  value={selectedEspecialidad}
-                  onChange={handleEspecialidadChange}
-                  required
-                >
-                  <option value="">Seleccione una Especialidad</option>
-                  {especialidades.map((especialidad) => (
-                    <option 
-                      key={especialidad.idEspecialidad} 
-                      value={especialidad.idEspecialidad}
-                    >
-                      {especialidad.nombre}
-                    </option>
-                  ))}
-                </select>
+        {/* Main Content Container */}
+        <div className="flex flex-col gap-6">
+          {/* Desktop Layout Container */}
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Form Container - Minimalist & Luxurious */}
+            <div className="flex-1 rounded-xl shadow-lg bg-white p-8">
+              <div className="flex items-center gap-3 mb-8 border-b border-gray-100 pb-4">
+                <Calendar className="h-5 w-5 text-green-700" />
+                <h2 className="text-xl font-light text-gray-800">Nueva Cita Médica</h2>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Médico Especialista
-                </label>
-                <DoctorSelect
-                  doctors={doctores}
-                  value={idDoctor}
-                  onChange={handleDoctorChange}
-                  disabled={!selectedEspecialidad}
-                  apiBaseUrl={API_BASE_URL}
-                />
-              </div>
-  
-              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Fecha de la Cita
-                </label>
-                <div className="flex items-center justify-between">
-                  <div className="flex-grow">
-                    {fecha ? (
-                      <span className="text-lg font-medium text-gray-700">
-                        {formatDate(fecha)}
-                      </span>
-                    ) : (
-                      <span className="text-gray-500 italic">No se ha seleccionado fecha</span>
+              {/* Family Checkbox - Elegant */}
+              <div className="mb-8">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={citaParaFamiliar}
+                      onChange={(e) => setCitaParaFamiliar(e.target.checked)}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 border ${citaParaFamiliar ? 'bg-green-600 border-green-600' : 'border-gray-300'} rounded transition-colors duration-200`}></div>
+                    {citaParaFamiliar && (
+                      <svg className="h-3 w-3 text-white absolute top-1 left-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
                     )}
                   </div>
-                  {fecha && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFecha('');
-                        setHorariosDisponibles([]);
-                      }}
-                      className="ml-4 px-3 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200"
+                  <span className="text-gray-700 group-hover:text-gray-900 transition-colors duration-200">¿Es la cita para un familiar?</span>
+                </label>
+              </div>
+
+              {/* Family member selection - Elegant */}
+              {citaParaFamiliar && (
+                <div className="bg-gray-50 p-5 rounded-xl mb-8 border border-gray-100">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Seleccione un Familiar
+                  </label>
+                  <select
+                    className="w-full p-3 border border-gray-200 rounded-lg bg-white focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all outline-none"
+                    value={idFamiliarUsuario}
+                    onChange={(e) => setIdFamiliarUsuario(e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione un familiar</option>
+                    {familiares.map((familiar) => (
+                      <option key={familiar.idFamiliarUsuario} value={familiar.idFamiliarUsuario}>
+                        {familiar.nombre} {familiar.apellidos} (DNI: {familiar.dni})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Error Message - Elegant */}
+              {error && (
+                <div className="bg-red-50 border-l-2 border-red-400 p-4 mb-6 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-4 w-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-600">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+     
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Especialidad Selection - Luxurious */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Especialidad Médica
+                  </label>
+                  <div className="relative">
+                    <select 
+                      className="w-full p-3 pl-3 border border-gray-200 rounded-lg appearance-none bg-white focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all outline-none"
+                      value={selectedEspecialidad}
+                      onChange={handleEspecialidadChange}
+                      required
                     >
-                      Limpiar fecha
-                    </button>
+                      <option value="">Seleccione una Especialidad</option>
+                      {especialidades.map((especialidad) => (
+                        <option 
+                          key={especialidad.idEspecialidad} 
+                          value={especialidad.idEspecialidad}
+                        >
+                          {especialidad.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Doctor Selection - Minimalist */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Médico Especialista
+                  </label>
+                  <DoctorSelect
+                    doctors={doctores}
+                    value={idDoctor}
+                    onChange={handleDoctorChange}
+                    disabled={!selectedEspecialidad}
+                    apiBaseUrl={API_BASE_URL}
+                  />
+                </div>
+    
+                {/* Selected Date - Elegant Display */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha de la Cita
+                  </label>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-grow">
+                      {fecha ? (
+                        <span className="text-lg font-light text-gray-800">
+                          {formatDate(fecha)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 italic font-light">Seleccione una fecha en el calendario</span>
+                      )}
+                    </div>
+                    {fecha && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFecha('');
+                          setHorariosDisponibles([]);
+                        }}
+                        className="ml-4 px-3 py-1 text-green-700 text-sm hover:text-green-900 transition-colors duration-200"
+                      >
+                        Cambiar
+                      </button>
+                    )}
+                  </div>
+                </div>
+    
+                {/* Available Times - Modern Grid Layout */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-4">
+                    Horarios Disponibles
+                  </label>
+                  {loading ? (
+                    <div className="flex items-center justify-center p-8">
+                      <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-green-600"></div>
+                    </div>
+                  ) : horariosDisponibles.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {horariosDisponibles.map((horario) => (
+                        <label
+                          key={horario.idHorario}
+                          className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
+                            selectedHorario === horario.idHorario.toString()
+                              ? 'border-green-600 bg-green-50 shadow-sm'
+                              : 'border-gray-200 hover:border-green-400 hover:bg-green-50/30'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="horario"
+                            value={horario.idHorario}
+                            checked={selectedHorario === horario.idHorario.toString()}
+                            onChange={(e) => setSelectedHorario(e.target.value)}
+                            className="hidden"
+                          />
+                          <div className="flex items-center gap-3 w-full">
+                            <Clock className="h-4 w-4 text-green-700" />
+                            <div className="flex flex-col">
+                              <span className="text-gray-900 font-medium">
+                                {formatTime(horario.hora_inicio)}
+                              </span>
+                              <span className="text-gray-500 text-sm">
+                                S/.{horario.costo.toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-100">
+                      <Clock className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500 font-light">
+                        {fecha ? "No hay horarios disponibles para este doctor en la fecha seleccionada." : "Seleccione una fecha para ver los horarios disponibles."}
+                      </p>
+                    </div>
                   )}
                 </div>
-              </div>
-  
-              {/* Available Times */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-4">
-                  Horarios Disponibles
-                </label>
-                {loading ? (
-                  <div className="flex items-center justify-center p-6">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
-                  </div>
-                ) : horariosDisponibles.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {horariosDisponibles.map((horario) => (
-                      <label
-                        key={horario.idHorario}
-                        className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                          selectedHorario === horario.idHorario.toString()
-                            ? 'border-green-600 bg-green-50 shadow-md'
-                            : 'border-gray-200 hover:border-green-600'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="horario"
-                          value={horario.idHorario}
-                          checked={selectedHorario === horario.idHorario.toString()}
-                          onChange={(e) => setSelectedHorario(e.target.value)}
-                          className="hidden"
-                        />
-                        <div className="flex items-center gap-3">
-                          <Clock className="h-5 w-5 text-green-600" />
-                          <span className="text-gray-700 font-medium">
-                            {formatTime(horario.hora_inicio)} - Costo: S/.{horario.costo.toFixed(2)}
-                          </span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center p-6 bg-gray-100 rounded-lg">
-                    <Clock className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">
-                      {fecha ? "No hay horarios disponibles para este doctor en la fecha seleccionada." : "Seleccione una fecha para ver los horarios disponibles."}
-                    </p>
-                  </div>
-                )}
-              </div>
-  
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 p-4 rounded-lg font-medium bg-green-600 hover:bg-green-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
-                disabled={loading || !selectedHorario}
-              >
-                <Calendar className="h-5 w-5" />
-                {loading ? "Procesando..." : "Confirmar Cita"}
-              </button>
-            </form>
-          </div>
+    
+                {/* Submit Button - Luxurious */}
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 p-3 rounded-lg font-medium bg-green-700 hover:bg-green-800 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-all shadow-sm"
+                  disabled={loading || !selectedHorario}
+                >
+                  <Calendar className="h-5 w-5" />
+                  {loading ? "Procesando..." : "Confirmar Cita"}
+                </button>
+              </form>
+            </div>
 
-        {/* Calendario Visual */}
-        {idDoctor && (
-              <div className="w-full md:w-1/3 order-first md:order-last mb-6 md:mb-0">
-                <DoctorCalendar doctorId={idDoctor} onDateSelect={handleDateSelect} />
+            {/* Calendar - Elegant */}
+            {idDoctor && (
+              <div className="w-full md:w-2/5 order-first md:order-last mb-6 md:mb-0">
+                <div className="bg-white rounded-xl shadow-lg p-6 h-full">
+                  <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-3">
+                    <Calendar className="h-5 w-5 text-green-700" />
+                    <h3 className="text-lg font-light text-gray-800">Calendario</h3>
+                  </div>
+                  <DoctorCalendar doctorId={idDoctor} onDateSelect={handleDateSelect} />
+                </div>
               </div>
             )}
-        </div>
+          </div>
         </div>
       </div>
     </Sidebar>
