@@ -1,8 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Calendar, FileText, ChevronRight } from "lucide-react";
+import { Calendar} from "lucide-react";
 import Sidebar from "../../components/doctorComponents/SidebarDoctor";
-import jwtUtils from "../../utilities/jwtUtils";
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import DoctorCalendar from "../../components/doctorComponents/DoctorCalendar"; // Importa el nuevo componente
 import WelcomeHeader from '../../components/WelcomeHeader';

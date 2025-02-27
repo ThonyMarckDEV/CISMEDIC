@@ -3,6 +3,7 @@ import { Eye, EyeOff, X } from "lucide-react";
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
+import WelcomeHeader from '../../components/WelcomeHeader';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -37,7 +38,6 @@ const SettingsSuperAdmin = () => {
 
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   const validatePassword = () => {
     const newErrors = {
@@ -128,19 +128,10 @@ const SettingsSuperAdmin = () => {
   return (
     <SidebarSuperAdmin>
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
-        {/* Header section */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
-          <div className="px-8 py-12 relative">
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {userName || "Usuario"}
-              </h1>
-              <p className="text-violet-100 text-lg">
-                Aquí realiza configuraciones de tu cuenta.
-              </p>
-            </div>
-          </div>
-        </div>
+
+          <WelcomeHeader 
+            customMessage="Aquí realiza configuraciones de tu cuenta."
+          />
 
         {/* Card para cambiar contraseña */}
         <div className="bg-white rounded-lg shadow-md p-6">

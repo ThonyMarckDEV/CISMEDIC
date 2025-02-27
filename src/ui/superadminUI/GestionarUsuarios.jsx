@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react"
-import { NotebookTextIcon, FileText, ChevronRight } from "lucide-react"
 import SidebarSuperAdmin from "../../components/superAdminComponents/SidebarSuperAdmin"
 import jwtUtils from "../../utilities/jwtUtils"
-import { Link } from "react-router-dom"
 import TablaUsuarios from '../../components/superAdminComponents/TablaUsuarios'
 import API_BASE_URL from "../../js/urlHelper"
 import LoaderScreen from '../../components/home/LoadingScreen'
 import SweetAlert from "../../components/SweetAlert"
 import Swal from 'sweetalert2'
+import WelcomeHeader from '../../components/WelcomeHeader';
 
 const GestionarUsuarios = () => {
   const [formData, setFormData] = useState({
@@ -23,7 +22,6 @@ const GestionarUsuarios = () => {
   const [errors, setErrors] = useState({});
   const [users, setUsers] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [nombreUsuario, setNombreUsuario] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const getAuthHeaders = () => {
@@ -33,13 +31,6 @@ const GestionarUsuarios = () => {
       'Authorization': `Bearer ${token}`
     };
   };
-
-  useEffect(() => {
-    fetchUsers();
-    const token = jwtUtils.getTokenFromCookie();
-    const nombres = jwtUtils.getNombres(token);
-    setNombreUsuario(nombres);
-  }, []);
 
   const fetchUsers = async (searchTerm = '') => {
     try {
@@ -168,25 +159,10 @@ const GestionarUsuarios = () => {
   return (
     <SidebarSuperAdmin>
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
-        {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
-          <div className="px-8 py-12 relative">
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {nombreUsuario || "Usuario"}
-              </h1>
-              <p className="text-violet-100 text-lg">
-                Aquí gestionarás tus usuarios.
-              </p>
-            </div>
-            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-              <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+
+          <WelcomeHeader 
+            customMessage="Aquí gestionarás tus usuarios."
+          />
 
         {/* Form Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
