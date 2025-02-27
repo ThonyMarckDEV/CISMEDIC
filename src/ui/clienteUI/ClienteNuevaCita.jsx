@@ -335,6 +335,7 @@ const ClienteNuevaCita = () => {
       {isLoadingFullScreen && <LoadingScreen />}
 
       <div className="flex flex-col p-6 gap-6 md:-ml-64 bg-gray-50">
+        
         {/* Header - Modern & Elegant */}
         <div className="mb-8 bg-gradient-to-r from-green-600 to-green-800 rounded-2xl shadow-lg overflow-hidden">
           <div className="px-8 py-10 relative">

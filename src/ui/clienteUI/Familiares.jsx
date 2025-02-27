@@ -6,10 +6,10 @@ import SweetAlert from '../../components/SweetAlert';
 import LoadingScreen from '../../components/home/LoadingScreen';
 import Swal from 'sweetalert2';
 import TablaFamiliares from '../../components/clienteComponents/TablaFamiliares';
+import WelcomeHeader from '../../components/WelcomeHeader';
 
 const Familiares = () => {
   const [isLoadingFullScreen, setIsLoadingFullScreen] = useState(false);
-  const [nombreUsuario, setNombreUsuario] = useState("");
   const [familiares, setFamiliares] = useState([]);
   const [formData, setFormData] = useState({
     idUsuario: "",
@@ -26,9 +26,7 @@ const Familiares = () => {
   useEffect(() => {
     const token = jwtUtils.getTokenFromCookie();
     if (token) {
-      const nombre = jwtUtils.getNombres(token);
       const idUsuario = jwtUtils.getIdUsuario(token);
-      if (nombre) setNombreUsuario(nombre);
       if (idUsuario) {
         setFormData((prev) => ({ ...prev, idUsuario }));
         fetchFamiliares(idUsuario);
@@ -262,25 +260,11 @@ const Familiares = () => {
       {isLoadingFullScreen && <LoadingScreen />}
       {/* Main container with max-width and no overflow */}
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
-        {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-900 rounded-3xl shadow-lg overflow-hidden">
-          <div className="px-8 py-12 relative">
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Bienvenido, {nombreUsuario || "Usuario"}
-              </h1>
-              <p className="text-violet-100 text-lg">
-                Aqui agrega a tus familiares.
-              </p>
-            </div>
-            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-              <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+
+      <WelcomeHeader 
+        customMessage="Aqui agrega a tus familiares."
+      />
+
         {/* Form section */}
         <div className="w-full">
         <h2 className="text-2xl font-bold mb-4">Agregar Familiares</h2>
