@@ -17,7 +17,6 @@ const HistorialPagosClientes = () => {
   const [filtroDNI, setFiltroDNI] = useState(""); // Nuevo filtro: DNI
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   // Función para obtener los pagos del cliente
   const fetchPayments = async () => {

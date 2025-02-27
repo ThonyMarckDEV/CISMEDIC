@@ -12,7 +12,6 @@ import WelcomeHeader from '../../components/WelcomeHeader';
 
 
 const DisponibilidadDoctores = () => {
-  const [nombreUsuario, setNombreUsuario] = useState("");
   const [especialidades, setEspecialidades] = useState([]);
   const [doctores, setDoctores] = useState([]);
   const [selectedEspecialidad, setSelectedEspecialidad] = useState("");
@@ -27,14 +26,6 @@ const DisponibilidadDoctores = () => {
 
   const getToken = () => jwtUtils.getTokenFromCookie();
 
-  useEffect(() => {
-    const token = getToken();
-    if (token) {
-      const nombre = jwtUtils.getNombres(token);
-      const idUsuario = jwtUtils.getIdUsuario(token);
-      if (nombre) setNombreUsuario(nombre);
-    }
-  }, []);
 
   const formatTime = (timeString) => {
     try {
@@ -127,12 +118,6 @@ const DisponibilidadDoctores = () => {
   };
 
   useEffect(() => {
-    const token = getToken();
-    if (token) {
-      const nombre = jwtUtils.getNombres(token);
-      if (nombre) setNombreUsuario(nombre);
-    }
-
     const fetchEspecialidades = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/especialidades`, {
