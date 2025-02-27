@@ -2,23 +2,11 @@
 import { useEffect, useState } from "react";
 import { Calendar, FileText, ChevronRight } from "lucide-react";
 import Sidebar from "../../components/clienteComponents/SidebarCliente";
-import jwtUtils from "../../utilities/jwtUtils";
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import NextAppointmentCard from './NextAppointmentCard';
 import WelcomeHeader from '../../components/WelcomeHeader';
 
 const Cliente = () => {
-  const [nombreUsuario, setNombreUsuario] = useState("");
-
-  useEffect(() => {
-    const token = jwtUtils.getTokenFromCookie();
-    if (token) {
-      const nombre = jwtUtils.getNombres(token);
-      if (nombre) {
-        setNombreUsuario(nombre);
-      }
-    }
-  }, []); // Agregamos hasShownWelcomeMessage como dependencia
 
   return (
     <Sidebar>

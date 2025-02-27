@@ -38,7 +38,6 @@ const Settings = () => {
 
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   const validatePassword = () => {
     const newErrors = {

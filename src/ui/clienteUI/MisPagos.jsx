@@ -11,7 +11,6 @@ const MisPagos = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   useEffect(() => {
     const status = searchParams.get("status");

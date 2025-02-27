@@ -2,21 +2,10 @@
 import { useEffect, useState } from "react"
 import { NotebookTextIcon, FileText, ChevronRight , UserPenIcon } from "lucide-react"
 import SidebarAdmin from "../../components/adminComponents/SidebarAdmin"
-import jwtUtils from "../../utilities/jwtUtils"
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import WelcomeHeader from '../../components/WelcomeHeader';
 
 const Admin = () => {
-  const [nombreUsuario, setNombreUsuario] = useState("")
-  useEffect(() => {
-    const token = jwtUtils.getTokenFromCookie()
-    if (token) {
-      const nombre = jwtUtils.getNombres(token)
-      if (nombre) {
-        setNombreUsuario(nombre)
-      }
-    }
-  }, [])
 
   return (
     <SidebarAdmin>

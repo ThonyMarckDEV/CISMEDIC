@@ -18,7 +18,6 @@ const HistorialCitas = () => {
   const [filtroHora, setFiltroHora] = useState("");
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   // Función para obtener las citas del cliente
   const fetchAppointments = async () => {

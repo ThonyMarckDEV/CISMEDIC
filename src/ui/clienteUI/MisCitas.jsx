@@ -12,7 +12,6 @@ const MisCitas = () => {
   const [error, setError] = useState(null);
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
-  const userName = jwtUtils.getNombres(token);
 
   useEffect(() => {
     const fetchAppointments = async () => {

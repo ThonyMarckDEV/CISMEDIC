@@ -52,9 +52,7 @@ const ClienteNuevaCita = () => {
   useEffect(() => {
     const token = getToken();
     if (token) {
-      const nombre = jwtUtils.getNombres(token);
       const idUsuario = jwtUtils.getIdUsuario(token);
-      if (nombre) setNombreUsuario(nombre);
       if (idUsuario) {
         fetchFamiliares(idUsuario);
       }
