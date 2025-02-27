@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
-import { FaCalendarTimes, FaSpinner } from "react-icons/fa"; // Importamos iconos de react-icons
+import { FaCalendarTimes, FaSpinner } from "react-icons/fa";
 
 const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const [availableSlots, setAvailableSlots] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [monthsWithAvailability, setMonthsWithAvailability] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar el loader
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Get the current date to compare when disabling past months
+  const today = new Date();
+  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
   useEffect(() => {
     const fetchAvailableSlots = async () => {
@@ -27,19 +30,10 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
 
         const data = await response.json();
         setAvailableSlots(data.availableSlots);
-
-        // Extraer los meses con disponibilidad
-        const monthsWithSlots = new Set();
-        Object.values(data.availableSlots).forEach(slot => {
-          const date = new Date(slot.fecha);
-          monthsWithSlots.add(date.getMonth()); // Guardamos el mes (0-11)
-        });
-
-        setMonthsWithAvailability(Array.from(monthsWithSlots));
       } catch (error) {
         console.error("Error fetching available slots:", error);
       } finally {
-        setIsLoading(false); // Desactivar el loader cuando la solicitud termine
+        setIsLoading(false);
       }
     };
 
@@ -47,16 +41,26 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   }, [doctorId]);
 
   const goToPreviousMonth = () => {
-    setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() - 1, 1));
+    // Create a new date object for the previous month
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    
+    // Only allow going to previous month if it's not before the current month
+    if (newDate.getTime() >= currentMonth.getTime()) {
+      setCurrentDate(newDate);
+    }
   };
 
   const goToNextMonth = () => {
     setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1));
   };
 
-  const isCurrentMonth = () => {
-    const today = new Date();
-    return currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
+  // Check if previous month button should be disabled
+  const isPreviousMonthDisabled = () => {
+    // Create date for the previous month
+    const previousMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    
+    // Disable if previous month is earlier than current month
+    return previousMonth.getTime() < currentMonth.getTime();
   };
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -85,7 +89,7 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
     }
   };
 
-  // Mostrar loader mientras se carga la información
+  // Show loader while loading information
   if (isLoading) {
     return (
       <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
@@ -97,8 +101,8 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
     );
   }
 
-  // Si no hay meses con disponibilidad, mostramos un mensaje
-  if (monthsWithAvailability.length === 0) {
+  // If there's no availability in general
+  if (Object.keys(availableSlots).length === 0) {
     return (
       <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
         <FaCalendarTimes className="text-6xl text-gray-400 mx-auto mb-4" />
@@ -112,10 +116,6 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
     );
   }
 
-  // Solo permitimos navegar a meses con disponibilidad
-  const canGoToPreviousMonth = monthsWithAvailability.includes((currentDate.getMonth() - 1 + 12) % 12);
-  const canGoToNextMonth = monthsWithAvailability.includes((currentDate.getMonth() + 1) % 12);
-
   return (
     <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">
@@ -125,10 +125,12 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
       <div className="mb-6 flex justify-between items-center">
         <button
           onClick={goToPreviousMonth}
+          disabled={isPreviousMonthDisabled()}
           className={`p-3 rounded-full transition duration-300 ${
-            !canGoToPreviousMonth ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
+            isPreviousMonthDisabled()
+              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+              : "bg-gray-900 text-white hover:bg-gray-700"
           }`}
-          disabled={!canGoToPreviousMonth}
         >
           &lt;
         </button>
@@ -139,10 +141,7 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
 
         <button
           onClick={goToNextMonth}
-          className={`p-3 rounded-full transition duration-300 ${
-            !canGoToNextMonth ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-700"
-          }`}
-          disabled={!canGoToNextMonth}
+          className="p-3 rounded-full transition duration-300 bg-gray-900 text-white hover:bg-gray-700"
         >
           &gt;
         </button>
