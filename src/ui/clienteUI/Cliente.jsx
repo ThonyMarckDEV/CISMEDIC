@@ -5,6 +5,7 @@ import Sidebar from "../../components/clienteComponents/SidebarCliente";
 import jwtUtils from "../../utilities/jwtUtils";
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 import NextAppointmentCard from './NextAppointmentCard';
+import WelcomeHeader from '../../components/WelcomeHeader';
 
 const Cliente = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -22,26 +23,10 @@ const Cliente = () => {
   return (
     <Sidebar>
       <div className="flex flex-col p-6 gap-6 md:-ml-64"> {/* Margen negativo solo en desktop */}
-                
-        {/* Header - Modern & Elegant */}
-        <div className="mb-8 bg-gradient-to-r from-green-600 to-green-800 rounded-2xl shadow-lg overflow-hidden">
-          <div className="px-8 py-10 relative">
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-3xl font-light text-white mb-2">
-                Bienvenido, <span className="font-medium">{nombreUsuario || "Usuario"}</span>
-              </h1>
-              <p className="text-green-100 text-lg font-light">
-              Estamos aquí para cuidarte.
-              </p>
-            </div>
-            <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
-              <svg viewBox="0 0 100 100" className="h-full">
-                <circle cx="80" cy="20" r="15" fill="white"/>
-                <circle cx="20" cy="80" r="25" fill="white"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+
+        <WelcomeHeader 
+          customMessage=" Estamos aquí para cuidarte."
+        />
 
         {/* Contenido principal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Una columna en móvil, dos en desktop */}
