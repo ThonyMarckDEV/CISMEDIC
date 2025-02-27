@@ -93,7 +93,7 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   if (isLoading) {
     return (
       <div className="p-10 bg-white rounded-xl shadow-xl max-w-4xl mx-auto text-center backdrop-blur-sm bg-white/80">
-        <FaSpinner className="text-5xl text-indigo-500 mx-auto mb-6 animate-spin" />
+        <FaSpinner className="text-5xl text-green-500 mx-auto mb-6 animate-spin" />
         <h1 className="text-2xl font-light text-gray-800 mb-2">
           Verificando disponibilidad...
         </h1>

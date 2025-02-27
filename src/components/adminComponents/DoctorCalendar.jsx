@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from '../../utilities/jwtUtils';
-import { FaCalendarTimes, FaSpinner } from "react-icons/fa";
+import { FaCalendarTimes, FaSpinner, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const [availableSlots, setAvailableSlots] = useState({});
@@ -41,10 +41,7 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   }, [doctorId]);
 
   const goToPreviousMonth = () => {
-    // Create a new date object for the previous month
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    
-    // Only allow going to previous month if it's not before the current month
     if (newDate.getTime() >= currentMonth.getTime()) {
       setCurrentDate(newDate);
     }
@@ -54,12 +51,8 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
     setCurrentDate(prevDate => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1));
   };
 
-  // Check if previous month button should be disabled
   const isPreviousMonthDisabled = () => {
-    // Create date for the previous month
     const previousMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    
-    // Disable if previous month is earlier than current month
     return previousMonth.getTime() < currentMonth.getTime();
   };
 
@@ -70,6 +63,14 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   const isDateAvailable = (day) => {
     const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return Object.values(availableSlots).some((slot) => slot.fecha === dateString);
+  };
+
+  const isToday = (day) => {
+    return (
+      today.getDate() === day &&
+      today.getMonth() === currentDate.getMonth() &&
+      today.getFullYear() === currentDate.getFullYear()
+    );
   };
 
   const handleDateClick = (day) => {
@@ -89,27 +90,25 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
     }
   };
 
-  // Show loader while loading information
   if (isLoading) {
     return (
-      <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
-        <FaSpinner className="text-6xl text-gray-400 mx-auto mb-4 animate-spin" />
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="p-10 bg-white rounded-xl shadow-xl max-w-4xl mx-auto text-center backdrop-blur-sm bg-white/80">
+        <FaSpinner className="text-5xl text-green-500 mx-auto mb-6 animate-spin" />
+        <h1 className="text-2xl font-light text-gray-800 mb-2">
           Verificando disponibilidad...
         </h1>
       </div>
     );
   }
 
-  // If there's no availability in general
   if (Object.keys(availableSlots).length === 0) {
     return (
-      <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto text-center">
-        <FaCalendarTimes className="text-6xl text-gray-400 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="p-10 bg-white rounded-xl shadow-xl max-w-4xl mx-auto text-center backdrop-blur-sm bg-white/80">
+        <FaCalendarTimes className="text-5xl text-gray-300 mx-auto mb-6" />
+        <h1 className="text-2xl font-light text-gray-800 mb-3">
           No hay disponibilidad
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-500 font-light">
           El doctor no tiene disponibilidad por el momento. Consulta más tarde.
         </p>
       </div>
@@ -117,75 +116,88 @@ const DoctorCalendar = ({ doctorId, onDateSelect }) => {
   }
 
   return (
-    <div className="p-8 bg-white rounded-3xl shadow-lg max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">
-        Disponibilidad del Doctor
+    <div className="p-10 bg-white rounded-xl shadow-xl max-w-4xl mx-auto backdrop-blur-sm bg-white/90">
+      <h1 className="text-3xl font-light text-center mb-8 text-gray-800">
+        Agenda de Consultas
       </h1>
 
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-8 flex justify-between items-center">
         <button
           onClick={goToPreviousMonth}
           disabled={isPreviousMonthDisabled()}
-          className={`p-3 rounded-full transition duration-300 ${
+          className={`p-2 rounded-full transition-all duration-300 ${
             isPreviousMonthDisabled()
-              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-              : "bg-gray-900 text-white hover:bg-gray-700"
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-green-600 hover:bg-indigo-50"
           }`}
+          aria-label="Mes anterior"
         >
-          &lt;
+          <FaChevronLeft className="text-xl" />
         </button>
 
-        <div className="text-2xl font-semibold text-gray-900">
+        <div className="text-xl font-light text-gray-800 tracking-wide uppercase">
           {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
         </div>
 
         <button
           onClick={goToNextMonth}
-          className="p-3 rounded-full transition duration-300 bg-gray-900 text-white hover:bg-gray-700"
+          className="p-2 rounded-full transition-all duration-300 text-green-600 hover:bg-indigo-50"
+          aria-label="Mes siguiente"
         >
-          &gt;
+          <FaChevronRight className="text-xl" />
         </button>
       </div>
 
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-8 flex justify-center space-x-6">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Días disponibles</span>
+          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span className="text-xs font-light text-gray-600">Disponible</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Días no disponibles</span>
+          <div className="w-3 h-3 bg-gray-200 rounded-full"></div>
+          <span className="text-xs font-light text-gray-600">No disponible</span>
         </div>
       </div>
 
-      <div className="mb-6 text-sm text-gray-600 text-center">
-        Los días marcados en verde tienen disponibilidad de horarios.
-      </div>
-
-      <div className="grid grid-cols-7 gap-2 text-center text-gray-700 font-medium">
-        {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
-          <div key={day} className="text-sm">
+      <div className="grid grid-cols-7 gap-1 text-center font-light text-gray-500 mb-3">
+        {["D", "L", "M", "X", "J", "V", "S"].map((day) => (
+          <div key={day} className="text-xs py-2">
             {day}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-2 mt-2">
+      <div className="grid grid-cols-7 gap-1">
         {Array(firstDayOfMonth).fill(null).map((_, index) => (
-          <div key={`empty-${index}`} className="p-2"></div>
+          <div key={`empty-${index}`} className="aspect-square"></div>
         ))}
 
-        {days.map((day) => (
-          <div
-            key={day}
-            onClick={() => handleDateClick(day)}
-            className={`p-3 text-center rounded-full transition duration-300 cursor-pointer ${
-              isDateAvailable(day) ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            {day}
-          </div>
-        ))}
+        {days.map((day) => {
+          const available = isDateAvailable(day);
+          const isCurrentDay = isToday(day);
+          
+          return (
+            <div
+              key={day}
+              onClick={() => handleDateClick(day)}
+              className={`
+                aspect-square flex items-center justify-center text-sm transition-all duration-300 m-0.5
+                ${available 
+                  ? "cursor-pointer bg-green-500 text-white hover:bg-green-700 shadow-md" 
+                  : "bg-gray-100 text-gray-400"}
+                ${isCurrentDay 
+                  ? "ring-2 ring-indigo-300" 
+                  : ""}
+                ${available && isCurrentDay 
+                  ? "ring-2 ring-white" 
+                  : ""}
+                rounded-lg
+              `}
+            >
+              {day}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
