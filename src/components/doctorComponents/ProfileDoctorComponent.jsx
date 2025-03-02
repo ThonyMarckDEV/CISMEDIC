@@ -135,7 +135,7 @@ const PerfilDoctorComponent = () => {
   
       // Actualizar nacimiento
       await fetch(`${API_BASE_URL}/api/doctor/actualizar-nacimiento/${idDoctor}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -145,7 +145,7 @@ const PerfilDoctorComponent = () => {
   
       // Actualizar idiomas
       await fetch(`${API_BASE_URL}/api/doctor/actualizar-idiomas/${idDoctor}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -155,7 +155,7 @@ const PerfilDoctorComponent = () => {
   
       // Actualizar educación
       await fetch(`${API_BASE_URL}/api/doctor/actualizar-educacion/${idDoctor}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -166,7 +166,7 @@ const PerfilDoctorComponent = () => {
   
       // Actualizar experiencia
       await fetch(`${API_BASE_URL}/api/doctor/actualizar-experiencia/${idDoctor}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
