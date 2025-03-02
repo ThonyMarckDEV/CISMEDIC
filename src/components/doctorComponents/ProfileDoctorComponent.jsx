@@ -132,55 +132,81 @@ const PerfilDoctorComponent = () => {
     try {
       const token = jwtUtils.getTokenFromCookie();
       const idDoctor = jwtUtils.getIdUsuario(token);
-  
-      // Actualizar nacimiento
-      await fetch(`${API_BASE_URL}/api/doctor/actualizar-nacimiento/${idDoctor}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nacimiento: tempNacimiento }),
-      });
-  
-      // Actualizar idiomas
-      await fetch(`${API_BASE_URL}/api/doctor/actualizar-idiomas/${idDoctor}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idiomas: tempIdiomas }),
-      });
-  
-      // Actualizar educación
-      await fetch(`${API_BASE_URL}/api/doctor/actualizar-educacion/${idDoctor}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({ educacion: tempEducacion }),
-      });
-  
-      // Actualizar experiencia
-      await fetch(`${API_BASE_URL}/api/doctor/actualizar-experiencia/${idDoctor}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ experiencia: tempExperiencia }),
-      });
-  
-      setProfileData({ ...profileData, nacimiento: tempNacimiento , experiencia: tempExperiencia });
+      
+      // Create an array to hold all update promises
+      const updatePromises = [];
+      
+      // Only update nacimiento if it has changed
+      if (tempNacimiento !== profileData.nacimiento) {
+        updatePromises.push(
+          fetch(`${API_BASE_URL}/api/doctor/actualizar-nacimiento/${idDoctor}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nacimiento: tempNacimiento }),
+          })
+        );
+      }
+      
+      // Only update idiomas if they have changed
+      if (JSON.stringify(tempIdiomas) !== JSON.stringify(profileData.idiomas)) {
+        updatePromises.push(
+          fetch(`${API_BASE_URL}/api/doctor/actualizar-idiomas/${idDoctor}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ idiomas: tempIdiomas }),
+          })
+        );
+      }
+      
+      // Only update educacion if it has changed
+      if (JSON.stringify(tempEducacion) !== JSON.stringify(profileData.educacion)) {
+        updatePromises.push(
+          fetch(`${API_BASE_URL}/api/doctor/actualizar-educacion/${idDoctor}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ educacion: tempEducacion }),
+          })
+        );
+      }
+      
+      // Only update experiencia if it has changed
+      if (tempExperiencia !== profileData.experiencia) {
+        updatePromises.push(
+          fetch(`${API_BASE_URL}/api/doctor/actualizar-experiencia/${idDoctor}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ experiencia: tempExperiencia }),
+          })
+        );
+      }
+      
+      // Wait for all updates to complete
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+        sweetAlert.showMessageAlert('Éxito!', 'Datos Actualizados Correctamente', 'success');
+      } else {
+        // If no changes were made
+        sweetAlert.showMessageAlert('Información', 'No se detectaron cambios', 'info');
+      }
+      
+      // Update the profile data and exit edit mode
       setIsEditing(false);
-      await fetchProfileData();
-      sweetAlert.showMessageAlert('Exito!','Datos Actualizados Correctamente','success');
+      await fetchProfileData(); // Refresh the data
     } catch (error) {
       setError("Error al guardar los cambios");
-      sweetAlert.showMessageAlert('Error!','Error al guardar los cambios','error');
+      sweetAlert.showMessageAlert('Error!', 'Error al guardar los cambios: ' + error.message, 'error');
     } finally {
       setIsLoading(false);
     }
