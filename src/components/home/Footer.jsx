@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUserMd } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUserMd ,FaTiktok } from 'react-icons/fa';
 
   // Función para desplazarse a la sección de especialidades
   const scrollToSpecialties = (e) => {
@@ -83,8 +83,13 @@ const Footer = () => {
               <a href="https://www.instagram.com/cismedic" className="text-black hover:text-gray-400">
                 <FaInstagram size={24} />
               </a>
+              <a href="https://www.tiktok.com/@clinicacismedic?lang=es" className="text-black hover:text-gray-400">
+                <FaTiktok  size={24} />
+              </a>
             </div>
           </div>
+
+          
         </div>
 
         {/* Derechos de autor */}
