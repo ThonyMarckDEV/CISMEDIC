@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, XCircle } from "lucide-react";
 import SidebarCliente from "../../components/doctorComponents/SidebarDoctor";
-import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
 import PerfilDoctorComponent from "../../components/doctorComponents/ProfileDoctorComponent";
 

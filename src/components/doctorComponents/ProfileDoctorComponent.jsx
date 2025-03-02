@@ -6,6 +6,7 @@ import jwtUtils from "../../utilities/jwtUtils";
 import LoaderScreen from '../../components/home/LoadingScreen';
 import sweetAlert from '../SweetAlert';
 import imgperfil from '../../img/defualtpefil.jpg';
+import AlbumDoctor from './AlbumDoctor';
 
 const PerfilDoctorComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -488,6 +489,12 @@ const PerfilDoctorComponent = () => {
           </button>
         </div>
       )}
+
+      {/* Integrated Album Section */}
+      <div className="mt-8 max-w-3xl mx-auto">
+        <AlbumDoctor />
+      </div>
+
     </div>
   )
 }
