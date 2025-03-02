@@ -140,6 +140,7 @@ const PerfilDoctorComponent = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        mode: "no-cors",
         body: JSON.stringify({ nacimiento: tempNacimiento }),
       });
   
@@ -150,6 +151,7 @@ const PerfilDoctorComponent = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        mode: "no-cors",
         body: JSON.stringify({ idiomas: tempIdiomas }),
       });
   
@@ -160,6 +162,7 @@ const PerfilDoctorComponent = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        mode: "no-cors",
         body: JSON.stringify({ educacion: tempEducacion }),
       });
   
@@ -170,6 +173,7 @@ const PerfilDoctorComponent = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        mode: "no-cors",
         body: JSON.stringify({ experiencia: tempExperiencia }),
       });
   
