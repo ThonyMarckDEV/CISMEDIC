@@ -10,6 +10,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
 
   // Control body overflow when modal is shown
   useEffect(() => {
@@ -29,6 +30,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
 
   const handleOpenModal = () => {
     setShowModal(true);
+    setPdfError(false);
   };
 
   const handleCloseModal = () => {
@@ -98,7 +100,18 @@ const ResultadoCardAdmin = ({ resultado }) => {
     }
   };
 
-  const pdfUrl = `${API_BASE_URL}/storage/${resultado.ruta_archivo}`;
+  // Convierte la URL HTTP a HTTPS si es necesario
+  const pdfUrl = resultado.ruta_archivo 
+    ? `${API_BASE_URL}/storage/${resultado.ruta_archivo}`
+    : '';
+    
+  // Usar URL segura para enlaces externos
+  const getSecureUrl = (url) => {
+    if (!url) return '';
+    return url.replace('http://', 'https://');
+  };
+  
+  const secureUrl = getSecureUrl(pdfUrl);
 
   return (
     <>
@@ -151,7 +164,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
               <div className="flex items-center gap-2">
                 {/* Botón para ver en nueva pestaña - Visible en todas las pantallas */}
                 <a 
-                  href={pdfUrl} 
+                  href={secureUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-1 hover:bg-green-700 rounded transition-colors"
@@ -159,7 +172,6 @@ const ResultadoCardAdmin = ({ resultado }) => {
                 >
                   <Eye className="h-5 w-5" />
                 </a>
-                
                 
                 {/* Botón de pantalla completa */}
                 <button 
@@ -182,12 +194,52 @@ const ResultadoCardAdmin = ({ resultado }) => {
             </div>
             
             {/* Contenido del modal */}
-            <div className="flex-grow bg-gray-100 overflow-hidden">
-              <iframe 
-                src={`${pdfUrl}#toolbar=0`} 
-                className="w-full h-full"
-                title={`Resultado de ${resultado.nombre_completo}`}
-              />
+            <div className="flex-grow bg-gray-100 overflow-hidden relative">
+              {pdfError ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                  <div className="text-red-500 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">No se puede mostrar el PDF</h3>
+                  <p className="text-gray-600 mb-6">El PDF no puede mostrarse dentro de la aplicación porque el contenido no está disponible en formato HTTPS seguro.</p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <a 
+                      href={secureUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors text-white flex items-center justify-center gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>Ver en nueva pestaña</span>
+                    </a>
+                    <a 
+                      href={secureUrl} 
+                      download={`Resultado-${resultado.nombre_completo}.pdf`}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-white flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Descargar</span>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <iframe 
+                    src={secureUrl + '#toolbar=0'} 
+                    className="w-full h-full"
+                    title={`Resultado de ${resultado.nombre_completo}`}
+                    onError={() => setPdfError(true)}
+                  />
+                  {/* Fallback si el iframe no carga */}
+                  <noscript>
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 p-8 text-center">
+                      <p>No se puede cargar el PDF. Por favor, usa los botones para ver o descargar el archivo.</p>
+                    </div>
+                  </noscript>
+                </>
+              )}
             </div>
             
             {/* Información del paciente */}
@@ -215,7 +267,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
                 )}
               </div>
             </div>
-          
+            
           </div>
         </div>
       )}
