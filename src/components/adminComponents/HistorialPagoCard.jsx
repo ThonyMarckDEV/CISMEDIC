@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, CreditCard, Eye, Clock, User, Stethoscope, IdCard, Maximize, Minimize, X } from "lucide-react";
+import { Calendar, CreditCard, Eye, Clock, User, Stethoscope, IdCard, Maximize, Minimize, X, Download } from "lucide-react";
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 
@@ -9,6 +9,7 @@ const HistorialPagoCard = ({ payment }) => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
 
   // Add useEffect to control body overflow when modal is open
   useEffect(() => {
@@ -34,9 +35,16 @@ const HistorialPagoCard = ({ payment }) => {
     );
   }
 
+  // Función para convertir URL HTTP a HTTPS
+  const getSecureUrl = (url) => {
+    if (!url) return '';
+    return url.replace('http://', 'https://');
+  };
+
   const handleViewPDF = async () => {
     setIsLoading(true);
     setError(null);
+    setPdfError(false);
     try {
       const token = jwtUtils.getTokenFromCookie();
       if (!token) {
@@ -61,12 +69,8 @@ const HistorialPagoCard = ({ payment }) => {
       }
       const data = await response.json();
       
-      // Modify the URL to use HTTPS instead of HTTP
-      let secureUrl = data.url;
-      if (secureUrl && secureUrl.startsWith('http:')) {
-        secureUrl = secureUrl.replace('http:', 'https:');
-      }
-      
+      // Usar la función getSecureUrl
+      const secureUrl = getSecureUrl(data.url);
       setPdfUrl(secureUrl);
       setShowModal(true);
     } catch (error) {
@@ -110,13 +114,6 @@ const HistorialPagoCard = ({ payment }) => {
   const formatTime = (timeString) => {
     if (!timeString) return 'Hora no disponible';
     return timeString.substring(0, 5); // Obtiene solo HH:mm
-  };
-
-  // Handle PDF download instead of direct iframe display
-  const handleDownloadPDF = () => {
-    if (pdfUrl) {
-      window.open(pdfUrl, '_blank');
-    }
   };
 
   return (
@@ -252,6 +249,17 @@ const HistorialPagoCard = ({ payment }) => {
                 Comprobante de Pago - {payment.clienteNombre} {payment.clienteApellidos}
               </h3>
               <div className="flex items-center gap-2">
+                {/* Botón para ver en nueva pestaña */}
+                <a 
+                  href={pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1 hover:bg-green-700 rounded transition-colors"
+                  title="Ver en nueva pestaña"
+                >
+                  <Eye className="h-5 w-5" />
+                </a>
+                
                 <button 
                   onClick={toggleFullscreen}
                   className="p-1 hover:bg-green-700 rounded transition-colors"
@@ -270,17 +278,50 @@ const HistorialPagoCard = ({ payment }) => {
             {/* Contenido del PDF */}
             <div className="w-full h-full bg-gray-100 overflow-hidden">
               {pdfUrl ? (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <p className="text-gray-700 mb-4">
-                    El PDF no puede mostrarse directamente debido a restricciones de seguridad (Mixed Content).
-                  </p>
-                  <button 
-                    onClick={handleDownloadPDF}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-white"
-                  >
-                    Abrir PDF en nueva pestaña
-                  </button>
-                </div>
+                pdfError ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                    <div className="text-red-500 mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">No se puede mostrar el PDF</h3>
+                    <p className="text-gray-600 mb-6">El PDF no puede mostrarse dentro de la aplicación porque el contenido no está disponible en formato HTTPS seguro.</p>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <a 
+                        href={pdfUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors text-white flex items-center justify-center gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span>Ver en nueva pestaña</span>
+                      </a>
+                      <a 
+                        href={pdfUrl} 
+                        download={`Comprobante-${payment.idCita}.pdf`}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-white flex items-center justify-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Descargar</span>
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <iframe 
+                      src={pdfUrl + '#toolbar=0'} 
+                      className="w-full h-full"
+                      title="Comprobante de pago"
+                      onError={() => setPdfError(true)}
+                    />
+                    <noscript>
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100 p-8 text-center">
+                        <p>No se puede cargar el PDF. Por favor, usa los botones para ver o descargar el archivo.</p>
+                      </div>
+                    </noscript>
+                  </>
+                )
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-gray-500">Cargando PDF...</p>
