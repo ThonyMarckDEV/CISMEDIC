@@ -24,18 +24,18 @@ const GestionarUsuarios = () => {
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getAuthHeaders = () => {
-    const token = jwtUtils.getTokenFromCookie();
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-  };
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const fetchUsers = async (searchTerm = '') => {
     try {
+      const token = jwtUtils.getTokenFromCookie();
       const response = await fetch(`${API_BASE_URL}/api/obtenerusuarios?search=${searchTerm}`, {
-        headers: getAuthHeaders()
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
       setUsers(data);
@@ -88,6 +88,7 @@ const GestionarUsuarios = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const token = jwtUtils.getTokenFromCookie();
       setIsLoading(true);
       const url = editingId 
         ? `${API_BASE_URL}/api/actualizarusuarios/${editingId}` 
@@ -109,7 +110,10 @@ const GestionarUsuarios = () => {
       
       const response = await fetch(url, {
         method,
-        headers: getAuthHeaders(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(dataToSend),
       });
 
@@ -338,9 +342,13 @@ const GestionarUsuarios = () => {
             // Si el usuario confirma la eliminación
             if (result.isConfirmed) {
               try {
+                const token = jwtUtils.getTokenFromCookie();
                 const response = await fetch(`${API_BASE_URL}/api/eliminarusuarios/${id}`, {
                   method: 'DELETE',
-                  headers: getAuthHeaders(),
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
                 });
 
                 if (response.ok) {
