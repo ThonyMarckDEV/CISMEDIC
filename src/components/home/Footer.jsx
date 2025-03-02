@@ -22,13 +22,11 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Enlaces Rápidos</h3>
             <ul className="space-y-2">
               <li><a href="/" className="hover:text-gray-400">Inicio</a></li>
-              <li><a href="/nosotros" className="hover:text-gray-400">Nosotros</a></li>
-              <li><a href="/servicios" className="hover:text-gray-400">Servicios</a></li>
-              <li><a href="/especialidades" className="hover:text-gray-400">Especialidades</a></li>
+              <li><a href="/staffmedico" className="hover:text-gray-400">Staff Medico</a></li>
               <li><a href="/contacto" className="hover:text-gray-400">Contacto</a></li>
               <li>
                 <a href="/login" className="hover:text-gray-400 flex items-center justify-center md:justify-start">
-                  <FaUserMd className="mr-2" /> Área de Pacientes
+                  <FaUserMd className="mr-2" /> Login
                 </a>
               </li>
             </ul>
@@ -40,23 +38,19 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center justify-center md:justify-start">
                 <FaMapMarkerAlt className="mr-2" />
-                Av. Javier Prado 1234, San Isidro - Lima
-              </li>
-              <li className="flex items-center justify-center md:justify-start">
-                <FaMapMarkerAlt className="mr-2" />
-                Calle Los Alamos 567, Miraflores - Lima
+                José Gálvez 415, Sechura 20691
               </li>
               <li className="flex items-center justify-center md:justify-start">
                 <FaPhone className="mr-2" />
-                (01) 123 4567
+                 (+51) 968103600
+              </li>
+              <li className="flex items-center justify-center md:justify-start">
+                <FaPhone className="mr-2" />
+                 (+51) 968104900
               </li>
               <li className="flex items-center justify-center md:justify-start">
                 <FaEnvelope className="mr-2" />
-                info@cismedic.com
-              </li>
-              <li className="flex items-center justify-center md:justify-start">
-                <FaEnvelope className="mr-2" />
-                emergencias@cismedic.com
+                cismedic@cismedicbayovar.com
               </li>
             </ul>
           </div>
