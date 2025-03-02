@@ -139,7 +139,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
           <div 
-            className={`bg-white rounded-lg shadow-xl overflow-hidden ${
+            className={`bg-white rounded-lg shadow-xl overflow-hidden flex flex-col ${
               isFullscreen ? 'fixed inset-0 m-0' : 'w-full max-w-4xl mx-4 h-5/6'
             }`}
           >
@@ -149,15 +149,32 @@ const ResultadoCardAdmin = ({ resultado }) => {
                 Resultado: {resultado.titulo}
               </h3>
               <div className="flex items-center gap-2">
+                {/* Botón para ver en nueva pestaña - Visible en todas las pantallas */}
+                <a 
+                  href={pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1 hover:bg-green-700 rounded transition-colors"
+                  title="Ver en nueva pestaña"
+                >
+                  <Eye className="h-5 w-5" />
+                </a>
+                
+                
+                {/* Botón de pantalla completa */}
                 <button 
                   onClick={toggleFullscreen}
                   className="p-1 hover:bg-green-700 rounded transition-colors"
+                  title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
                 >
                   {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
                 </button>
+                
+                {/* Botón para cerrar */}
                 <button 
                   onClick={handleCloseModal}
                   className="p-1 hover:bg-green-700 rounded transition-colors"
+                  title="Cerrar"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -165,71 +182,40 @@ const ResultadoCardAdmin = ({ resultado }) => {
             </div>
             
             {/* Contenido del modal */}
-            <div className="flex flex-col h-full">
-              {/* PDF Viewer */}
-              <div className="flex-grow bg-gray-100 overflow-hidden">
-                <iframe 
-                  src={`${pdfUrl}#toolbar=0`} 
-                  className="w-full h-full"
-                  title={`Resultado de ${resultado.nombre_completo}`}
-                />
-              </div>
-              
-              {/* Información del paciente */}
-              <div className="p-4 bg-gray-50 border-t border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Paciente</p>
-                    <p className="font-medium">{resultado.nombre_completo}</p>
-                  </div>
-                  {resultado.dni && (
-                    <div>
-                      <p className="text-sm text-gray-500">DNI</p>
-                      <p className="font-medium">{resultado.dni}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm text-gray-500">Fecha</p>
-                    <p className="font-medium">{formatDate(resultado.fecha_cita)}</p>
-                  </div>
-                  {resultado.observaciones && (
-                    <div className="col-span-1 md:col-span-2">
-                      <p className="text-sm text-gray-500">Observaciones</p>
-                      <p className="font-medium">{resultado.observaciones}</p>
-                    </div>
-                  )}
+            <div className="flex-grow bg-gray-100 overflow-hidden">
+              <iframe 
+                src={`${pdfUrl}#toolbar=0`} 
+                className="w-full h-full"
+                title={`Resultado de ${resultado.nombre_completo}`}
+              />
+            </div>
+            
+            {/* Información del paciente */}
+            <div className="p-4 bg-gray-50 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Paciente</p>
+                  <p className="font-medium">{resultado.nombre_completo}</p>
                 </div>
-              </div>
-              
-              {/* Barra de herramientas inferior */}
-              <div className="bg-gray-100 border-t border-gray-200 p-3 flex justify-between">
-                <button 
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors text-gray-700"
-                >
-                  Cerrar
-                </button>
-                <div className="flex gap-2">
-                  <a 
-                    href={pdfUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors text-white flex items-center gap-2"
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span>Ver en nueva pestaña</span>
-                  </a>
-                  <a 
-                    href={pdfUrl} 
-                    download={`Resultado-${resultado.nombre_completo}.pdf`}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-white flex items-center gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>Descargar</span>
-                  </a>
+                {resultado.dni && (
+                  <div>
+                    <p className="text-sm text-gray-500">DNI</p>
+                    <p className="font-medium">{resultado.dni}</p>
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm text-gray-500">Fecha</p>
+                  <p className="font-medium">{formatDate(resultado.fecha_cita)}</p>
                 </div>
+                {resultado.observaciones && (
+                  <div className="col-span-1 md:col-span-2">
+                    <p className="text-sm text-gray-500">Observaciones</p>
+                    <p className="font-medium">{resultado.observaciones}</p>
+                  </div>
+                )}
               </div>
             </div>
+          
           </div>
         </div>
       )}
