@@ -60,7 +60,14 @@ const HistorialPagoCard = ({ payment }) => {
         throw new Error(errorMessage);
       }
       const data = await response.json();
-      setPdfUrl(data.url);
+      
+      // Modify the URL to use HTTPS instead of HTTP
+      let secureUrl = data.url;
+      if (secureUrl && secureUrl.startsWith('http:')) {
+        secureUrl = secureUrl.replace('http:', 'https:');
+      }
+      
+      setPdfUrl(secureUrl);
       setShowModal(true);
     } catch (error) {
       console.error('Error al obtener el PDF:', error);
@@ -103,6 +110,13 @@ const HistorialPagoCard = ({ payment }) => {
   const formatTime = (timeString) => {
     if (!timeString) return 'Hora no disponible';
     return timeString.substring(0, 5); // Obtiene solo HH:mm
+  };
+
+  // Handle PDF download instead of direct iframe display
+  const handleDownloadPDF = () => {
+    if (pdfUrl) {
+      window.open(pdfUrl, '_blank');
+    }
   };
 
   return (
@@ -256,11 +270,17 @@ const HistorialPagoCard = ({ payment }) => {
             {/* Contenido del PDF */}
             <div className="w-full h-full bg-gray-100 overflow-hidden">
               {pdfUrl ? (
-                <iframe 
-                  src={`${pdfUrl}#toolbar=0`} 
-                  className="w-full h-full"
-                  title="Comprobante de pago"
-                />
+                <div className="flex flex-col items-center justify-center h-full">
+                  <p className="text-gray-700 mb-4">
+                    El PDF no puede mostrarse directamente debido a restricciones de seguridad (Mixed Content).
+                  </p>
+                  <button 
+                    onClick={handleDownloadPDF}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-white"
+                  >
+                    Abrir PDF en nueva pestaña
+                  </button>
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-gray-500">Cargando PDF...</p>
