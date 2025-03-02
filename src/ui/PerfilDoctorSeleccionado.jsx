@@ -6,6 +6,7 @@ import banner from '../img/local.jpeg';
 import jwtUtils from "../utilities/jwtUtils";
 import Navbar from "../components/home/NavBar";
 import imgperfil from '../img/defualtpefil.jpg';
+import AlbumDoctor from './AlbumDoctor';
 
 const PerfilDoctorSeleccionado = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -261,6 +262,13 @@ const PerfilDoctorSeleccionado = () => {
             </div>
           </div>
         )}
+
+        
+        {/* Integrated Album Section */}
+        <div className="">
+          <AlbumDoctor idDoctor={idDoctor} />
+        </div>
+
       </div>
     </div>
   );
