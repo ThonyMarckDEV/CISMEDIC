@@ -16,55 +16,132 @@ const Paso2 = ({ onNext }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+// Para limitar la entrada de caracteres en tiempo real
+const handleNombreKeyPress = (e) => {
+  const charCode = e.charCode;
+  // Solo permitir letras y espacios (a-z, A-Z, letras con acento, ñ, espacios)
+  if (!/[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(String.fromCharCode(charCode))) {
     e.preventDefault();
-    setErrors({});
-    setIsLoading(true);
+  }
+};
 
-    const dni = localStorage.getItem('dni');
-    const nacimiento = localStorage.getItem('nacimiento');
+const handleApellidoKeyPress = (e) => {
+  const charCode = e.charCode;
+  // Solo permitir letras y espacios (a-z, A-Z, letras con acento, ñ, espacios)
+  if (!/[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(String.fromCharCode(charCode))) {
+    e.preventDefault();
+  }
+};
 
-    const data = {
-      dni,
-      nacimiento,
-      nombres,
-      apellidos,
-      telefono,
-      correo,
-      password,
-      password_confirmation: passwordConfirmation,
-    };
+const handleTelefonoKeyPress = (e) => {
+  const charCode = e.charCode;
+  // Solo permitir números
+  if (!/\d/.test(String.fromCharCode(charCode))) {
+    e.preventDefault();
+  }
+};
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/registrar-usuario`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+// Limitar la longitud del teléfono a 9 dígitos
+const handleTelefonoChange = (e) => {
+  const value = e.target.value;
+  // Asegurar que solo haya números
+  const sanitizedValue = value.replace(/\D/g, '');
+  // Limitar a 9 dígitos
+  const truncatedValue = sanitizedValue.slice(0, 9);
+  setTelefono(truncatedValue);
+};
 
-      const result = await response.json();
-
-      if (response.ok) {
-        localStorage.clear();
-        setIsLoading(false);
-        SweetAlert.showMessageAlert('Éxito', 'Usuario registrado Correctamente , Verifica tu Correo!.', 'success');
-    
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1500);
-      } else {
-        setIsLoading(false);
-        setErrors(result.errors || { general: result.message || 'Error al registrar los datos' });
-      }
-    } catch (err) {
-      setIsLoading(false);
-      SweetAlert.showMessageAlert(
-        'Error',
-        'Error de conexión. Por favor, inténtalo de nuevo.',
-        'error'
-      );
+// Función para validar los campos del formulario al enviar
+const validateForm = () => {
+  const newErrors = {};
+  
+  // Validar nombres (al menos un nombre)
+  if (!nombres.trim()) {
+    newErrors.nombres = "Ingrese al menos un nombre";
+  } else if (!/^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(nombres)) {
+    newErrors.nombres = "El nombre solo debe contener letras";
+  }
+  
+  // Validar apellidos (al menos dos apellidos separados)
+  if (!apellidos.trim()) {
+    newErrors.apellidos = "Ingrese sus apellidos";
+  } else {
+    const apellidosArray = apellidos.trim().split(/\s+/);
+    if (apellidosArray.length < 2) {
+      newErrors.apellidos = "Ingrese al menos dos apellidos";
     }
+  }
+  
+  // Validar teléfono (exactamente 9 dígitos)
+  if (!telefono) {
+    newErrors.telefono = "Ingrese un número de teléfono";
+  } else if (telefono.length !== 9) {
+    newErrors.telefono = "El teléfono debe tener exactamente 9 dígitos";
+  }
+  
+  return newErrors;
+};
+
+// Modificación del handleSubmit incorporando la validación
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Ejecutar validaciones
+  const formErrors = validateForm();
+  
+  // Si hay errores, actualizar estado y detener el envío
+  if (Object.keys(formErrors).length > 0) {
+    setErrors(formErrors);
+    return;
+  }
+  
+  setErrors({});
+  setIsLoading(true);
+
+  const dni = localStorage.getItem('dni');
+  const nacimiento = localStorage.getItem('nacimiento');
+
+  const data = {
+    dni,
+    nacimiento,
+    nombres,
+    apellidos,
+    telefono,
+    correo,
+    password,
+    password_confirmation: passwordConfirmation,
   };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/registrar-usuario`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      localStorage.clear();
+      setIsLoading(false);
+      SweetAlert.showMessageAlert('Éxito', 'Usuario registrado Correctamente , Verifica tu Correo!.', 'success');
+  
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    } else {
+      setIsLoading(false);
+      setErrors(result.errors || { general: result.message || 'Error al registrar los datos' });
+    }
+  } catch (err) {
+    setIsLoading(false);
+    SweetAlert.showMessageAlert(
+      'Error',
+      'Error de conexión. Por favor, inténtalo de nuevo.',
+      'error'
+    );
+  }
+};
 
   return (
     <>
@@ -73,50 +150,54 @@ const Paso2 = ({ onNext }) => {
         <h2 className="text-2xl font-medium mb-8 text-green-700">Ingresa tus datos personales</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Nombres</label>
-            <input
-              placeholder="Ej: Juan"
-              className={`w-full p-2 border rounded-md text-sm ${
-                errors.nombres ? 'border-red-500' : ''
-              }`}
-              value={nombres}
-              onChange={(e) => setNombres(e.target.value)}
-            />
-            {errors.nombres && (
-              <p className="text-red-500 text-sm mt-1">{errors.nombres}</p>
-            )}
-          </div>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Nombres</label>
+          <input
+            placeholder="Ej: Juan"
+            className={`w-full p-2 border rounded-md text-sm ${
+              errors.nombres ? 'border-red-500' : ''
+            }`}
+            value={nombres}
+            onChange={(e) => setNombres(e.target.value)}
+            onKeyPress={handleNombreKeyPress}
+          />
+          {errors.nombres && (
+            <p className="text-red-500 text-sm mt-1">{errors.nombres}</p>
+          )}
+        </div>
 
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Apellidos</label>
-            <input
-              placeholder="Ej: Pérez"
-              className={`w-full p-2 border rounded-md text-sm ${
-                errors.apellidos ? 'border-red-500' : ''
-              }`}
-              value={apellidos}
-              onChange={(e) => setApellidos(e.target.value)}
-            />
-            {errors.apellidos && (
-              <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
-            )}
-          </div>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Apellidos</label>
+          <input
+            placeholder="Ej: Pérez Gómez"
+            className={`w-full p-2 border rounded-md text-sm ${
+              errors.apellidos ? 'border-red-500' : ''
+            }`}
+            value={apellidos}
+            onChange={(e) => setApellidos(e.target.value)}
+            onKeyPress={handleApellidoKeyPress}
+          />
+          {errors.apellidos && (
+            <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
+          )}
+        </div>
 
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Teléfono</label>
-            <input
-              placeholder="Ej: 987654321"
-              className={`w-full p-2 border rounded-md text-sm ${
-                errors.telefono ? 'border-red-500' : ''
-              }`}
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-            />
-            {errors.telefono && (
-              <p className="text-red-500 text-sm mt-1">{errors.telefono}</p>
-            )}
-          </div>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Teléfono</label>
+          <input
+            placeholder="Ej: 987654321"
+            className={`w-full p-2 border rounded-md text-sm ${
+              errors.telefono ? 'border-red-500' : ''
+            }`}
+            value={telefono}
+            onChange={handleTelefonoChange}
+            onKeyPress={handleTelefonoKeyPress}
+            maxLength={9}
+          />
+          {errors.telefono && (
+            <p className="text-red-500 text-sm mt-1">{errors.telefono}</p>
+          )}
+        </div>
 
           <div>
             <label className="block text-sm text-gray-600 mb-1">Correo</label>
