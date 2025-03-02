@@ -12,6 +12,8 @@ const AlbumDoctor = () => {
     const [tieneAlbum, setTieneAlbum] = useState(false);
     const [loading, setLoading] = useState(true);
     const carouselRef = useRef(null);
+    const [enlace, setEnlace] = useState('');
+    // Nuevo estado para el enlace  
 
     // Obtener token y ID
     const token = jwtUtils.getTokenFromCookie();
@@ -31,7 +33,24 @@ const AlbumDoctor = () => {
         return headers;
     };
 
-    // Cargar álbum
+    // Función para cargar el enlace del álbum
+    const cargarEnlace = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/doctor/album`, {
+                method: 'GET',
+                headers: createAuthHeaders()
+            });
+            
+            if (!response.ok) throw new Error('Error al obtener enlace');
+            
+            const data = await response.json();
+            setEnlace(data.enlace || '');
+        } catch (error) {
+            console.error('Error cargando enlace:', error);
+        }
+    };
+
+    // Modificar cargarAlbum para cargar el enlace
     const cargarAlbum = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/doctor/verificaralbum`, {
@@ -39,18 +58,37 @@ const AlbumDoctor = () => {
                 headers: createAuthHeaders()
             });
             
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
             
             const data = await response.json();
             setTieneAlbum(data.existe);
-            if(data.existe) cargarFotos();
+            if(data.existe) {
+                await cargarFotos();
+                await cargarEnlace(); // Cargar enlace después de confirmar álbum
+            }
         } catch (error) {
             sweetAlert.showMessageAlert('Error', 'Error cargando álbum', 'error');
             console.error('Error cargando álbum:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Función para guardar el enlace
+    const guardarEnlace = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/doctor/album/actualizar`, {
+                method: 'PUT',
+                headers: createAuthHeaders(),
+                body: JSON.stringify({ enlace })
+            });
+            
+            if (!response.ok) throw new Error('Error actualizando enlace');
+            
+            sweetAlert.showMessageAlert('Éxito', 'Enlace actualizado', 'success');
+        } catch (error) {
+            sweetAlert.showMessageAlert('Error', error.message, 'error');
+            console.error('Error guardando enlace:', error);
         }
     };
 
@@ -180,24 +218,54 @@ const AlbumDoctor = () => {
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-4 border-2 border-green-100">
-            {/* Encabezado */}
+            {/* Encabezado Corregido */}
             <div className="flex justify-between items-center mb-4">
+                {/* Lado izquierdo - Título */}
                 <h2 className="text-xl font-bold text-green-800">
                     <Edit className="inline mr-2" /> Álbum Médico
                 </h2>
-                
+
+                {/* Lado derecho - Controles */}
                 {tieneAlbum && (
-                    <button 
-                        onClick={() => setEditMode(!editMode)}
-                        className={`px-3 py-1 rounded-lg flex items-center gap-1 text-sm transition-all ${
-                            editMode 
-                            ? 'bg-red-600 hover:bg-red-700 text-white' 
-                            : 'bg-green-700 hover:bg-green-800 text-white'
-                        }`}
-                    >
-                        {editMode ? <X size={16} /> : <Edit size={16} />}
-                        {editMode ? 'Salir Edición' : 'Editar Álbum'}
-                    </button>
+                    <div className="flex items-center gap-4">
+                        {/* Enlace y campo de edición */}
+                        <div className="flex items-center gap-2">
+                            {!editMode ? (
+                                <span className="text-sm text-gray-600">
+                                    Enlace: {enlace || 'Sin enlace'}
+                                </span>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={enlace}
+                                        onChange={(e) => setEnlace(e.target.value)}
+                                        className="border rounded px-2 py-1 text-sm w-48"
+                                        placeholder="Ingrese enlace"
+                                    />
+                                    <button
+                                        onClick={guardarEnlace}
+                                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                                    >
+                                        Guardar
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Botón de edición */}
+                        <button 
+                            onClick={() => setEditMode(!editMode)}
+                            className={`px-3 py-1 rounded-lg flex items-center gap-1 text-sm transition-all ${
+                                editMode 
+                                ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                : 'bg-green-700 hover:bg-green-800 text-white'
+                            }`}
+                        >
+                            {editMode ? <X size={16} /> : <Edit size={16} />}
+                            {editMode ? 'Salir Edición' : 'Editar Álbum'}
+                        </button>
+                    </div>
                 )}
             </div>
 

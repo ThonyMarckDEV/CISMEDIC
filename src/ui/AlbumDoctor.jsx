@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Edit, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit, ChevronLeft, ChevronRight, PlayCircle } from 'lucide-react';
 import API_BASE_URL from '../js/urlHelper';
 
 const AlbumDoctor = ({ idDoctor }) => {
@@ -8,6 +8,7 @@ const AlbumDoctor = ({ idDoctor }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [tieneAlbum, setTieneAlbum] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [enlace, setEnlace] = useState('');
     const carouselRef = useRef(null);
 
     const cargarAlbum = async () => {
@@ -18,6 +19,8 @@ const AlbumDoctor = ({ idDoctor }) => {
             
             const data = await response.json();
             setTieneAlbum(data.existe);
+            setEnlace(data.enlace || ''); // Asegúrate de recibir el enlace aquí
+            
             if(data.existe) cargarFotos();
         } catch (error) {
             console.error('Error cargando álbum:', error);
@@ -57,10 +60,24 @@ const AlbumDoctor = ({ idDoctor }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-4 border-2 border-green-100">
+
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-green-800">
-                    <Edit className="inline mr-2" /> Álbum Médico
-                </h2>
+                <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-green-800">
+                        <Edit className="inline mr-2" /> Álbum Médico
+                    </h2>
+                    {enlace && (
+                        <a 
+                            href={enlace} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-green-600 hover:text-green-800 transition-colors"
+                            title="Abrir enlace"
+                        >
+                            <PlayCircle size={24} />
+                        </a>
+                    )}
+                </div>
             </div>
 
             {fotos.length === 0 ? (
