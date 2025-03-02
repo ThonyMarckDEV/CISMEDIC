@@ -129,13 +129,18 @@ const PerfilDoctorSeleccionado = () => {
           {profileData.especialidad}
         </p>
       </div>
+
+
       {/* Main Content Grid */}
-      <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {/* Birth Date and Age Card */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+    <div className="mt-8 max-w-7xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Primeras dos tarjetas */}
+      <div className="sm:col-span-2 lg:col-span-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {/* Birth Date and Age Card */}
+          {isLoading ? (
+            <SkeletonCard />
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-green-100">
             <div className="p-6">
               <div className="flex justify-between items-start">
                 {/* Birth Date Section */}
@@ -167,12 +172,13 @@ const PerfilDoctorSeleccionado = () => {
               </div>
             </div>
           </div>
-        )}
-        {/* Experience and Languages Card */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          )}
+
+          {/* Experience and Languages Card */}
+          {isLoading ? (
+            <SkeletonCard />
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-green-100">
             <div className="p-6">
               <div className="flex justify-between items-start">
                 {/* Experience Section */}
@@ -204,72 +210,79 @@ const PerfilDoctorSeleccionado = () => {
               </div>
             </div>
           </div>
-        )}
-        {/* Educación */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-green-700" />
-                  Educación
-                </h2>
-              </div>
-              <div className="mt-4 space-y-4">
-                {profileData.educacion.length > 0 ? (
-                  profileData.educacion.map((edu, index) => (
-                    <div key={index} className="border-l-2 border-green-200 pl-4">
-                      <h3 className="text-sm font-medium text-gray-900">{edu.titulo || "No especificado"}</h3>
-                      <p className="text-sm text-gray-500">{edu.institucion || "No especificado"}</p>
-                      <p className="text-xs text-green-700">{edu.anio || "No especificado"}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">No hay información de educación disponible.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Idiomas */}
-        {isLoading ? (
-          <SkeletonCard />
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-green-100">
-            <div className="p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <Languages className="h-5 w-5 text-green-700" />
-                  Idiomas
-                </h2>
-              </div>
-              <div className="mt-4">
-                {profileData.idiomas.length > 0 ? (
-                  <ul className="space-y-2">
-                    {profileData.idiomas.map((idioma, index) => (
-                      <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
-                        <Languages className="h-4 w-4 text-green-700" />
-                        {idioma || "No especificado"}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-500">No hay información de idiomas disponible.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        
-        {/* Integrated Album Section */}
-        <div className="">
-          <AlbumDoctor idDoctor={idDoctor} />
+          )}
         </div>
-
       </div>
+
+      {/* Educación */}
+      <div className="lg:col-start-1">
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-green-700" />
+                Educación
+              </h2>
+            </div>
+            <div className="mt-4 space-y-4">
+              {profileData.educacion.length > 0 ? (
+                profileData.educacion.map((edu, index) => (
+                  <div key={index} className="border-l-2 border-green-200 pl-4">
+                    <h3 className="text-sm font-medium text-gray-900">{edu.titulo || "No especificado"}</h3>
+                    <p className="text-sm text-gray-500">{edu.institucion || "No especificado"}</p>
+                    <p className="text-xs text-green-700">{edu.anio || "No especificado"}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No hay información de educación disponible.</p>
+              )}
+            </div>
+          </div>
+        </div>
+        )}
+      </div>
+
+      {/* AlbumDoctor CENTRADO */}
+      <div className="lg:col-span-1 lg:col-start-2">
+        <AlbumDoctor idDoctor={idDoctor} />
+      </div>
+
+      {/* Idiomas */}
+      <div className="lg:col-start-3">
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-green-100">
+          <div className="p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <Languages className="h-5 w-5 text-green-700" />
+                Idiomas
+              </h2>
+            </div>
+            <div className="mt-4">
+              {profileData.idiomas.length > 0 ? (
+                <ul className="space-y-2">
+                  {profileData.idiomas.map((idioma, index) => (
+                    <li key={index} className="text-sm text-gray-900 flex items-center gap-2">
+                      <Languages className="h-4 w-4 text-green-700" />
+                      {idioma || "No especificado"}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">No hay información de idiomas disponible.</p>
+              )}
+            </div>
+          </div>
+        </div>
+        )}
+      </div>
+    </div>
+      
     </div>
   );
 };
