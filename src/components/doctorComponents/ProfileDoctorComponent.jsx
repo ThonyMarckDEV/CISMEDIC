@@ -140,7 +140,7 @@ const PerfilDoctorComponent = () => {
       if (tempNacimiento !== profileData.nacimiento) {
         updatePromises.push(
           fetch(`${API_BASE_URL}/api/doctor/actualizar-nacimiento/${idDoctor}`, {
-            method: "PUT",
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const PerfilDoctorComponent = () => {
       if (JSON.stringify(tempIdiomas) !== JSON.stringify(profileData.idiomas)) {
         updatePromises.push(
           fetch(`${API_BASE_URL}/api/doctor/actualizar-idiomas/${idDoctor}`, {
-            method: "PUT",
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -168,7 +168,7 @@ const PerfilDoctorComponent = () => {
       if (JSON.stringify(tempEducacion) !== JSON.stringify(profileData.educacion)) {
         updatePromises.push(
           fetch(`${API_BASE_URL}/api/doctor/actualizar-educacion/${idDoctor}`, {
-            method: "PUT",
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -182,7 +182,7 @@ const PerfilDoctorComponent = () => {
       if (tempExperiencia !== profileData.experiencia) {
         updatePromises.push(
           fetch(`${API_BASE_URL}/api/doctor/actualizar-experiencia/${idDoctor}`, {
-            method: "PUT",
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
