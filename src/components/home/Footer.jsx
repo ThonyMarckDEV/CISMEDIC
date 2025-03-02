@@ -1,6 +1,15 @@
 import React from 'react';
 import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUserMd } from 'react-icons/fa';
 
+  // Función para desplazarse a la sección de especialidades
+  const scrollToSpecialties = (e) => {
+    e.preventDefault();
+    const specialtiesSection = document.getElementById('specialties-section');
+    if (specialtiesSection) {
+      specialtiesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
 const Footer = () => {
   return (
     <div className="bg-white text-black py-12">
@@ -22,6 +31,15 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Enlaces Rápidos</h3>
             <ul className="space-y-2">
               <li><a href="/" className="hover:text-gray-400">Inicio</a></li>
+              <li> 
+                <a
+                  href="#specialties-section"
+                  className="hover:text-gray-400"
+                  onClick={scrollToSpecialties}
+                >
+                  Especialidades
+                </a>
+              </li>
               <li><a href="/staffmedico" className="hover:text-gray-400">Staff Medico</a></li>
               <li><a href="/contacto" className="hover:text-gray-400">Contacto</a></li>
               <li>

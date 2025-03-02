@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../../img/logo.png'; // Solo usa el logo negro
+import logo from '../../img/logo.png';
 import { Link } from 'react-router-dom';
-import AuthSection from './AuthSection'; // Importa el componente AuthSection
+import AuthSection from './AuthSection';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +23,18 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Función para desplazarse a la sección de especialidades
+  const scrollToSpecialties = (e) => {
+    e.preventDefault();
+    const specialtiesSection = document.getElementById('specialties-section');
+    if (specialtiesSection) {
+      specialtiesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (isOpen) {
+      toggleMenu();
+    }
+  };
 
   return (
     <>
@@ -46,7 +58,7 @@ const Navbar = () => {
         <div className="flex items-center">
           <a href="/">
             <img
-              src={logo} // Logo negro fijo
+              src={logo}
               alt="Cismedic Logo"
               className="h-16"
             />
@@ -65,11 +77,19 @@ const Navbar = () => {
             </li>
             <li>
               <a
+                href="#specialties-section"
+                className="text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
+                onClick={scrollToSpecialties}
+              >
+                Especialidades
+              </a>
+            </li>
+            <li>
+              <a
                 href="/staffmedico"
                 className="block text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
-                onClick={toggleMenu}
               >
-                 Staff Medico
+                Staff Medico
               </a>
             </li>
             <li>
@@ -103,6 +123,15 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Inicio
+              </a>
+            </li>
+            <li>
+              <a
+                href="#specialties-section"
+                className="block text-black hover:text-gray-900 text-lg font-serif font-medium transition-all duration-300 hover:tracking-widest"
+                onClick={scrollToSpecialties}
+              >
+                Especialidades
               </a>
             </li>
             <li>
