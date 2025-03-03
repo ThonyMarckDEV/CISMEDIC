@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, ChevronLeft, ChevronRight, PlayCircle } from 'lucide-react';
 import API_BASE_URL from '../js/urlHelper';
+import API_BASE_URL_PHOTO from '../js/urlHelperPhoto';
 
 const AlbumDoctor = ({ idDoctor }) => {
     const [fotos, setFotos] = useState([]);
@@ -97,7 +98,7 @@ const AlbumDoctor = ({ idDoctor }) => {
                                 }`}
                             >
                                 <img
-                                    src={`${API_BASE_URL}/${foto.ruta_imagen}`}
+                                    src={`${API_BASE_URL_PHOTO}/backend/storage/app/public/${foto.ruta_imagen}`}
                                     className="object-contain h-full w-full"
                                     alt="Foto médica"
                                 />
