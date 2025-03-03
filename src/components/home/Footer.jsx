@@ -77,7 +77,7 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <h3 className="text-xl font-bold mb-4">Síguenos</h3>
             <div className="flex space-x-4 justify-center md:justify-start">
-              <a href="https://www.facebook.com/cismedic" className="text-black hover:text-gray-400">
+              <a href="https://www.facebook.com/clinicacismedic" className="text-black hover:text-gray-400">
                 <FaFacebook size={24} />
               </a>
               <a href="https://www.instagram.com/cismedic" className="text-black hover:text-gray-400">
