@@ -144,7 +144,7 @@ const Contacto = () => {
           {[
             {
               title: "Dirección",
-              content: ["José Gálvez 415, Sechura 20691"]
+              content: ["Calle Buenos Aires 415 Sechura"]
             },
             {
               title: "Teléfono",

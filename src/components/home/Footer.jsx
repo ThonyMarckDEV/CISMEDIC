@@ -56,7 +56,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center justify-center md:justify-start">
                 <FaMapMarkerAlt className="mr-2" />
-                José Gálvez 415, Sechura 20691
+                Calle Buenos Aires 415 Sechura
               </li>
               <li className="flex items-center justify-center md:justify-start">
                 <FaPhone className="mr-2" />
