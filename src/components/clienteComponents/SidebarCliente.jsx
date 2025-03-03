@@ -142,16 +142,17 @@ const SidebarCliente = ({ children }) => {
               <div className="text-xs text-gray-500">
                 <p>¿Tienes alguna duda o inconveniente?</p>
                 <p>Contáctanos a:</p>
-                <a href="mailto:soporteapp.pe@auna.org" className="text-blue-500 hover:underline">
-                  soporteapp.pe@cismedic.org
+                <a href="mailto:cismedicsechura1@gmail.com" className="text-blue-500 hover:underline">
+                   cismedicsechura1@gmail.com
                 </a>
-                <p className="mt-2">
-                  <a href="#" className="text-blue-500 hover:underline">
+                <p className="mt-2">\
+                  <a href="https://wa.me/968103600" className="text-blue-500 hover:underline">
                     Whatsapp Cismedic
                   </a>
                 </p>
               </div>
             </div>
+            
           </div>
         </div>
 
