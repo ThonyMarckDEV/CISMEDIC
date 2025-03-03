@@ -6,6 +6,7 @@ import jwtUtils from "../../utilities/jwtUtils";
 import LoaderScreen from '../../components/home/LoadingScreen';
 import sweetAlert from '../SweetAlert';
 import imgperfil from '../../img/defualtpefil.jpg';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 
 const PerfilClienteComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -152,7 +153,7 @@ const PerfilClienteComponent = () => {
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
               <img
                 src={
-                  profileData.foto_perfil ? `${API_BASE_URL}/public/storage/${profileData.foto_perfil}` : imgperfil
+                  profileData.foto_perfil ? `${API_BASE_URL_PHOTO}/backend/storage/app/public/${profileData.foto_perfil}` : imgperfil
                 }
                 alt="Profile"
                 className="h-full w-full object-cover"
