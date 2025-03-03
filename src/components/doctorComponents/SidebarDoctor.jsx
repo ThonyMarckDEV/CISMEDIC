@@ -121,7 +121,7 @@ const SidebarDoctor = ({ children }) => {
               </ul>
             </nav>
 
-            {/* Footer Section */}
+              {/* Footer Section */}
             <div className="mt-auto p-4">
               <div className="text-xs text-gray-500">
                 <p>¿Tienes alguna duda o inconveniente?</p>
@@ -129,7 +129,7 @@ const SidebarDoctor = ({ children }) => {
                 <a href="mailto:cismedicsechura1@gmail.com" className="text-blue-500 hover:underline">
                    cismedicsechura1@gmail.com
                 </a>
-                <p className="mt-2">\
+                <p className="mt-2">
                   <a href="https://wa.me/968103600" className="text-blue-500 hover:underline">
                     Whatsapp Cismedic
                   </a>
