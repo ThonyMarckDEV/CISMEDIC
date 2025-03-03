@@ -18,32 +18,38 @@ const HistorialPagosClientes = () => {
   const token = jwtUtils.getTokenFromCookie();
   const userId = jwtUtils.getIdUsuario(token);
 
-  // Función para obtener los pagos del cliente
   const fetchPayments = async () => {
     try {
       if (!userId || !token) {
         throw new Error("User ID or token not found");
       }
-      const params = new URLSearchParams({
-        estado: filtroEstado,
-        nombre: filtroNombre,
-        idPago: filtroIdPago,
-        fecha: filtroFecha,
-        dni: filtroDNI, // Agregar filtro DNI
+  
+      // Construir los parámetros solo si tienen valor
+      const params = new URLSearchParams();
+      if (filtroEstado && filtroEstado !== "todas") params.append("estado", filtroEstado);
+      if (filtroNombre) params.append("nombre", filtroNombre);
+      if (filtroIdPago) params.append("idPago", filtroIdPago);
+      if (filtroFecha) params.append("fecha", filtroFecha);
+      if (filtroDNI) params.append("dni", filtroDNI);
+  
+      // Construir la URL con o sin parámetros
+      const queryString = params.toString();
+      const url = queryString 
+        ? `${API_BASE_URL}/api/admin/obtenerhistorialpagosclientes/?${queryString}`
+        : `${API_BASE_URL}/api/admin/obtenerhistorialpagosclientes`;
+        
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/obtenerhistorialpagosclientes`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
+      
       const data = await response.json();
       setPayments(data);
     } catch (err) {
