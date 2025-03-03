@@ -24,42 +24,13 @@ const GestionarUsuarios = () => {
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dniValidated, setDniValidated] = useState(false);
-  const [dniCheckTimeout, setDniCheckTimeout] = useState(null);
   const [isValidatingDni, setIsValidatingDni] = useState(false);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Efecto para validar DNI cuando cambia
-  useEffect(() => {
-    // Si estamos editando, no validamos el DNI automáticamente
-    if (editingId) return;
-    
-    // Limpiar el timeout previo si existe
-    if (dniCheckTimeout) {
-      clearTimeout(dniCheckTimeout);
-    }
-    
-    // Resetear validación cuando cambia el DNI
-    if (dniValidated && formData.dni.length !== 8) {
-      setDniValidated(false);
-    }
-    
-    // Validar DNI cuando tiene 8 dígitos
-    if (formData.dni.length === 8) {
-      const timeout = setTimeout(() => {
-        validateDni();
-      }, 500);
-      setDniCheckTimeout(timeout);
-    }
-    
-    return () => {
-      if (dniCheckTimeout) {
-        clearTimeout(dniCheckTimeout);
-      }
-    };
-  }, [formData.dni]);
+  // Removido el efecto para validar DNI automáticamente cuando cambia
 
   const fetchUsers = async (searchTerm = '') => {
     try {
@@ -179,8 +150,8 @@ const GestionarUsuarios = () => {
       }));
 
       if (isValid) {
-        // Si cambia el DNI, reseteamos la validación
-        if (name === "dni" && dniValidated) {
+        // Si cambia el DNI y no estamos editando, reseteamos la validación
+        if (name === "dni" && !editingId && dniValidated) {
           setDniValidated(false);
         }
         
@@ -203,7 +174,10 @@ const GestionarUsuarios = () => {
     
     // Si no estamos editando y el DNI no está validado, validarlo primero
     if (!editingId && !dniValidated) {
+      setIsLoading(true);
       await validateDni();
+      setIsLoading(false);
+      
       // Si después de validar aún no es válido, detener el envío
       if (!dniValidated) {
         return;
@@ -335,14 +309,10 @@ const GestionarUsuarios = () => {
                     maxLength={8}
                     value={formData.dni}
                     onChange={handleInputChange}
-                    onBlur={() => {
-                      if (formData.dni.length === 8 && !dniValidated && !editingId) {
-                        validateDni();
-                      }
-                    }}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
                       dniValidated ? 'border-green-500' : errors.dni ? 'border-red-500' : ''
                     }`}
+                    readOnly={editingId ? true : false} // Hacer el DNI de solo lectura cuando se edita
                   />
                   {isValidatingDni && (
                     <div className="absolute right-3 top-2">
@@ -441,17 +411,12 @@ const GestionarUsuarios = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <button
                 type="submit"
-                className={`w-full md:w-auto px-6 py-2 rounded-lg transition-colors ${
-                  !editingId && !dniValidated
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-                disabled={!editingId && !dniValidated}
+                className="w-full md:w-auto px-6 py-2 rounded-lg transition-colors bg-green-600 hover:bg-green-700 text-white"
               >
-                {editingId ? 'Actualizar' : dniValidated ? 'Registrar' : 'Verifica el DNI primero'}
+                {editingId ? 'Actualizar' : 'Registrar'}
               </button>
               
-              {!editingId && !dniValidated && formData.dni.length === 8 && (
+              {!editingId && formData.dni.length === 8 && !dniValidated && (
                 <button
                   type="button"
                   onClick={validateDni}
@@ -487,6 +452,7 @@ const GestionarUsuarios = () => {
               correo: user.correo,
               telefono: user.telefono || '',
               rol: user.rol,
+              newPassword: '',
             });
             // En edición, asumimos que el DNI ya está validado
             setDniValidated(true);
