@@ -32,7 +32,7 @@ const HistorialPagosClientes = () => {
         dni: filtroDNI, // Agregar filtro DNI
       });
       const response = await fetch(
-        `${API_BASE_URL}/api/admin/historialpagos/${params}`,
+        `${API_BASE_URL}/api/admin/historialpagos/?${params}`,
         {
           method: "GET",
           headers: {
