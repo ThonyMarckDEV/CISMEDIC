@@ -70,8 +70,6 @@ const AgendarCitaCliente = () => {
       if (data.success && data.data.ruc) {
         setRucValid(true);
         setRucError("");
-        // Puedes guardar los datos completos si quieres mostrarlos
-        setRucData(data.data);
       } else {
         setRucError(data.message || "RUC no encontrado o inválido");
         setRucValid(false);
