@@ -230,7 +230,7 @@ const PerfilDoctorComponent = () => {
             <div className="h-40 w-40 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden">
               <img
                 src={
-                  profileData.foto_perfil ? `${API_BASE_URL}/storage/${profileData.foto_perfil}` : imgperfil
+                  profileData.foto_perfil ? `${API_BASE_URL_PHOTO}/backend/storage/app/public/${profileData.foto_perfil}` : imgperfil
                 }
                 alt="Profile"
                 className="h-full w-full object-cover"
