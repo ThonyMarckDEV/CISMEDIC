@@ -44,40 +44,42 @@ const AgendarCitaCliente = () => {
       setRucValid(false);
       return;
     }
-
+    
     setLoading(true);
     
-    const API_TOKEN = process.env.REACT_APP_API_TOKEN;
-    if (!API_TOKEN) {
-      console.error("API Token no configurado");
-      setRucError("Error de configuración del sistema. Contacte al administrador.");
-      setRucValid(false);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch(
-        `https://dniruc.apisperu.com/api/v1/ruc/${rucNumber}?token=${API_TOKEN}`
-      );
-
+      // Obtener el token de autenticación (si estás usando autenticación)
+      const token = jwtUtils.getTokenFromCookie();
+      
+      // Hacer fetch al endpoint de Laravel
+      const response = await fetch(`${API_BASE_URL}/api/validate-ruc`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ ruc: rucNumber })
+      });
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      
       const data = await response.json();
-
-      if (data.ruc) {
+      
+      if (data.success && data.data.ruc) {
         setRucValid(true);
         setRucError("");
+        // Puedes guardar los datos completos si quieres mostrarlos
+        setRucData(data.data);
       } else {
-        setRucError("RUC no encontrado o inválido");
+        setRucError(data.message || "RUC no encontrado o inválido");
         setRucValid(false);
       }
     } catch (error) {
       console.error("Error validando RUC:", error);
       setRucError(
-        error.message.includes("HTTP error") 
+        error.message.includes("HTTP error")
           ? "Servicio de validación no disponible. Intente más tarde."
           : "Error al validar el RUC. Verifique su conexión."
       );
