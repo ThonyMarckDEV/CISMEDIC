@@ -206,7 +206,7 @@ const Contacto = () => {
             >
               <Popup>
                 <strong>Cismedic</strong><br />
-                Dirección:J osé Gálvez 415, Sechura 20691
+                Dirección: Calle Buenos Aires 415 Sechura
               </Popup>
             </Marker>
           </MapContainer>
