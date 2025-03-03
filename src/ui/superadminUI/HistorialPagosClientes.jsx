@@ -139,7 +139,7 @@ const HistorialPagosClientes = () => {
       <div className="flex flex-col p-6 gap-6 md:-ml-64">
 
         <WelcomeHeader 
-            customMessage="Aquí está tu historial de pagos."
+            customMessage="Aquí está el historial de pagos."
           />
 
         {/* Filtros */}
