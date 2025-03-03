@@ -9,6 +9,7 @@ import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
 import { getDate } from "date-fns/getDate";
 import DoctorSelect from './DoctorSelect';
 import WelcomeHeader from '../../components/WelcomeHeader';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 
 const AgendarCitaCliente = () => {
   const [especialidades, setEspecialidades] = useState([]);
@@ -627,7 +628,7 @@ const AgendarCitaCliente = () => {
                     value={idDoctor}
                     onChange={handleDoctorChange}
                     disabled={!selectedEspecialidad}
-                    apiBaseUrl={API_BASE_URL}
+                    apiBaseUrl={API_BASE_URL_PHOTO}
                   />
                 </div>
 

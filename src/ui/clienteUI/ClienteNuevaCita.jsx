@@ -9,6 +9,7 @@ import { useCitas } from '../../context/CitasContext';
 import { usePagos } from '../../context/PagosContext';
 import DoctorCalendar from '../../components/clienteComponents/DoctorCalendar';
 import DoctorSelect from './DoctorSelect';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 
 const ClienteNuevaCita = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -465,7 +466,7 @@ const ClienteNuevaCita = () => {
                     value={idDoctor}
                     onChange={handleDoctorChange}
                     disabled={!selectedEspecialidad}
-                    apiBaseUrl={API_BASE_URL}
+                    apiBaseUrl={API_BASE_URL_PHOTO}
                   />
                 </div>
     
