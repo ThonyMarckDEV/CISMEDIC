@@ -4,7 +4,7 @@ import appImage from '../../img/app.jpg'; // Importar la imagen
 
 const AppDownload = () => {
   // URL del archivo APK en el repositorio de releases
-  const apkDownloadUrl = "https://github.com/ThonyMarckDEV/CISMEDIC/releases/download/1.0/Cismedic.apk";
+  const apkDownloadUrl = "https://github.com/ThonyMarckDEV/CISMEDIC/releases/download/1.1/Cismedic.apk";
 
   return (
     <div className="bg-white text-gray-900 py-16 relative overflow-hidden">
