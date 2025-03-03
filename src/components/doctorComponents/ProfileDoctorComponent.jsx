@@ -7,6 +7,7 @@ import LoaderScreen from '../../components/home/LoadingScreen';
 import sweetAlert from '../SweetAlert';
 import imgperfil from '../../img/defualtpefil.jpg';
 import AlbumDoctor from './AlbumDoctor';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 
 const PerfilDoctorComponent = () => {
   const [isEditing, setIsEditing] = useState(false);

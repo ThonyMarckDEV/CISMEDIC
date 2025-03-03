@@ -3,6 +3,7 @@ import { Plus, Trash2, Edit, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
 import jwtUtils from '../../utilities/jwtUtils';
 import sweetAlert from '../SweetAlert';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 
 // Modified AlbumDoctor component with smaller size
 const AlbumDoctor = () => {
@@ -296,7 +297,7 @@ const AlbumDoctor = () => {
                                         }`}
                                     >
                                         <img
-                                            src={`${API_BASE_URL}/${foto.ruta_imagen}`}
+                                            src={`${API_BASE_URL_PHOTO}/backend/storage/app/public/${foto.ruta_imagen}`}
                                             className="object-contain h-full w-full"
                                             alt="Foto médica"
                                         />
