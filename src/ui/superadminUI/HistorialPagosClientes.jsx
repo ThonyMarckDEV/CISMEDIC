@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, XCircle } from "lucide-react";
-import SidebarDoctor from "../../components/adminComponents/SidebarAdmin";
+import SidebarDoctor from "../../components/superAdminComponents/SidebarSuperAdmin";
 import API_BASE_URL from "../../js/urlHelper";
 import jwtUtils from "../../utilities/jwtUtils";
-import CardHistorialPagosCliente from "../../components/adminComponents/HistorialPagoCard";
+import CardHistorialPagosCliente from "../../components/superAdminComponents/HistorialPagoCard";
 import WelcomeHeader from '../../components/WelcomeHeader';
 
 const HistorialPagosClientes = () => {
