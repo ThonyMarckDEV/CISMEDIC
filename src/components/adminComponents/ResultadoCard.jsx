@@ -103,7 +103,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
 
   // Convierte la URL HTTP a HTTPS si es necesario
   const pdfUrl = resultado.ruta_archivo 
-    ? `${API_BASE_URL_PHOTO}/storage/app/public/${resultado.ruta_archivo}`
+    ? `${API_BASE_URL_PHOTO}/backend/storage/app/public/${resultado.ruta_archivo}`
     : '';
     
   // Usar URL segura para enlaces externos
