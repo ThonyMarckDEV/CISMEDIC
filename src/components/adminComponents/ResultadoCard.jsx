@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, Trash2, X, Download, Maximize, Minimize } from 'lucide-react';
-import API_BASE_URL from '../../js/urlHelper';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 import jwtUtils from '../../utilities/jwtUtils';
 import Swal from 'sweetalert2';
 import LoaderScreen from '../home/LoadingScreen';
@@ -102,7 +102,7 @@ const ResultadoCardAdmin = ({ resultado }) => {
 
   // Convierte la URL HTTP a HTTPS si es necesario
   const pdfUrl = resultado.ruta_archivo 
-    ? `${API_BASE_URL}/storage/${resultado.ruta_archivo}`
+    ? `${API_BASE_URL_PHOTO}/storage/app/public/${resultado.ruta_archivo}`
     : '';
     
   // Usar URL segura para enlaces externos
