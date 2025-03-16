@@ -1,6 +1,7 @@
 import React from 'react';
 import { WifiOff, Search } from 'lucide-react';
 import API_BASE_URL from '../../js/urlHelper';
+import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 import imgperfil from '../../img/defualtpefil.jpg';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -68,7 +69,7 @@ const DoctorList = ({
             >
               <div className="flex flex-col items-center">
                 <img
-                  src={doctor.perfil ? `${API_BASE_URL}/storage/${doctor.perfil}` : imgperfil}
+                  src={doctor.perfil ? `${API_BASE_URL_PHOTO}/backend/storage/app/public/${doctor.perfil}` : imgperfil}
                   alt={`Dr. ${doctor.nombres} ${doctor.apellidos}`}
                   className="w-24 h-24 rounded-full object-cover mb-4"
                 />
