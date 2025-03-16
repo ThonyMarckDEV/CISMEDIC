@@ -1,6 +1,5 @@
 import React from 'react';
 import { WifiOff, Search } from 'lucide-react';
-import API_BASE_URL from '../../js/urlHelper';
 import API_BASE_URL_PHOTO from '../../js/urlHelperPhoto';
 import imgperfil from '../../img/defualtpefil.jpg';
 import { motion, AnimatePresence } from 'framer-motion';

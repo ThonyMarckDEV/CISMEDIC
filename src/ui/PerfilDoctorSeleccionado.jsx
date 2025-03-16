@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Building, GraduationCap, Stethoscope, Languages, Star, Edit, Plus, Trash2, Clock, Calendar, User } from "lucide-react";
 import API_BASE_URL from "../js/urlHelper";
+import API_BASE_URL_PHOTO from "../js/urlHelperPhoto";
 import banner from '../img/local.jpeg';
 import jwtUtils from "../utilities/jwtUtils";
 import Navbar from "../components/home/NavBar";
@@ -109,7 +110,7 @@ const PerfilDoctorSeleccionado = () => {
                 <img
                   src={
                     profileData.foto_perfil
-                      ? `${API_BASE_URL}/storage/${profileData.foto_perfil}`
+                      ? `${API_BASE_URL_PHOTO}/backend/storage/app/public/${profileData.foto_perfil}`
                       : imgperfil
                   }
                   alt="Profile"
