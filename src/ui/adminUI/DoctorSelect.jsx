@@ -75,7 +75,7 @@ const DoctorSelect = ({
               className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 transition-colors"
             >
               <img
-                src={doctor.perfil ? `${apiBaseUrl}/backend/storage/app/public/${doctor.perfil}` : defaultImage}
+                src={doctor.perfil ? `https://clinicacismedic.com/backend/storage/app/public/${doctor.perfil}` : defaultImage}
                 alt={`Dr. ${doctor.nombres}`}
                 className="w-10 h-10 rounded-full object-cover"
               />
