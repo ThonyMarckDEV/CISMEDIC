@@ -48,7 +48,7 @@ const DoctorSelect = ({
         {selectedDoctor ? (
           <div className="flex items-center space-x-3">
             <img
-              src={selectedDoctor.perfil ? `${apiBaseUrl}/backend/storage/app/public/${selectedDoctor.perfil}` : defaultImage}
+              src={selectedDoctor.perfil ? `https://clinicacismedic.com/backend/storage/app/public/${selectedDoctor.perfil}` : defaultImage}
               alt={`Dr. ${selectedDoctor.nombres}`}
               className="w-10 h-10 rounded-full object-cover"
             />
